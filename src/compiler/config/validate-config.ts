@@ -11,6 +11,12 @@ import {
   ValidatedConfig,
 } from '../../declarations';
 import { setBooleanConfig } from './config-utils';
+import {
+  DEFAULT_DEV_MODE,
+  DEFAULT_HASHED_FILENAME_LENGTH,
+  MAX_HASHED_FILENAME_LENGTH,
+  MIN_HASHED_FILENAME_LENGTH,
+} from './constants';
 import { validateOutputTargets } from './outputs';
 import { validateDevServer } from './validate-dev-server';
 import { validateHydrated } from './validate-hydrated';
@@ -100,14 +106,29 @@ export const validateConfig = (
 
   logger.setLevel(logLevel);
 
+  let devMode = !isBoolean(config.devMode) ? DEFAULT_DEV_MODE : config.devMode;
+  if (config.flags?.prod) {
+    devMode = false;
+  } else if (config.flags?.dev) {
+    devMode = true;
+  }
+
+  const hashFileNames = config.hashFileNames ?? !devMode;
+
   const validatedConfig: ValidatedConfig = {
     devServer: {}, // assign `devServer` before spreading `config`, in the event 'devServer' is not a key on `config`
     ...config,
+    buildEs5: config.buildEs5 === true || (!devMode && config.buildEs5 === 'prod'),
+    devMode,
     extras: config.extras || {},
     flags,
+    hashFileNames,
+    hashedFileNameLength: config.hashedFileNameLength ?? DEFAULT_HASHED_FILENAME_LENGTH,
     hydratedFlag: validateHydrated(config),
     logLevel,
     logger,
+    minifyCss: config.minifyCss ?? !devMode,
+    minifyJs: config.minifyJs ?? !devMode,
     outputTargets: config.outputTargets ?? [],
     rollupConfig: validateRollupConfig(config),
     sys: config.sys ?? bootstrapConfig.sys ?? createNodeSys({ logger }),
@@ -119,15 +140,6 @@ export const validateConfig = (
     ...validateNamespace(config.namespace, config.fsNamespace, diagnostics),
     ...validatePaths(config),
   };
-
-  // default devMode false
-  if (validatedConfig.flags.prod) {
-    validatedConfig.devMode = false;
-  } else if (validatedConfig.flags.dev) {
-    validatedConfig.devMode = true;
-  } else if (!isBoolean(validatedConfig.devMode)) {
-    validatedConfig.devMode = DEFAULT_DEV_MODE;
-  }
 
   validatedConfig.extras.lifecycleDOMEvents = !!validatedConfig.extras.lifecycleDOMEvents;
   validatedConfig.extras.scriptDataOpts = !!validatedConfig.extras.scriptDataOpts;
@@ -168,11 +180,6 @@ export const validateConfig = (
     validatedConfig.extras.scopedSlotTextContentFix = !!validatedConfig.extras.scopedSlotTextContentFix;
   }
 
-  validatedConfig.buildEs5 =
-    validatedConfig.buildEs5 === true || (!validatedConfig.devMode && validatedConfig.buildEs5 === 'prod');
-
-  setBooleanConfig(validatedConfig, 'minifyCss', null, !validatedConfig.devMode);
-  setBooleanConfig(validatedConfig, 'minifyJs', null, !validatedConfig.devMode);
   setBooleanConfig(
     validatedConfig,
     'sourceMap',
@@ -181,7 +188,7 @@ export const validateConfig = (
   );
   setBooleanConfig(validatedConfig, 'watch', 'watch', false);
   setBooleanConfig(validatedConfig, 'buildDocs', 'docs', !validatedConfig.devMode);
-  setBooleanConfig(validatedConfig, 'buildDist', 'esm', !validatedConfig.devMode || validatedConfig.buildEs5);
+  setBooleanConfig(validatedConfig, 'buildDist', 'esm', !validatedConfig.devMode || !!validatedConfig.buildEs5);
   setBooleanConfig(validatedConfig, 'profile', 'profile', validatedConfig.devMode);
   setBooleanConfig(validatedConfig, 'writeLog', 'log', false);
   setBooleanConfig(validatedConfig, 'buildAppCore', null, true);
@@ -198,15 +205,15 @@ export const validateConfig = (
     validatedConfig.hashFileNames = !validatedConfig.devMode;
   }
   if (!isNumber(validatedConfig.hashedFileNameLength)) {
-    validatedConfig.hashedFileNameLength = DEFAULT_HASHED_FILENAME_LENTH;
+    validatedConfig.hashedFileNameLength = DEFAULT_HASHED_FILENAME_LENGTH;
   }
-  if (validatedConfig.hashedFileNameLength < MIN_HASHED_FILENAME_LENTH) {
+  if (validatedConfig.hashedFileNameLength < MIN_HASHED_FILENAME_LENGTH) {
     const err = buildError(diagnostics);
-    err.messageText = `validatedConfig.hashedFileNameLength must be at least ${MIN_HASHED_FILENAME_LENTH} characters`;
+    err.messageText = `validatedConfig.hashedFileNameLength must be at least ${MIN_HASHED_FILENAME_LENGTH} characters`;
   }
-  if (validatedConfig.hashedFileNameLength > MAX_HASHED_FILENAME_LENTH) {
+  if (validatedConfig.hashedFileNameLength > MAX_HASHED_FILENAME_LENGTH) {
     const err = buildError(diagnostics);
-    err.messageText = `validatedConfig.hashedFileNameLength cannot be more than ${MAX_HASHED_FILENAME_LENTH} characters`;
+    err.messageText = `validatedConfig.hashedFileNameLength cannot be more than ${MAX_HASHED_FILENAME_LENGTH} characters`;
   }
   if (!validatedConfig.env) {
     validatedConfig.env = {};
@@ -260,8 +267,3 @@ export const validateConfig = (
     diagnostics,
   };
 };
-
-const DEFAULT_DEV_MODE = false;
-const DEFAULT_HASHED_FILENAME_LENTH = 8;
-const MIN_HASHED_FILENAME_LENTH = 4;
-const MAX_HASHED_FILENAME_LENTH = 32;

@@ -455,14 +455,19 @@ type RequireFields<T, K extends keyof T> = T & { [P in K]-?: T[P] };
  */
 type StrictConfigFields = keyof Pick<
   Config,
+  | 'buildEs5'
   | 'cacheDir'
   | 'devServer'
   | 'extras'
   | 'flags'
   | 'fsNamespace'
+  | 'hashFileNames'
+  | 'hashedFileNameLength'
   | 'hydratedFlag'
   | 'logger'
   | 'logLevel'
+  | 'minifyJs'
+  | 'minifyCss'
   | 'namespace'
   | 'outputTargets'
   | 'packageJsonFilePath'

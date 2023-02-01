@@ -13,8 +13,8 @@ export const taskServe = async (config: ValidatedConfig) => {
   config.maxConcurrentWorkers = 1;
   config.devServer.root = isString(config.flags.root) ? config.flags.root : config.sys.getCurrentDirectory();
 
-  const devServerPath = config.sys.getDevServerExecutingPath();
-  const { start }: typeof import('@stencil/core/dev-server') = await config.sys.dynamicImport(devServerPath);
+  // const devServerPath = config.sys.getDevServerExecutingPath();
+  const { start }: typeof import('@stencil/core/dev-server') = await import('@stencil/core/dev-server');
   const devServer = await start(config.devServer, config.logger);
 
   console.log(`${config.logger.cyan('     Root:')} ${devServer.root}`);

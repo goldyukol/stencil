@@ -29,3 +29,9 @@ export function sysModulesPlugin(inputDir: string): Plugin {
     },
   };
 }
+
+export function sysModulesAliases(inputDir: string): Record<string, string> {
+  return Object.fromEntries(
+    Array.from(modules).map((moduleId) => [moduleId, path.join(inputDir, 'sys', 'modules', `${moduleId}.js`)])
+  );
+}

@@ -1,4 +1,5 @@
 import { start } from '@stencil/core/dev-server';
+import { createCompiler } from '@stencil/core/compiler';
 import type {
   Compiler,
   CompilerBuildResults,
@@ -21,7 +22,6 @@ import { getAppScriptUrl, getAppStyleUrl } from './testing-utils';
 export const createTesting = async (config: ValidatedConfig): Promise<Testing> => {
   config = setupTestingConfig(config);
 
-  const { createCompiler } = require('../compiler/stencil.js');
   const compiler: Compiler = await createCompiler(config);
 
   let devServer: DevServer;

@@ -1,9 +1,9 @@
 import type { CompilerSystem } from '../declarations';
 
-export const loadCoreCompiler = async (sys: CompilerSystem): Promise<CoreCompiler> => {
-  await sys.dynamicImport(sys.getCompilerExecutingPath());
+export const loadCoreCompiler = async (_sys: CompilerSystem): Promise<CoreCompiler> => {
+  const coreCompiler = await import('@stencil/core/compiler');
 
-  return (globalThis as any).stencil;
+  return coreCompiler
 };
 
 export type CoreCompiler = typeof import('@stencil/core/compiler');

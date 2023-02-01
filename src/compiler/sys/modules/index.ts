@@ -1,4 +1,3 @@
-export * from './compiler-deps';
 export * from './crypto';
 export * from './dts-core';
 export * from './dts-internal';

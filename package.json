@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "npm run tsc.scripts && npm run tsc.prod && npm run rollup.prod.ci",
+    "build:esbuild": "git clean -fd && npm run clean && npm run build && node esbuild.js",
     "clean": "rm -rf build/ cli/ compiler/ dev-server/ internal/ mock-doc/ sys/ testing/ && npm run clean-scripts",
     "clean-scripts": "rm -rf scripts/build",
     "license": "node scripts/build --license",
@@ -86,6 +87,7 @@
     "autoprefixer": "10.4.14",
     "conventional-changelog-cli": "^2.2.2",
     "dts-bundle-generator": "~7.2.0",
+    "esbuild": "^0.17.8",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-jest": "^27.0.4",

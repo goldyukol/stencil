@@ -28,6 +28,7 @@
     "paths": {
       "@app-data": ["src/app-data/index.ts"],
       "@app-globals": ["src/app-globals/index.ts"],
+      "@environment": ["src/compiler/sys/environment.ts"],
       "@compiler-deps": ["src/compiler/sys/modules/compiler-deps.ts"],
       "@dev-server-process": ["src/dev-server/server-process.ts"],
       "@hydrate-factory": ["src/hydrate/runner/hydrate-factory.ts"],
@@ -76,5 +77,5 @@
     "src/testing/index.ts",
     "src/testing/platform/index.ts"
   ],
-  "include": ["types/*.d.ts", "src/declarations/*.ts", "src/**/*.spec.ts"]
+  "include": ["types/*.d.ts", "src/declarations/*.ts", "src/**/*.spec.ts", "src/utils/**/*.ts" ]
 }

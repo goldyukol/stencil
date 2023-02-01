@@ -58,14 +58,14 @@ export async function createBuild(opts: BuildOptions): Promise<readonly RollupOp
   await sysNodeExternalBundles(opts);
 
   const bundles = await Promise.all([
-    cli(opts),
-    compiler(opts),
+    // cli(opts),
+    // compiler(opts),
     devServer(opts),
     internal(opts),
-    mockDoc(opts),
+    // mockDoc(opts),
     screenshot(opts),
     testing(opts),
-    sysNode(opts),
+    // sysNode(opts),
   ]);
 
   return bundles.flat();

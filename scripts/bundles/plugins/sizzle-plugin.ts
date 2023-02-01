@@ -69,3 +69,17 @@ return module.exports;
 })();
 `;
 }
+
+export async function writeSizzleBundle(opts: BuildOptions): Promise<string> {
+  const f = opts.isProd ? 'sizzle.min.js' : 'sizzle.js';
+  const sizzlePath = join(opts.nodeModulesDir, 'sizzle', 'dist', f);
+  const sizzleContent = await fs.readFile(sizzlePath, 'utf8');
+  const patchedSizzle = getSizzleBundle(opts, sizzleContent);
+
+  const fileName = `sizzle--bundle-cache${opts.isProd ? '.min' : ''}.js`;
+  const cacheFile = join(opts.scriptsBuildDir, fileName);
+
+  fs.writeFileSync(cacheFile, patchedSizzle);
+
+  return cacheFile;
+}

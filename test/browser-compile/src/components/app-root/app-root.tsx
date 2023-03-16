@@ -5,7 +5,8 @@ import type RollupTypes from 'rollup';
 import { cssTemplatePlugin } from '../../utils/css-template-plugin';
 import { loadDeps } from '../../utils/load-deps';
 import { templates, templateList } from '../../utils/templates';
-import { transpileWorker } from '../../compiler.worker';
+import { createStencilContainer, saveStencilTranspileOptions, saveStencilComponentFile, runCompilation } from '../../utils/stencil-webcontainer'
+import {WebContainer} from '@webcontainer/api';
 
 @Component({
   tag: 'app-root',
@@ -39,12 +40,16 @@ export class AppRoot {
   @State() minified: 'uncompressed' | 'pretty' | 'minified' = 'uncompressed';
   @State() bundledLength = 0;
   @State() diagnostics: any = [];
+  @State() wc: WebContainer | null = null;
 
   componentWillLoad() {
     return loadDeps(this.resolveLookup, this.fs);
   }
 
   async componentDidLoad() {
+    const wc = await createStencilContainer();
+    this.wc = wc;
+    console.log(wc);
     this.loadTemplate(templates.keys().next().value);
   }
 
@@ -72,20 +77,24 @@ export class AppRoot {
       styleImportData: this.styleImportData.value,
     };
 
-    const browserPromise = stencil.transpile(this.sourceCodeInput.value, opts);
-    const workerPromise = transpileWorker(this.sourceCodeInput.value, opts);
+    await saveStencilTranspileOptions(this.wc, opts);
+    await saveStencilComponentFile(this.wc, this.file.value, this.sourceCodeInput.value )
 
-    const browserResults = await browserPromise;
-    const workerResults = await workerPromise;
-
-    const results = this.transpilerThread.value === 'worker' ? workerResults : browserResults;
-
-    results.imports.forEach((imprt) => {
-      console.log('import:', imprt);
+    const transpiledData = this.transpiledInput
+    const writeableStream = new WritableStream({
+      write(data) {
+        console.log(data);
+        transpiledData.value = data;
+      },
     });
+    await runCompilation(this.wc, writeableStream);
 
-    this.transpiledInput.value = results.code;
-    this.diagnostics = results.diagnostics;
+    // results.imports.forEach((imprt) => {
+    //   console.log('import:', imprt);
+    // });
+
+    // this.transpiledInput.value = output
+    this.diagnostics = []
     this.wrap = 'off';
 
     this.diagnostics.forEach((d: any) => {
@@ -98,7 +107,7 @@ export class AppRoot {
       }
     });
 
-    await this.bundle();
+    // await this.bundle();
   }
 
   async bundle() {
@@ -368,7 +377,7 @@ export class AppRoot {
 
           <textarea
             ref={(el) => (this.transpiledInput = el)}
-            onInput={this.bundle.bind(this)}
+            // onInput={this.bundle.bind(this)}
             hidden={this.buildView !== 'transpiled'}
             spellcheck="false"
             autocapitalize="off"

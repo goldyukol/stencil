@@ -90,14 +90,20 @@ export const validateTesting = (config: d.ValidatedConfig, diagnostics: d.Diagno
     testing.preset = join(configPathDir, testing.preset);
   }
 
+  // TODO(NOW): This assumes we'll always have this file
+  // We'll need to decide if there's a path retrieval mechanism, or if that acts as a facade in front of the rest
   if (!Array.isArray(testing.setupFilesAfterEnv)) {
     testing.setupFilesAfterEnv = [];
   }
 
+  // TODO(NOW): This assumes we'll always have this file
+  // We'll need to decide if there's a path retrieval mechanism, or if that acts as a facade in front of the rest
   testing.setupFilesAfterEnv.unshift(
     join(config.sys!.getCompilerExecutingPath(), '..', '..', 'testing', 'jest-setuptestframework.js'),
   );
 
+  // TODO(NOW): This assumes we'll always have this file
+  // We'll need to decide if there's a path retrieval mechanism, or if that acts as a facade in front of the rest
   if (isString(testing.testEnvironment)) {
     if (!isAbsolute(testing.testEnvironment) && isLocalModule(testing.testEnvironment)) {
       testing.testEnvironment = join(configPathDir, testing.testEnvironment);
@@ -150,6 +156,8 @@ export const validateTesting = (config: d.ValidatedConfig, diagnostics: d.Diagno
     delete testing.testMatch;
   }
 
+  // TODO(NOW): This assumes we'll always have this file
+  // We'll need to decide if there's a path retrieval mechanism, or if that acts as a facade in front of the rest
   if (typeof testing.runner !== 'string') {
     testing.runner = join(config.sys!.getCompilerExecutingPath(), '..', '..', 'testing', 'jest-runner.js');
   }

@@ -1,4 +1,5 @@
 import type { TestingRunOptions, ValidatedConfig } from '../declarations';
+// import { getTestingModuleNames } from '../testing/jest/jest-version';
 
 /**
  * Entrypoint for any Stencil tests
@@ -7,6 +8,7 @@ import type { TestingRunOptions, ValidatedConfig } from '../declarations';
  */
 export const taskTest = async (config: ValidatedConfig): Promise<void> => {
   config.buildDocs = false;
+  // TODO(NOW): Do I want to add a new flag for Jest 28 support? Maybe....
   const testingRunOpts: TestingRunOptions = {
     e2e: !!config.flags.e2e,
     screenshot: !!config.flags.screenshot,
@@ -14,8 +16,9 @@ export const taskTest = async (config: ValidatedConfig): Promise<void> => {
     updateScreenshot: !!config.flags.updateScreenshot,
   };
 
+  // TODO(NOW):
   // always ensure we have jest modules installed
-  const ensureModuleIds = ['@types/jest', 'jest', 'jest-cli'];
+  const ensureModuleIds =  ['@types/jest', 'jest', 'jest-cli']; //getTestingModuleNames();
 
   if (testingRunOpts.e2e) {
     // if it's an e2e test, also make sure we're got
@@ -43,6 +46,7 @@ export const taskTest = async (config: ValidatedConfig): Promise<void> => {
 
   try {
     // let's test!
+    // TODO(NOW): Better way to handle these imports?
     const { createTesting } = await import('@stencil/core/testing');
     const testing = await createTesting(config);
     const passed = await testing.run(testingRunOpts);

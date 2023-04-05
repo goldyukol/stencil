@@ -146,6 +146,7 @@ export function buildJestConfig(config: d.ValidatedConfig): string {
     jestConfig.verbose = stencilConfigTesting.verbose;
   }
 
+  // TODO(NOW)
   // TODO(STENCIL-307): Move away from Jasmine runner for Stencil tests, which involves a potentially breaking change
   jestConfig.testRunner = 'jest-jasmine2';
 

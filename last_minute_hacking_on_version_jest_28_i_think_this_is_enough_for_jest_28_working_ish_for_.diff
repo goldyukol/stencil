@@ -1,0 +1,1579 @@
+Subject: [PATCH] last minute hacking on version
+jest 28
+i think this is enough for jest 28
+working ish for 27
+port over matchers
+add runner note and e2e is broken, moving on
+hacky go lucky it works
+add .d.ts for now
+lock
+hack a lot out
+it can read the preprocessor
+add build cmd
+fix stencil build
+tsc
+stub preprocessor
+rm that
+scaffolding
+refactor(test-task): pull easy stuff out of try
+---
+Index: src/cli/task-test.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/cli/task-test.ts b/src/cli/task-test.ts
+--- a/src/cli/task-test.ts	(revision ac2c09e41ab1dee497a695e93b01ff434334883c)
++++ b/src/cli/task-test.ts	(revision cdc3463bedff9499d7143752ae218201f52dd973)
+@@ -1,5 +1,8 @@
+ import type { ValidatedConfig, TestingRunOptions } from '../declarations';
+ import { IS_NODE_ENV } from '../compiler/sys/environment';
++// this inherits from elsewhere and won't make sense if split out. just shush it for now
++// eslint-disable-next-line jest/no-jest-import
++import {getVersion} from 'jest';
+ 
+ /**
+  * Entrypoint for any Stencil tests
+@@ -11,19 +14,27 @@
+     return config.sys.exit(1);
+   }
+ 
+-  try {
+-    config.buildDocs = false;
+-    const testingRunOpts: TestingRunOptions = {
+-      e2e: !!config.flags.e2e,
+-      screenshot: !!config.flags.screenshot,
+-      spec: !!config.flags.spec,
+-      updateScreenshot: !!config.flags.updateScreenshot,
+-    };
++  // TODO(NOW): need a way to determine the version that's safe - coerce this w `semver`
++  const jestVersion = Number(getVersion().split('.')[0]);
++  // TODO(NOW): new name
++  const isExperimentalJestSupport = jestVersion >= 28;
++
++  config.buildDocs = false;
++  const testingRunOpts: TestingRunOptions = {
++    e2e: !!config.flags.e2e,
++    screenshot: !!config.flags.screenshot,
++    spec: !!config.flags.spec,
++    updateScreenshot: !!config.flags.updateScreenshot,
++    isExperimentalJestSupport,
++  };
+ 
+-    // always ensure we have jest modules installed
+-    const ensureModuleIds = ['@types/jest', 'jest', 'jest-cli'];
++  // always ensure we have jest modules installed
++  const ensureModuleIds = config.testing?.experimentalJestArchitecture ? [] : ['@types/jest', 'jest', 'jest-cli'];
+ 
+-    if (testingRunOpts.e2e) {
++  if (testingRunOpts.e2e) {
++    if (isExperimentalJestSupport) {
++      // TODO(NOW): Warn that this isn't supported, e2e will not run
++    } else {
+       // if it's an e2e test, also make sure we're got
+       // puppeteer modules installed and if browserExecutablePath is provided don't download Chromium use only puppeteer-core instead
+       const puppeteer = config.testing.browserExecutablePath ? 'puppeteer-core' : 'puppeteer';
+@@ -39,7 +50,9 @@
+         );
+       }
+     }
++  }
+ 
++  try {
+     // ensure we've got the required modules installed
+     const diagnostics = await config.sys.lazyRequire.ensure(config.rootDir, ensureModuleIds);
+     if (diagnostics.length > 0) {
+Index: src/compiler/config/validate-testing.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/compiler/config/validate-testing.ts b/src/compiler/config/validate-testing.ts
+--- a/src/compiler/config/validate-testing.ts	(revision 8285ce5419dec9ec8e6db75773660db2523b8c9f)
++++ b/src/compiler/config/validate-testing.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -7,6 +7,9 @@
+ export const validateTesting = (config: d.ValidatedConfig, diagnostics: d.Diagnostic[]) => {
+   const testing = (config.testing = Object.assign({}, config.testing || {}));
+ 
++  // TODO: Lots of reorg to do here
++  const _usingExperimentalJestSupport = !!(testing.experimentalJestArchitecture);
++  console.log(`Experimental Arch ${_usingExperimentalJestSupport}`)
+   if (!config.flags.e2e && !config.flags.spec) {
+     return;
+   }
+@@ -89,9 +92,11 @@
+     testing.setupFilesAfterEnv = [];
+   }
+ 
+-  testing.setupFilesAfterEnv.unshift(
+-    join(config.sys!.getCompilerExecutingPath(), '..', '..', 'testing', 'jest-setuptestframework.js')
+-  );
++  if (!_usingExperimentalJestSupport) {
++    testing.setupFilesAfterEnv.unshift(
++      join(config.sys!.getCompilerExecutingPath(), '..', '..', 'testing', 'jest-setuptestframework.js')
++    );
++  }
+ 
+   if (isString(testing.testEnvironment)) {
+     if (!isAbsolute(testing.testEnvironment) && isLocalModule(testing.testEnvironment)) {
+@@ -145,7 +150,7 @@
+     delete testing.testMatch;
+   }
+ 
+-  if (typeof testing.runner !== 'string') {
++  if (!_usingExperimentalJestSupport && typeof testing.runner !== 'string') {
+     testing.runner = join(config.sys!.getCompilerExecutingPath(), '..', '..', 'testing', 'jest-runner.js');
+   }
+ 
+@@ -173,6 +178,8 @@
+       },
+     ];
+   }
++  console.log(`TEST CONFIG
++${JSON.stringify(testing,null,4)}`)
+ };
+ 
+ const addTestingConfigOption = (setArray: string[], option: string) => {
+Index: src/declarations/stencil-public-compiler.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/declarations/stencil-public-compiler.ts b/src/declarations/stencil-public-compiler.ts
+--- a/src/declarations/stencil-public-compiler.ts	(revision 8285ce5419dec9ec8e6db75773660db2523b8c9f)
++++ b/src/declarations/stencil-public-compiler.ts	(revision a9d8442cf26f5835a3401978e38a8ea34b3a2ee3)
+@@ -1505,6 +1505,7 @@
+   screenshot?: boolean;
+   spec?: boolean;
+   updateScreenshot?: boolean;
++  isExperimentalJestSupport?: boolean;
+ }
+ 
+ export interface JestConfig {
+@@ -1638,6 +1639,7 @@
+ }
+ 
+ export interface TestingConfig extends JestConfig {
++  experimentalJestArchitecture?: boolean;
+   /**
+    * The `allowableMismatchedPixels` value is used to determine an acceptable
+    * number of pixels that can be mismatched before the image is considered
+Index: src/testing/jest/experimental/jest-28/package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/package.json b/src/testing/jest/experimental/jest-28/package.json
+new file mode 100644
+--- /dev/null	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
++++ b/src/testing/jest/experimental/jest-28/package.json	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
+@@ -0,0 +1,35 @@
++{
++  "name": "@stencil/jest-28-adapter",
++  "version": "0.0.1",
++  "description": "an experimental adapter for stencil and jest 28",
++  "main": "index.js",
++  "files": [
++    "jest-preprocessor.js",
++    "jest-preset.js",
++    "./matchers/*.js",
++    "*.d.ts"
++  ],
++  "scripts": {
++    "build": "tsc -p . && npm pack",
++    "test": "echo \"Error: no test specified\" && exit 1"
++  },
++  "repository": {
++    "type": "git",
++    "url": "git+https://github.com/ionic-team/stencil.git"
++  },
++  "keywords": [
++    "jest",
++    "stencil",
++    "testing",
++    "experimental"
++  ],
++  "author": "",
++  "license": "MIT",
++  "bugs": {
++    "url": "https://github.com/ionic-team/stencil/issues"
++  },
++  "homepage": "https://github.com/ionic-team/stencil#readme",
++  "dependencies": {
++    "@stencil/core": "^2.17.4"
++  }
++}
+Index: src/testing/jest/jest-runner.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/jest-runner.ts b/src/testing/jest/jest-runner.ts
+--- a/src/testing/jest/jest-runner.ts	(revision 8285ce5419dec9ec8e6db75773660db2523b8c9f)
++++ b/src/testing/jest/jest-runner.ts	(revision 807d65e69e8aa4d10236031ecbcd2c4ed53f533b)
+@@ -4,7 +4,7 @@
+ import type { AggregatedResult } from '@jest/test-result';
+ import type { ConfigFlags } from '../../cli/config-flags';
+ 
+-export async function runJest(config: d.ValidatedConfig, env: d.E2EProcessEnv) {
++export async function runJest(config: d.ValidatedConfig, env: d.E2EProcessEnv, _isJestExperimentalSupport: boolean) {
+   let success = false;
+ 
+   try {
+@@ -60,6 +60,8 @@
+       tests = tests.filter((t) => includeTestFile(t.path, env));
+ 
+       if (env.__STENCIL_SCREENSHOT__ === 'true') {
++        console.log(`e2e`)
++
+         // we're doing e2e screenshots, so let's loop through
+         // each of the emulate configs for each test
+ 
+@@ -78,6 +80,7 @@
+           await super.runTests(tests, watcher, onStart, onResult, onFailure, options);
+         }
+       } else {
++        console.log(`unit`)
+         // not doing e2e screenshot tests
+         // so just run each test once
+         await super.runTests(tests, watcher, onStart, onResult, onFailure, options);
+Index: src/testing/jest/jest-screenshot.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/jest-screenshot.ts b/src/testing/jest/jest-screenshot.ts
+--- a/src/testing/jest/jest-screenshot.ts	(revision 8285ce5419dec9ec8e6db75773660db2523b8c9f)
++++ b/src/testing/jest/jest-screenshot.ts	(revision a9d8442cf26f5835a3401978e38a8ea34b3a2ee3)
+@@ -45,7 +45,7 @@
+ 
+   const testsTimespan = config.logger.createTimeSpan(`screenshot, tests started`, true);
+ 
+-  const passed = await runJest(config, env);
++  const passed = await runJest(config, env, false);
+ 
+   testsTimespan.finish(`screenshot, tests finished, passed: ${passed}`);
+ 
+Index: src/testing/testing.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/testing.ts b/src/testing/testing.ts
+--- a/src/testing/testing.ts	(revision 8285ce5419dec9ec8e6db75773660db2523b8c9f)
++++ b/src/testing/testing.ts	(revision a9d8442cf26f5835a3401978e38a8ea34b3a2ee3)
+@@ -43,7 +43,8 @@
+ 
+       env = process.env;
+ 
+-      if (opts.e2e) {
++      // TODO() Maybe warn here?
++      if (opts.e2e && !opts.isExperimentalJestSupport) {
+         msg.push('e2e');
+         env.__STENCIL_E2E_TESTS__ = 'true';
+       }
+@@ -55,7 +56,7 @@
+ 
+       config.logger.info(config.logger.magenta(`testing ${msg.join(' and ')} files${config.watch ? ' (watch)' : ''}`));
+ 
+-      doScreenshots = !!(opts.e2e && opts.screenshot);
++      doScreenshots = !!(opts.e2e && opts.screenshot && !opts.isExperimentalJestSupport);
+       if (doScreenshots) {
+         env.__STENCIL_SCREENSHOT__ = 'true';
+ 
+@@ -66,7 +67,8 @@
+         }
+       }
+ 
+-      if (opts.e2e) {
++      // TODO(): so many places to update....
++      if (opts.e2e && !opts.isExperimentalJestSupport) {
+         // e2e tests only
+         // do a build, start a dev server
+         // and spin up a puppeteer browser
+@@ -138,7 +140,7 @@
+       if (doScreenshots) {
+         passed = await runJestScreenshot(config, env);
+       } else {
+-        passed = await runJest(config, env);
++        passed = await runJest(config, env, opts.isExperimentalJestSupport);
+       }
+       config.logger.info('');
+       if (compilerWatcher) {
+Index: src/testing/jest/experimental/jest-28/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/.gitignore b/src/testing/jest/experimental/jest-28/.gitignore
+new file mode 100644
+--- /dev/null	(revision 9d57594ac6934c617104ba1d013072fd76bca8c9)
++++ b/src/testing/jest/experimental/jest-28/.gitignore	(revision 9d57594ac6934c617104ba1d013072fd76bca8c9)
+@@ -0,0 +1,2 @@
++*.tgz
++*.js
+Index: src/testing/jest/experimental/jest-28/index.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/index.ts b/src/testing/jest/experimental/jest-28/index.ts
+new file mode 100644
+--- /dev/null	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
++++ b/src/testing/jest/experimental/jest-28/index.ts	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
+@@ -0,0 +1,2 @@
++// @ts-check
++export {expectExtend} from './matchers'
+Index: src/testing/jest/experimental/jest-28/jest-preprocessor.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/jest-preprocessor.ts b/src/testing/jest/experimental/jest-28/jest-preprocessor.ts
+new file mode 100644
+--- /dev/null	(revision e1db8b17287382ea63ef160e7fe3e7bc1fd1e6b9)
++++ b/src/testing/jest/experimental/jest-28/jest-preprocessor.ts	(revision e1db8b17287382ea63ef160e7fe3e7bc1fd1e6b9)
+@@ -0,0 +1,217 @@
++import type { TranspileOptions, Diagnostic } from '@stencil/core/internal';
++// import { loadTypeScriptDiagnostic, normalizePath } from '@utils';
++// import { transpile } from '../test-transpile';
++import {transpile} from '@stencil/core/testing';
++// TODO Maybe a transform for this...
++// import {} from '@stencil/core/compiler';
++
++/**
++ * Constant used for cache busting when the contents of this file have changed. When modifying this file, it's advised
++ * this value be monotonically incremented.
++ */
++// const CACHE_BUSTER = 8;
++
++/**
++ * Fields containing the consuming library's `tsconfig.json#options` entry. The first is the original representation,
++ * where the second is the stringified version. These fields are cached to prevent unnecessary I/O & repetitive
++ * stringification of the read options. Note that this caching does not persist across multiple Jest workers (I.E.
++ * every Jest worker will read the `tsconfig.json` file and stringify it's `options` entry.
++ */
++// let _tsCompilerOptions: ts.CompilerOptions | null = null;
++// let _tsCompilerOptionsKey: string | null = null;
++
++module.exports = {
++  /**
++   * Transforms a file to CommonJS to be used by Jest. The API for `process` is described in the
++   * ["Writing custom transformers"](https://jestjs.io/docs/code-transformation#writing-custom-transformers)
++   * documentation on the jest site. Unfortunately, the URL is not versioned at the time of this writing. For
++   * reference, the v27.2 docs were referenced (the most recent available).
++   *
++   * This function attempts to support several versions of Jest (v23 through v27). Support for earlier versions of Jest
++   * will be removed in a future major version of Stencil.
++   *
++   * @param sourceText the contents of the source file
++   * @param sourcePath the path to the source file
++   * @param jestConfig the jest configuration when called by Jest 26 and lower. This parameter is folded into
++   * `transformOptions` when called by Jest 27+ as a top level `config` property. Calls to this function from Jest 27+
++   * will have a `Jest27TransformOptions` shape
++   * @returns the transformed file contents if the file should be transformed. returns the original source otherwise
++   */
++  process(
++    sourceText: string,
++    sourcePath: string,
++    jestConfig: any, //Jest27TransformOptions,
++  ): { code: string } { // TODO: Get this type
++
++    console.log(`HELLO WORLD`)
++    // TODO Naming
++    const transformOptions = jestConfig.config;
++
++    console.log(`tranform ${sourcePath}?`);
++    if (shouldTransform(sourcePath, sourceText)) {
++      console.log(`gonna transform ${sourcePath}`)
++      const opts: TranspileOptions = {
++        file: sourcePath,
++        currentDirectory: transformOptions.rootDir,
++      };
++
++      // const tsCompilerOptions: ts.CompilerOptions | null = getCompilerOptions(transformOptions.rootDir);
++      // if (tsCompilerOptions) {
++      //   if (tsCompilerOptions.baseUrl) {
++      //     opts.baseUrl = tsCompilerOptions.baseUrl;
++      //   }
++      //   if (tsCompilerOptions.paths) {
++      //     opts.paths = tsCompilerOptions.paths;
++      //   }
++      // }
++
++      const results = transpile(sourceText, opts);
++
++      const hasErrors = results.diagnostics.some((diagnostic) => diagnostic.level === 'error');
++
++      if (results.diagnostics && hasErrors) {
++        const msg = results.diagnostics.map(formatDiagnostic).join('\n\n');
++        throw new Error(msg);
++      }
++
++      return { code: results.code };
++    }
++
++    return {code: sourceText};
++  },
++
++  /**
++   * Generates a key used to cache the results of transforming a file. This helps avoid re-processing a file via the
++   * `transform` function unnecessarily (when no changes have occurred). The API for `getCacheKey` is described in the
++   * ["Writing custom transformers"](https://jestjs.io/docs/code-transformation#writing-custom-transformers)
++   * documentation on the jest site. Unfortunately, the URL is not versioned at the time of this writing. For
++   * reference, the v27.2 docs were referenced (the most recent available).
++   *
++   * This function attempts to support several versions of Jest (v23 through v27). Support for earlier versions of Jest
++   * will be removed in a future major version of Stencil.
++   *
++   * @param sourceText the contents of the source file
++   * @param sourcePath the path to the source file
++   * @param jestConfigStr a stringified version of the jest configuration when called by Jest 26 and lower. This
++   * parameter takes the shape of `transformOptions` when called by Jest 27+.
++   * @returns the key to cache a file with
++   */
++  getCacheKey(
++    sourceText: string,
++    sourcePath: string,
++    jestConfigStr:  any, //Jest27TransformOptions,
++  ): string {
++    // TODO Name
++    // const transformOptions = jestConfigStr.config;
++    //
++    // if (!_tsCompilerOptionsKey) {
++    //   const opts = getCompilerOptions(transformOptions.rootDir);
++    //   _tsCompilerOptionsKey = JSON.stringify(opts);
++    // }
++    //
++    // const key = [
++    //   process.version,
++    //   _tsCompilerOptionsKey,
++    //   sourceText,
++    //   sourcePath,
++    //   jestConfigStr,
++    //   !!transformOptions.instrument,
++    //   CACHE_BUSTER,
++    // ];
++
++    // return key.join(':');
++    return '';
++  },
++};
++
++function formatDiagnostic(diagnostic: Diagnostic) {
++  let m = '';
++
++  if (diagnostic.relFilePath) {
++    m += diagnostic.relFilePath;
++    if (typeof diagnostic.lineNumber === 'number') {
++      m += ':' + diagnostic.lineNumber + 1;
++      if (typeof diagnostic.columnNumber === 'number') {
++        m += ':' + diagnostic.columnNumber;
++      }
++    }
++    m += '\n';
++  }
++
++  m += diagnostic.messageText;
++
++  return m;
++}
++//
++// /**
++//  * Read the TypeScript compiler configuration file from disk
++//  * @param rootDir the location to search for the config file
++//  * @returns the configuration, or `null` if the file cannot be found
++//  */
++// function getCompilerOptions(rootDir: string): ts.CompilerOptions | null {
++//   if (_tsCompilerOptions) {
++//     return _tsCompilerOptions;
++//   }
++//
++//   if (typeof rootDir !== 'string') {
++//     return null;
++//   }
++//
++//   rootDir = normalizePath(rootDir);
++//
++//   const tsconfigFilePath = ts.findConfigFile(rootDir, ts.sys.fileExists);
++//   if (!tsconfigFilePath) {
++//     return null;
++//   }
++//
++//   const tsconfigResults = ts.readConfigFile(tsconfigFilePath, ts.sys.readFile);
++//
++//   if (tsconfigResults.error) {
++//     throw new Error(formatDiagnostic(loadTypeScriptDiagnostic(tsconfigResults.error)));
++//   }
++//
++//   const parseResult = ts.parseJsonConfigFileContent(
++//     tsconfigResults.config,
++//     ts.sys,
++//     rootDir,
++//     undefined,
++//     tsconfigFilePath
++//   );
++//
++//   _tsCompilerOptions = parseResult.options;
++//   return _tsCompilerOptions;
++// }
++//
++/**
++ * Determines if a file should be transformed prior to being consumed by Jest, based on the file name and its contents
++ * @param filePath the path of the file
++ * @param sourceText the contents of the file
++ * @returns `true` if the file should be transformed, `false` otherwise
++ */
++export function shouldTransform(filePath: string, sourceText: string): boolean {
++  const ext = (filePath.split('.').pop() ?? '').toLowerCase().split('?')[0];
++
++  if (ext === 'ts' || ext === 'tsx' || ext === 'jsx') {
++    // typescript extensions (to include .d.ts)
++    return true;
++  }
++  if (ext === 'mjs') {
++    // es module extensions
++    return true;
++  }
++  if (ext === 'js') {
++    // there may be false positives here
++    // but worst case scenario a commonjs file is transpiled to commonjs
++    if (sourceText.includes('import ') || sourceText.includes('import.') || sourceText.includes('import(')) {
++      return true;
++    }
++    if (sourceText.includes('export ')) {
++      return true;
++    }
++  }
++  if (ext === 'css') {
++    // convert a standard css file into an nodejs ready file
++    return true;
++  }
++  return false;
++}
+Index: src/testing/jest/experimental/jest-28/jest-preset.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/jest-preset.ts b/src/testing/jest/experimental/jest-28/jest-preset.ts
+new file mode 100644
+--- /dev/null	(revision 807d65e69e8aa4d10236031ecbcd2c4ed53f533b)
++++ b/src/testing/jest/experimental/jest-28/jest-preset.ts	(revision 807d65e69e8aa4d10236031ecbcd2c4ed53f533b)
+@@ -0,0 +1,40 @@
++/**
++ * The path's declared below are relative. Specifically, they are relative to the location of this file after
++ * compilation of the Stencil compiler has completed. See `scripts/bundles/testing` for the location of this file
++ * following compilation.
++ */
++const path = require('path');
++const testingDir = __dirname;
++// const rootDir = path.join(testingDir, '..');
++// const internalDir = path.join(rootDir, 'internal');
++
++// NOTE: if you change this, also change compiler/transpile.ts
++const moduleExtensions = ['ts', 'tsx', 'js', 'mjs', 'jsx'];
++const moduleExtensionRegexp = '(' + moduleExtensions.join('|') + ')';
++
++module.exports = {
++  moduleFileExtensions: [...moduleExtensions, 'json', 'd.ts'],
++  moduleNameMapper: {
++    // '^@stencil/core/cli$': path.join(rootDir, 'cli', 'index.js'),
++    // '^@stencil/core/compiler$': path.join(rootDir, 'compiler', 'stencil.js'),
++    // '^@stencil/core/internal$': path.join(internalDir, 'testing', 'index.js'),
++    // '^@stencil/core/internal/app-data$': path.join(internalDir, 'app-data', 'index.cjs'),
++    // '^@stencil/core/internal/app-globals$': path.join(internalDir, 'app-globals', 'index.js'),
++    // '^@stencil/core/internal/testing$': path.join(internalDir, 'testing', 'index.js'),
++    // '^@stencil/core/mock-doc$': path.join(rootDir, 'mock-doc', 'index.cjs'),
++    // '^@stencil/core/sys$': path.join(rootDir, 'sys', 'node', 'index.js'),
++    // '^@stencil/core/testing$': path.join(testingDir, 'index.js'),
++    // '^@stencil/core$': path.join(internalDir, 'testing', 'index.js'),
++  },
++  // setupFilesAfterEnv: [path.join(testingDir, 'jest-setuptestframework.js')],
++  // testEnvironment: path.join(testingDir, 'jest-environment.js'),
++  testPathIgnorePatterns: ['/.cache', '/.stencil', '/.vscode', '/dist', '/node_modules', '/www'],
++  testRegex: '(/__tests__/.*|\\.?(test|spec))\\.' + moduleExtensionRegexp + '$',
++  transform: {
++    '^.+\\.(ts|tsx|jsx|css)$': path.join(testingDir, 'jest-preprocessor.js'),
++  },
++  watchPathIgnorePatterns: ['^.+\\.d\\.ts$'],
++};
++
++// export const stringPreset = JSON.stringify(preset);
++// export const stringPreset2 = preset.toString();
+Index: src/testing/jest/experimental/jest-28/tsconfig.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/tsconfig.json b/src/testing/jest/experimental/jest-28/tsconfig.json
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/tsconfig.json	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,109 @@
++{
++  "compilerOptions": {
++    /* Visit https://aka.ms/tsconfig.json to read more about this file */
++
++    /* Projects */
++    // "incremental": true,                              /* Enable incremental compilation */
++    // "composite": true,                                /* Enable constraints that allow a TypeScript project to be used with project references. */
++    // "tsBuildInfoFile": "./",                          /* Specify the folder for .tsbuildinfo incremental compilation files. */
++    // "disableSourceOfProjectReferenceRedirect": true,  /* Disable preferring source files instead of declaration files when referencing composite projects */
++    // "disableSolutionSearching": true,                 /* Opt a project out of multi-project reference checking when editing. */
++    // "disableReferencedProjectLoad": true,             /* Reduce the number of projects loaded automatically by TypeScript. */
++
++    /* Language and Environment */
++    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
++    // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
++    // "jsx": "preserve",                                /* Specify what JSX code is generated. */
++    // "experimentalDecorators": true,                   /* Enable experimental support for TC39 stage 2 draft decorators. */
++    // "emitDecoratorMetadata": true,                    /* Emit design-type metadata for decorated declarations in source files. */
++    // "jsxFactory": "",                                 /* Specify the JSX factory function used when targeting React JSX emit, e.g. 'React.createElement' or 'h' */
++    // "jsxFragmentFactory": "",                         /* Specify the JSX Fragment reference used for fragments when targeting React JSX emit e.g. 'React.Fragment' or 'Fragment'. */
++    // "jsxImportSource": "",                            /* Specify module specifier used to import the JSX factory functions when using `jsx: react-jsx*`.` */
++    // "reactNamespace": "",                             /* Specify the object invoked for `createElement`. This only applies when targeting `react` JSX emit. */
++    // "noLib": true,                                    /* Disable including any library files, including the default lib.d.ts. */
++    // "useDefineForClassFields": true,                  /* Emit ECMAScript-standard-compliant class fields. */
++
++    /* Modules */
++    "module": "commonjs",                                /* Specify what module code is generated. */
++    // "rootDir": "./",                                  /* Specify the root folder within your source files. */
++    // "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */
++    // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
++    // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
++    // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
++    // "typeRoots": [],                                  /* Specify multiple folders that act like `./node_modules/@types`. */
++    // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */
++    // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
++    // "resolveJsonModule": true,                        /* Enable importing .json files */
++    // "noResolve": true,                                /* Disallow `import`s, `require`s or `<reference>`s from expanding the number of files TypeScript should add to a project. */
++
++    /* JavaScript Support */
++    // "allowJs": true,                                  /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */
++    // "checkJs": true,                                  /* Enable error reporting in type-checked JavaScript files. */
++    // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from `node_modules`. Only applicable with `allowJs`. */
++
++    /* Emit */
++     "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
++    // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
++    // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
++    // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
++    // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If `declaration` is true, also designates a file that bundles all .d.ts output. */
++    // "outDir": "./",                                   /* Specify an output folder for all emitted files. */
++    // "removeComments": true,                           /* Disable emitting comments. */
++    // "noEmit": true,                                   /* Disable emitting files from a compilation. */
++    // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
++    // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types */
++    // "downlevelIteration": true,                       /* Emit more compliant, but verbose and less performant JavaScript for iteration. */
++    // "sourceRoot": "",                                 /* Specify the root path for debuggers to find the reference source code. */
++    // "mapRoot": "",                                    /* Specify the location where debugger should locate map files instead of generated locations. */
++    // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
++    // "inlineSources": true,                            /* Include source code in the sourcemaps inside the emitted JavaScript. */
++    // "emitBOM": true,                                  /* Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files. */
++    // "newLine": "crlf",                                /* Set the newline character for emitting files. */
++    // "stripInternal": true,                            /* Disable emitting declarations that have `@internal` in their JSDoc comments. */
++    // "noEmitHelpers": true,                            /* Disable generating custom helper functions like `__extends` in compiled output. */
++    // "noEmitOnError": true,                            /* Disable emitting files if any type checking errors are reported. */
++    // "preserveConstEnums": true,                       /* Disable erasing `const enum` declarations in generated code. */
++     "declarationDir": "./",                           /* Specify the output directory for generated declaration files. */
++    // "preserveValueImports": true,                     /* Preserve unused imported values in the JavaScript output that would otherwise be removed. */
++
++    /* Interop Constraints */
++    // "isolatedModules": true,                          /* Ensure that each file can be safely transpiled without relying on other imports. */
++    // "allowSyntheticDefaultImports": true,             /* Allow 'import x from y' when a module doesn't have a default export. */
++    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
++    // "preserveSymlinks": true,                         /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */
++    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
++
++    /* Type Checking */
++    "strict": true,                                      /* Enable all strict type-checking options. */
++    // "noImplicitAny": true,                            /* Enable error reporting for expressions and declarations with an implied `any` type.. */
++    // "strictNullChecks": true,                         /* When type checking, take into account `null` and `undefined`. */
++    // "strictFunctionTypes": true,                      /* When assigning functions, check to ensure parameters and the return values are subtype-compatible. */
++    // "strictBindCallApply": true,                      /* Check that the arguments for `bind`, `call`, and `apply` methods match the original function. */
++    // "strictPropertyInitialization": true,             /* Check for class properties that are declared but not set in the constructor. */
++    // "noImplicitThis": true,                           /* Enable error reporting when `this` is given the type `any`. */
++    // "useUnknownInCatchVariables": true,               /* Type catch clause variables as 'unknown' instead of 'any'. */
++    // "alwaysStrict": true,                             /* Ensure 'use strict' is always emitted. */
++    // "noUnusedLocals": true,                           /* Enable error reporting when a local variables aren't read. */
++    // "noUnusedParameters": true,                       /* Raise an error when a function parameter isn't read */
++    // "exactOptionalPropertyTypes": true,               /* Interpret optional property types as written, rather than adding 'undefined'. */
++    // "noImplicitReturns": true,                        /* Enable error reporting for codepaths that do not explicitly return in a function. */
++    // "noFallthroughCasesInSwitch": true,               /* Enable error reporting for fallthrough cases in switch statements. */
++    // "noUncheckedIndexedAccess": true,                 /* Include 'undefined' in index signature results */
++    // "noImplicitOverride": true,                       /* Ensure overriding members in derived classes are marked with an override modifier. */
++    // "noPropertyAccessFromIndexSignature": true,       /* Enforces using indexed accessors for keys declared using an indexed type */
++    // "allowUnusedLabels": true,                        /* Disable error reporting for unused labels. */
++    // "allowUnreachableCode": true,                     /* Disable error reporting for unreachable code. */
++
++    /* Completeness */
++    // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
++    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
++  },
++  "include": ["**/*.ts"],
++  "exclude": []
++  //  "files": [
++//    "index.ts",
++//    "jest-preprocessor.ts",
++//    "jest-preset.ts",
++//    "matchers/*.ts"
++//  ]
++}
+Index: src/testing/jest/experimental/jest-28/package-lock.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/package-lock.json b/src/testing/jest/experimental/jest-28/package-lock.json
+new file mode 100644
+--- /dev/null	(revision 7c56476b2dd8817a5f4934f0704bb3c704ddcd3e)
++++ b/src/testing/jest/experimental/jest-28/package-lock.json	(revision 7c56476b2dd8817a5f4934f0704bb3c704ddcd3e)
+@@ -0,0 +1,35 @@
++{
++  "name": "@stencil/jest-28-adapter",
++  "version": "0.0.1",
++  "lockfileVersion": 2,
++  "requires": true,
++  "packages": {
++    "": {
++      "name": "@stencil/jest-28-adapter",
++      "version": "0.0.1",
++      "license": "MIT",
++      "dependencies": {
++        "@stencil/core": "^2.17.4"
++      }
++    },
++    "node_modules/@stencil/core": {
++      "version": "2.17.4",
++      "resolved": "https://registry.npmjs.org/@stencil/core/-/core-2.17.4.tgz",
++      "integrity": "sha512-SGRlHpjV1RyFvzw6jFMVKpLNox9Eds3VvpbpD2SW9CuxdLonHDSFtQks5zmT4zs1Rse9I6kFc2mFK/dHNTalkg==",
++      "bin": {
++        "stencil": "bin/stencil"
++      },
++      "engines": {
++        "node": ">=12.10.0",
++        "npm": ">=6.0.0"
++      }
++    }
++  },
++  "dependencies": {
++    "@stencil/core": {
++      "version": "2.17.4",
++      "resolved": "https://registry.npmjs.org/@stencil/core/-/core-2.17.4.tgz",
++      "integrity": "sha512-SGRlHpjV1RyFvzw6jFMVKpLNox9Eds3VvpbpD2SW9CuxdLonHDSFtQks5zmT4zs1Rse9I6kFc2mFK/dHNTalkg=="
++    }
++  }
++}
+Index: src/testing/jest/experimental/jest-28/index.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/index.d.ts b/src/testing/jest/experimental/jest-28/index.d.ts
+new file mode 100644
+--- /dev/null	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
++++ b/src/testing/jest/experimental/jest-28/index.d.ts	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
+@@ -0,0 +1,1 @@
++export { expectExtend } from './matchers';
+Index: src/testing/jest/experimental/jest-28/jest-preprocessor.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/jest-preprocessor.d.ts b/src/testing/jest/experimental/jest-28/jest-preprocessor.d.ts
+new file mode 100644
+--- /dev/null	(revision 009451edc2ac87f45525fa5ae3b7826cb8b4c5aa)
++++ b/src/testing/jest/experimental/jest-28/jest-preprocessor.d.ts	(revision 009451edc2ac87f45525fa5ae3b7826cb8b4c5aa)
+@@ -0,0 +1,7 @@
++/**
++ * Determines if a file should be transformed prior to being consumed by Jest, based on the file name and its contents
++ * @param filePath the path of the file
++ * @param sourceText the contents of the file
++ * @returns `true` if the file should be transformed, `false` otherwise
++ */
++export declare function shouldTransform(filePath: string, sourceText: string): boolean;
+Index: src/testing/jest/experimental/jest-28/jest-preset.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/jest-preset.d.ts b/src/testing/jest/experimental/jest-28/jest-preset.d.ts
+new file mode 100644
+--- /dev/null	(revision c3747a3acbb827658df8250fb73bd49f63cb618f)
++++ b/src/testing/jest/experimental/jest-28/jest-preset.d.ts	(revision c3747a3acbb827658df8250fb73bd49f63cb618f)
+@@ -0,0 +1,9 @@
++/**
++ * The path's declared below are relative. Specifically, they are relative to the location of this file after
++ * compilation of the Stencil compiler has completed. See `scripts/bundles/testing` for the location of this file
++ * following compilation.
++ */
++declare const path: any;
++declare const testingDir: string;
++declare const moduleExtensions: string[];
++declare const moduleExtensionRegexp: string;
+Index: src/testing/test-transpile.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/test-transpile.ts b/src/testing/test-transpile.ts
+--- a/src/testing/test-transpile.ts	(revision c3747a3acbb827658df8250fb73bd49f63cb618f)
++++ b/src/testing/test-transpile.ts	(revision 009451edc2ac87f45525fa5ae3b7826cb8b4c5aa)
+@@ -17,6 +17,7 @@
+     target: 'es2015', // default to es2015
+   };
+ 
++  console.log(`transpiling with ${JSON.stringify(opts, null, 4)}`)
+   try {
+     const v = process.versions.node.split('.');
+     if (parseInt(v[0], 10) >= 10) {
+Index: src/testing/puppeteer/puppeteer-page.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/puppeteer/puppeteer-page.ts b/src/testing/puppeteer/puppeteer-page.ts
+--- a/src/testing/puppeteer/puppeteer-page.ts	(revision 009451edc2ac87f45525fa5ae3b7826cb8b4c5aa)
++++ b/src/testing/puppeteer/puppeteer-page.ts	(revision 0b50f420fd3e73af2cfd434b59dffc124b1cb9c7)
+@@ -18,7 +18,10 @@
+ const env: E2EProcessEnv = process.env;
+ export async function newE2EPage(opts: NewE2EPageOptions = {}): Promise<E2EPage> {
+   if (!global.__NEW_TEST_PAGE__) {
+-    throw new Error(`newE2EPage() is only available from E2E tests, and ran with the --e2e cmd line flag.`);
++    // TODO: Be more graceful here
++    // @ts-ignore
++    return Promise.reject();
++    // throw new Error(`newE2EPage() is only available from E2E tests, and ran with the --e2e cmd line flag.`);
+   }
+ 
+   const page: E2EPageInternal = await global.__NEW_TEST_PAGE__();
+Index: src/testing/jest/experimental/jest-28/matchers/attributes.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/attributes.d.ts b/src/testing/jest/experimental/jest-28/matchers/attributes.d.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/attributes.d.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,14 @@
++export declare function toEqualAttribute(elm: HTMLElement, expectAttrName: string, expectAttrValue: string): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toEqualAttributes(elm: HTMLElement, expectAttrs: {
++    [attrName: string]: any;
++}): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toHaveAttribute(elm: HTMLElement, expectAttrName: string): {
++    message: () => string;
++    pass: boolean;
++};
+Index: src/testing/jest/experimental/jest-28/matchers/attributes.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/attributes.ts b/src/testing/jest/experimental/jest-28/matchers/attributes.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/attributes.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,86 @@
++import { NODE_TYPES } from '@stencil/core/mock-doc';
++
++export function toEqualAttribute(elm: HTMLElement, expectAttrName: string, expectAttrValue: string) {
++  if (!elm) {
++    throw new Error(`expect toMatchAttribute value is null`);
++  }
++
++  if (typeof (elm as any).then === 'function') {
++    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (elm.nodeType !== NODE_TYPES.ELEMENT_NODE) {
++    throw new Error(`expect toMatchAttribute value is not an element`);
++  }
++
++  let receivedAttrValue = elm.getAttribute(expectAttrName);
++
++  if (expectAttrValue != null) {
++    expectAttrValue = String(expectAttrValue);
++  }
++
++  if (receivedAttrValue != null) {
++    receivedAttrValue = String(receivedAttrValue);
++  }
++
++  const pass = expectAttrValue === receivedAttrValue;
++
++  return {
++    message: () =>
++      `expected attribute ${expectAttrName} "${expectAttrValue}" to ${pass ? 'not ' : ''}equal "${receivedAttrValue}"`,
++    pass: pass,
++  };
++}
++
++export function toEqualAttributes(elm: HTMLElement, expectAttrs: { [attrName: string]: any }) {
++  if (!elm) {
++    throw new Error(`expect toEqualAttributes value is null`);
++  }
++
++  if (typeof (elm as any).then === 'function') {
++    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (elm.nodeType !== NODE_TYPES.ELEMENT_NODE) {
++    throw new Error(`expect toEqualAttributes value is not an element`);
++  }
++
++  const attrNames = Object.keys(expectAttrs);
++
++  const pass = attrNames.every((attrName) => {
++    let expectAttrValue = expectAttrs[attrName];
++    if (expectAttrValue != null) {
++      expectAttrValue = String(expectAttrValue);
++    }
++    return elm.getAttribute(attrName) === expectAttrValue;
++  });
++
++  return {
++    message: () =>
++      `expected attributes to ${pass ? 'not ' : ''}equal ${attrNames
++        .map((a) => `[${a}="${expectAttrs[a]}"]`)
++        .join(', ')}`,
++    pass: pass,
++  };
++}
++
++export function toHaveAttribute(elm: HTMLElement, expectAttrName: string) {
++  if (!elm) {
++    throw new Error(`expect toHaveAttribute value is null`);
++  }
++
++  if (typeof (elm as any).then === 'function') {
++    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (elm.nodeType !== NODE_TYPES.ELEMENT_NODE) {
++    throw new Error(`expect toHaveAttribute value is not an element`);
++  }
++
++  const pass = elm.hasAttribute(expectAttrName);
++
++  return {
++    message: () => `expected to ${pass ? 'not ' : ''}have the attribute "${expectAttrName}"`,
++    pass: pass,
++  };
++}
+Index: src/testing/jest/experimental/jest-28/matchers/class-list.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/class-list.d.ts b/src/testing/jest/experimental/jest-28/matchers/class-list.d.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/class-list.d.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,12 @@
++export declare function toHaveClass(elm: HTMLElement, expectClassName: string): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toHaveClasses(elm: HTMLElement, expectClassNames: string[]): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toMatchClasses(elm: HTMLElement, expectClassNames: string[]): {
++    message: () => string;
++    pass: boolean;
++};
+Index: src/testing/jest/experimental/jest-28/matchers/class-list.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/class-list.ts b/src/testing/jest/experimental/jest-28/matchers/class-list.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/class-list.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,61 @@
++export function toHaveClass(elm: HTMLElement, expectClassName: string) {
++  if (!elm) {
++    throw new Error(`expect toHaveClass value is null`);
++  }
++
++  if (typeof (elm as any).then === 'function') {
++    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (elm.nodeType !== 1) {
++    throw new Error(`expect toHaveClass value is not an element`);
++  }
++
++  const pass = elm.classList.contains(expectClassName);
++
++  return {
++    message: () => `expected to ${pass ? 'not ' : ''}have css class "${expectClassName}"`,
++    pass: pass,
++  };
++}
++
++export function toHaveClasses(elm: HTMLElement, expectClassNames: string[]) {
++  if (!elm) {
++    throw new Error(`expect toHaveClasses value is null`);
++  }
++
++  if (typeof (elm as any).then === 'function') {
++    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (elm.nodeType !== 1) {
++    throw new Error(`expect toHaveClasses value is not an element`);
++  }
++
++  const pass = expectClassNames.every((expectClassName) => {
++    return elm.classList.contains(expectClassName);
++  });
++
++  return {
++    message: () =>
++      `expected to ${pass ? 'not ' : ''}have css classes "${expectClassNames.join(' ')}", but className is "${
++        elm.className
++      }"`,
++    pass: pass,
++  };
++}
++
++export function toMatchClasses(elm: HTMLElement, expectClassNames: string[]) {
++  let { pass } = toHaveClasses(elm, expectClassNames);
++  if (pass) {
++    pass = expectClassNames.length === elm.classList.length;
++  }
++
++  return {
++    message: () =>
++      `expected to ${pass ? 'not ' : ''}match css classes "${expectClassNames.join(' ')}", but className is "${
++        elm.className
++      }"`,
++    pass: pass,
++  };
++}
+Index: src/testing/jest/experimental/jest-28/matchers/events.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/events.d.ts b/src/testing/jest/experimental/jest-28/matchers/events.d.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/events.d.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,21 @@
++import type * as d from '@stencil/core/internal';
++export declare function toHaveReceivedEvent(eventSpy: d.EventSpy): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toHaveReceivedEventTimes(eventSpy: d.EventSpy, count: number): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toHaveReceivedEventDetail(eventSpy: d.EventSpy, eventDetail: any): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toHaveFirstReceivedEventDetail(eventSpy: d.EventSpy, eventDetail: any): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toHaveNthReceivedEventDetail(eventSpy: d.EventSpy, index: number, eventDetail: any): {
++    message: () => string;
++    pass: boolean;
++};
+Index: src/testing/jest/experimental/jest-28/matchers/events.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/events.ts b/src/testing/jest/experimental/jest-28/matchers/events.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/events.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,180 @@
++import type * as d from '@stencil/core/internal';
++
++export function toHaveReceivedEvent(eventSpy: d.EventSpy) {
++  if (!eventSpy) {
++    throw new Error(`toHaveReceivedEvent event spy is null`);
++  }
++
++  if (typeof (eventSpy as any).then === 'function') {
++    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (!eventSpy.eventName) {
++    throw new Error(`toHaveReceivedEvent did not receive an event spy`);
++  }
++
++  const pass = eventSpy.events.length > 0;
++
++  return {
++    message: () => `expected to have ${pass ? 'not ' : ''}called "${eventSpy.eventName}" event`,
++    pass: pass,
++  };
++}
++
++export function toHaveReceivedEventTimes(eventSpy: d.EventSpy, count: number) {
++  if (!eventSpy) {
++    throw new Error(`toHaveReceivedEventTimes event spy is null`);
++  }
++
++  if (typeof (eventSpy as any).then === 'function') {
++    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (!eventSpy.eventName) {
++    throw new Error(`toHaveReceivedEventTimes did not receive an event spy`);
++  }
++
++  const pass = eventSpy.length === count;
++
++  return {
++    message: () =>
++      `expected event "${eventSpy.eventName}" to have been called ${count} times, but was called ${
++        eventSpy.events.length
++      } time${eventSpy.events.length > 1 ? 's' : ''}`,
++    pass: pass,
++  };
++}
++
++export function toHaveReceivedEventDetail(eventSpy: d.EventSpy, eventDetail: any) {
++  if (!eventSpy) {
++    throw new Error(`toHaveReceivedEventDetail event spy is null`);
++  }
++
++  if (typeof (eventSpy as any).then === 'function') {
++    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (!eventSpy.eventName) {
++    throw new Error(`toHaveReceivedEventDetail did not receive an event spy`);
++  }
++
++  if (!eventSpy.lastEvent) {
++    throw new Error(`event "${eventSpy.eventName}" was not received`);
++  }
++
++  const pass = deepEqual(eventSpy.lastEvent.detail, eventDetail);
++
++  expect(eventSpy.lastEvent.detail).toEqual(eventDetail);
++
++  return {
++    message: () => `expected event "${eventSpy.eventName}" detail to ${pass ? 'not ' : ''}equal`,
++    pass: pass,
++  };
++}
++
++export function toHaveFirstReceivedEventDetail(eventSpy: d.EventSpy, eventDetail: any) {
++  if (!eventSpy) {
++    throw new Error(`toHaveFirstReceivedEventDetail event spy is null`);
++  }
++
++  if (typeof (eventSpy as any).then === 'function') {
++    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (!eventSpy.eventName) {
++    throw new Error(`toHaveFirstReceivedEventDetail did not receive an event spy`);
++  }
++
++  if (!eventSpy.firstEvent) {
++    throw new Error(`event "${eventSpy.eventName}" was not received`);
++  }
++
++  const pass = deepEqual(eventSpy.firstEvent.detail, eventDetail);
++
++  expect(eventSpy.lastEvent.detail).toEqual(eventDetail);
++
++  return {
++    message: () => `expected event "${eventSpy.eventName}" detail to ${pass ? 'not ' : ''}equal`,
++    pass: pass,
++  };
++}
++
++export function toHaveNthReceivedEventDetail(eventSpy: d.EventSpy, index: number, eventDetail: any) {
++  if (!eventSpy) {
++    throw new Error(`toHaveNthReceivedEventDetail event spy is null`);
++  }
++
++  if (typeof (eventSpy as any).then === 'function') {
++    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  if (!eventSpy.eventName) {
++    throw new Error(`toHaveNthReceivedEventDetail did not receive an event spy`);
++  }
++
++  if (!eventSpy.firstEvent) {
++    throw new Error(`event "${eventSpy.eventName}" was not received`);
++  }
++
++  const event = eventSpy.events[index];
++
++  if (!event) {
++    throw new Error(`event at index ${index} was not received`);
++  }
++
++  const pass = deepEqual(event.detail, eventDetail);
++
++  expect(event.detail).toEqual(eventDetail);
++
++  return {
++    message: () => `expected event "${eventSpy.eventName}" detail to ${pass ? 'not ' : ''}equal`,
++    pass: pass,
++  };
++}
++
++// from https://www.npmjs.com/package/fast-deep-equal
++// License in NOTICE.md
++const deepEqual = function equal(a: any, b: any) {
++  if (a === b) return true;
++
++  if (a && b && typeof a == 'object' && typeof b == 'object') {
++    const arrA = Array.isArray(a),
++      arrB = Array.isArray(b);
++    let i, length, key;
++
++    if (arrA && arrB) {
++      length = a.length;
++      if (length != b.length) return false;
++      for (i = length; i-- !== 0; ) if (!equal(a[i], b[i])) return false;
++      return true;
++    }
++
++    if (arrA != arrB) return false;
++
++    const dateA = a instanceof Date,
++      dateB = b instanceof Date;
++    if (dateA != dateB) return false;
++    if (dateA && dateB) return a.getTime() == b.getTime();
++
++    const regexpA = a instanceof RegExp,
++      regexpB = b instanceof RegExp;
++    if (regexpA != regexpB) return false;
++    if (regexpA && regexpB) return a.toString() == b.toString();
++
++    const keys = Object.keys(a);
++    length = keys.length;
++
++    if (length !== Object.keys(b).length) return false;
++
++    for (i = length; i-- !== 0; ) if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
++
++    for (i = length; i-- !== 0; ) {
++      key = keys[i];
++      if (!equal(a[key], b[key])) return false;
++    }
++
++    return true;
++  }
++
++  return a !== a && b !== b;
++};
+Index: src/testing/jest/experimental/jest-28/matchers/html.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/html.d.ts b/src/testing/jest/experimental/jest-28/matchers/html.d.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/html.d.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,12 @@
++export declare function toEqualHtml(input: string | HTMLElement | ShadowRoot, shouldEqual: string): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function toEqualLightHtml(input: string | HTMLElement | ShadowRoot, shouldEqual: string): {
++    message: () => string;
++    pass: boolean;
++};
++export declare function compareHtml(input: string | HTMLElement | ShadowRoot, shouldEqual: string, serializeShadowRoot: boolean): {
++    message: () => string;
++    pass: boolean;
++};
+Index: src/testing/jest/experimental/jest-28/matchers/html.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/html.ts b/src/testing/jest/experimental/jest-28/matchers/html.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/html.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,80 @@
++import type * as d from '@stencil/core/internal';
++import { NODE_TYPES, parseHtmlToFragment, serializeNodeToHtml } from '@stencil/core/mock-doc';
++
++export function toEqualHtml(input: string | HTMLElement | ShadowRoot, shouldEqual: string) {
++  return compareHtml(input, shouldEqual, true);
++}
++
++export function toEqualLightHtml(input: string | HTMLElement | ShadowRoot, shouldEqual: string) {
++  return compareHtml(input, shouldEqual, false);
++}
++
++export function compareHtml(
++  input: string | HTMLElement | ShadowRoot,
++  shouldEqual: string,
++  serializeShadowRoot: boolean
++) {
++  if (input == null) {
++    throw new Error(`expect toEqualHtml() value is "${input}"`);
++  }
++
++  if (typeof (input as any).then === 'function') {
++    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  let serializeA: string;
++
++  if ((input as HTMLElement).nodeType === NODE_TYPES.ELEMENT_NODE) {
++    const options = getSpecOptions(input as any);
++    serializeA = serializeNodeToHtml(input as any, {
++      prettyHtml: true,
++      outerHtml: true,
++      removeHtmlComments: options.includeAnnotations === false,
++      excludeTags: ['body'],
++      serializeShadowRoot,
++    });
++  } else if ((input as HTMLElement).nodeType === NODE_TYPES.DOCUMENT_FRAGMENT_NODE) {
++    serializeA = serializeNodeToHtml(input as any, {
++      prettyHtml: true,
++      excludeTags: ['style'],
++      excludeTagContent: ['style'],
++      serializeShadowRoot,
++    });
++  } else if (typeof input === 'string') {
++    const parseA = parseHtmlToFragment(input);
++    serializeA = serializeNodeToHtml(parseA, {
++      prettyHtml: true,
++      serializeShadowRoot,
++    });
++  } else {
++    throw new Error(`expect toEqualHtml() value should be an element, shadow root or string.`);
++  }
++
++  const parseB = parseHtmlToFragment(shouldEqual);
++
++  const serializeB = serializeNodeToHtml(parseB, {
++    prettyHtml: true,
++    excludeTags: ['body'],
++  });
++
++  if (serializeA !== serializeB) {
++    expect(serializeA).toBe(serializeB);
++    return {
++      message: () => 'HTML does not match',
++      pass: false,
++    };
++  }
++
++  return {
++    message: () => 'expect HTML to match',
++    pass: true,
++  };
++}
++
++function getSpecOptions(el: HTMLElement): Partial<d.NewSpecPageOptions> {
++  if (el && el.ownerDocument && el.ownerDocument.defaultView) {
++    return (el.ownerDocument.defaultView as any)['__stencil_spec_options'] || {};
++  }
++
++  return {};
++}
+Index: src/testing/jest/experimental/jest-28/matchers/index.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/index.d.ts b/src/testing/jest/experimental/jest-28/matchers/index.d.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/index.d.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,21 @@
++import { toEqualAttribute, toEqualAttributes, toHaveAttribute } from './attributes';
++import { toHaveReceivedEvent, toHaveReceivedEventDetail, toHaveReceivedEventTimes, toHaveFirstReceivedEventDetail, toHaveNthReceivedEventDetail } from './events';
++import { toEqualHtml, toEqualLightHtml } from './html';
++import { toEqualText } from './text';
++import { toHaveClass, toHaveClasses, toMatchClasses } from './class-list';
++export declare const expectExtend: {
++    toEqualAttribute: typeof toEqualAttribute;
++    toEqualAttributes: typeof toEqualAttributes;
++    toEqualHtml: typeof toEqualHtml;
++    toEqualLightHtml: typeof toEqualLightHtml;
++    toEqualText: typeof toEqualText;
++    toHaveAttribute: typeof toHaveAttribute;
++    toHaveClass: typeof toHaveClass;
++    toHaveClasses: typeof toHaveClasses;
++    toMatchClasses: typeof toMatchClasses;
++    toHaveReceivedEvent: typeof toHaveReceivedEvent;
++    toHaveReceivedEventDetail: typeof toHaveReceivedEventDetail;
++    toHaveReceivedEventTimes: typeof toHaveReceivedEventTimes;
++    toHaveFirstReceivedEventDetail: typeof toHaveFirstReceivedEventDetail;
++    toHaveNthReceivedEventDetail: typeof toHaveNthReceivedEventDetail;
++};
+Index: src/testing/jest/experimental/jest-28/matchers/index.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/index.ts b/src/testing/jest/experimental/jest-28/matchers/index.ts
+new file mode 100644
+--- /dev/null	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
++++ b/src/testing/jest/experimental/jest-28/matchers/index.ts	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
+@@ -0,0 +1,29 @@
++import { toEqualAttribute, toEqualAttributes, toHaveAttribute } from './attributes';
++import {
++  toHaveReceivedEvent,
++  toHaveReceivedEventDetail,
++  toHaveReceivedEventTimes,
++  toHaveFirstReceivedEventDetail,
++  toHaveNthReceivedEventDetail,
++} from './events';
++import { toEqualHtml, toEqualLightHtml } from './html';
++import { toEqualText } from './text';
++import { toHaveClass, toHaveClasses, toMatchClasses } from './class-list';
++
++// TODO: SHould this be an object? IDK ATM
++export const expectExtend = {
++  toEqualAttribute,
++  toEqualAttributes,
++  toEqualHtml,
++  toEqualLightHtml,
++  toEqualText,
++  toHaveAttribute,
++  toHaveClass,
++  toHaveClasses,
++  toMatchClasses,
++  toHaveReceivedEvent,
++  toHaveReceivedEventDetail,
++  toHaveReceivedEventTimes,
++  toHaveFirstReceivedEventDetail,
++  toHaveNthReceivedEventDetail,
++};
+Index: src/testing/jest/experimental/jest-28/matchers/text.d.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/text.d.ts b/src/testing/jest/experimental/jest-28/matchers/text.d.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/text.d.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,4 @@
++export declare function toEqualText(input: HTMLElement | string, expectTextContent: string): {
++    message: () => string;
++    pass: boolean;
++};
+Index: src/testing/jest/experimental/jest-28/matchers/text.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/experimental/jest-28/matchers/text.ts b/src/testing/jest/experimental/jest-28/matchers/text.ts
+new file mode 100644
+--- /dev/null	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
++++ b/src/testing/jest/experimental/jest-28/matchers/text.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -0,0 +1,32 @@
++import { NODE_TYPES } from '@stencil/core/mock-doc';
++
++export function toEqualText(input: HTMLElement | string, expectTextContent: string) {
++  if (input == null) {
++    throw new Error(`expect toEqualText() value is "${input}"`);
++  }
++
++  if (typeof (input as any).then === 'function') {
++    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
++  }
++
++  // TODO: I added this |undefined
++  let textContent: string | undefined;
++
++  if ((input as HTMLElement).nodeType === NODE_TYPES.ELEMENT_NODE) {
++    // TODO I added the bang op
++    textContent = (input as HTMLElement).textContent!.replace(/\s\s+/g, ' ').trim();
++  } else if (input != null) {
++    textContent = String(input).replace(/\s\s+/g, ' ').trim();
++  }
++
++  if (typeof expectTextContent === 'string') {
++    expectTextContent = expectTextContent.replace(/\s\s+/g, ' ').trim();
++  }
++
++  const pass = textContent === expectTextContent;
++
++  return {
++    message: () => `expected textContent "${expectTextContent}" to ${pass ? 'not ' : ''}equal "${textContent}"`,
++    pass: pass,
++  };
++}
+Index: src/testing/jest/jest-setup-test-framework.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/jest-setup-test-framework.ts b/src/testing/jest/jest-setup-test-framework.ts
+--- a/src/testing/jest/jest-setup-test-framework.ts	(revision 0b50f420fd3e73af2cfd434b59dffc124b1cb9c7)
++++ b/src/testing/jest/jest-setup-test-framework.ts	(revision 962b077b5b55103ccd4325104966a95b2ab95d5e)
+@@ -15,6 +15,7 @@
+ declare const global: d.JestEnvironmentGlobal;
+ 
+ export function jestSetupTestFramework() {
++  // TODO: Oh my
+   global.Context = {};
+   global.resourcesUrl = '/build';
+ 
+Index: src/sys/node/node-sys.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/sys/node/node-sys.ts b/src/sys/node/node-sys.ts
+--- a/src/sys/node/node-sys.ts	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
++++ b/src/sys/node/node-sys.ts	(revision fa67427b016fb46d305111a47203d52d7d3dad44)
+@@ -588,9 +588,10 @@
+   const nodeResolve = new NodeResolveModule();
+ 
+   sys.lazyRequire = new NodeLazyRequire(nodeResolve, {
+-    '@types/jest': { minVersion: '24.9.1', recommendedVersion: '27.0.3', maxVersion: '27.0.0' },
+-    jest: { minVersion: '24.9.1', recommendedVersion: '27.0.3', maxVersion: '27.0.0' },
+-    'jest-cli': { minVersion: '24.9.0', recommendedVersion: '27.4.5', maxVersion: '27.0.0' },
++    // TODO: I don't have config, there's a hacky way to check it but this is easier for prototyping
++    // '@types/jest': { minVersion: '24.9.1', recommendedVersion: '27.0.3', maxVersion: '27.0.0' },
++    // jest: { minVersion: '24.9.1', recommendedVersion: '27.0.3', maxVersion: '27.0.0' },
++    // 'jest-cli': { minVersion: '24.9.0', recommendedVersion: '27.4.5', maxVersion: '27.0.0' },
+     pixelmatch: { minVersion: '4.0.2', recommendedVersion: '4.0.2' },
+     puppeteer: { minVersion: '1.19.0', recommendedVersion: '10.0.0' },
+     'puppeteer-core': { minVersion: '1.19.0', recommendedVersion: '5.2.1' },
+Index: src/testing/jest/jest-config.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/testing/jest/jest-config.ts b/src/testing/jest/jest-config.ts
+--- a/src/testing/jest/jest-config.ts	(revision c97d962aecb5e7d8b5ee89f880594a596080f9b0)
++++ b/src/testing/jest/jest-config.ts	(revision fa67427b016fb46d305111a47203d52d7d3dad44)
+@@ -135,7 +135,9 @@
+   }
+ 
+   // TODO(STENCIL-307): Move away from Jasmine runner for Stencil tests, which involves a potentially breaking change
+-  jestConfig.testRunner = 'jest-jasmine2';
++  if (!stencilConfigTesting.experimentalJestArchitecture) {
++    jestConfig.testRunner = 'jest-jasmine2';
++  }
+ 
+   return JSON.stringify(jestConfig);
+ }

@@ -18,7 +18,7 @@ export const taskTest = async (config: ValidatedConfig): Promise<void> => {
 
   // TODO(NOW):
   // always ensure we have jest modules installed
-  const ensureModuleIds =  ['@types/jest', 'jest', 'jest-cli']; //getTestingModuleNames();
+  const ensureModuleIds = ['@types/jest', 'jest', 'jest-cli']; //getTestingModuleNames();
 
   if (testingRunOpts.e2e) {
     // if it's an e2e test, also make sure we're got

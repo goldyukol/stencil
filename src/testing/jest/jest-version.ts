@@ -1,5 +1,6 @@
-import { getVersion } from 'jest';
 import semverMajor from 'semver/functions/major';
+
+import { getVersion } from './jest-facade';
 
 // TODO(NOW): Fixup w examples
 /**
@@ -19,4 +20,11 @@ export const getTestingModuleNames = (): string[] => {
     default:
       return ['@types/jest', 'jest', 'jest-cli'];
   }
+};
+
+export const getJestRunner = (): string => {
+  if (getJestMajorVersion() <= 27) {
+    return 'jest-jasmine2';
+  }
+  return 'jest-circus';
 };

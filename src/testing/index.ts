@@ -2,7 +2,8 @@ export { createJestPuppeteerEnvironment } from './jest/jest-environment';
 // TODO(NOW): Which to export
 export { jestPreprocessor } from './jest/experimental/jest-27-and-under/jest-preprocessor';
 export { createTestRunner } from './jest/jest-runner';
-export { jestSetupTestFramework } from './jest/jest-setup-test-framework';
+// TODO(NOW): Which to export
+export { jestSetupTestFramework } from './jest/experimental/jest-27-and-under/jest-setup-test-framework';
 export {
   mockFetch,
   MockHeaders,

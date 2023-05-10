@@ -9,10 +9,11 @@ import {
 } from '@stencil/core/internal/testing';
 import { MockDocument, MockNode, MockWindow, setupGlobal, teardownGlobal } from '@stencil/core/mock-doc';
 
-import { expectExtend } from '../matchers';
-import { setupMockFetch } from '../mock-fetch';
-import { resetBuildConditionals } from '../reset-build-conditionals';
-import { HtmlSerializer } from './jest-serializer';
+// TODO(NOW): These all had to change
+import { expectExtend } from '../../../matchers';
+import { setupMockFetch } from '../../../mock-fetch';
+import { resetBuildConditionals } from '../../../reset-build-conditionals';
+import { HtmlSerializer } from '../../jest-serializer';
 
 declare const global: d.JestEnvironmentGlobal;
 

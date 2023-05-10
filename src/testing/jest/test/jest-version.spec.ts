@@ -32,7 +32,6 @@ describe('jest-utils', () => {
 
   describe('getTestingModuleNames', () => {
     it.each([
-      ['23.0.0', ['@types/jest', 'jest', 'jest-cli']],
       ['24.0.0', ['@types/jest', 'jest', 'jest-cli']],
       ['25.0.0', ['@types/jest', 'jest', 'jest-cli']],
       ['26.0.0', ['@types/jest', 'jest', 'jest-cli']],
@@ -49,7 +48,6 @@ describe('jest-utils', () => {
 
   describe('getJestRunner()', () => {
     it.each([
-      ['23.0.0', 'jest-jasmine2'],
       ['24.0.0', 'jest-jasmine2'],
       ['25.0.0', 'jest-jasmine2'],
       ['26.0.0', 'jest-jasmine2'],

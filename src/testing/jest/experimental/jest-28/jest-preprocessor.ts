@@ -6,18 +6,7 @@ import { loadTypeScriptDiagnostic, normalizePath } from '@utils';
 import { transpile } from '../../../test-transpile';
 
 // TODO(STENCIL-306): Remove support for earlier versions of Jest
-type Jest26CacheKeyOptions = { instrument: boolean; rootDir: string };
-type Jest26Config = { instrument: boolean; rootDir: string };
-type Jest27TransformOptions = { config: Jest26Config };
-
-/**
- * Type guard to differentiate Jest 27 `TransformOptions` from those found in Jest 26 and below
- * @param obj the entity to evaluate
- * @returns `true` if the `obj` is a `Jest27TransformOptions`, false otherwise
- */
-const isJest27TransformOptions = (obj: unknown): obj is Jest27TransformOptions => {
-  return obj != null && typeof obj === 'object' && obj.hasOwnProperty('config');
-};
+type Jest27TransformOptions = { config: { instrument: boolean; rootDir: string } };
 
 /**
  * Constant used for cache busting when the contents of this file have changed. When modifying this file, it's advised
@@ -49,36 +38,14 @@ export const jestPreprocessor = {
    * @param jestConfig the jest configuration when called by Jest 26 and lower. This parameter is folded into
    * `transformOptions` when called by Jest 27+ as a top level `config` property. Calls to this function from Jest 27+
    * will have a `Jest27TransformOptions` shape
-   * @param transformOptions an object containing the various transformation options. In Jest 27+ this parameter occurs
-   * third in this function signature (and no fourth parameter is formally accepted)
    * @returns the transformed file contents if the file should be transformed. returns the original source otherwise
    */
   process(
     sourceText: string,
     sourcePath: string,
-    jestConfig: Jest26Config | Jest27TransformOptions,
-    transformOptions?: Jest26Config
+    jestConfig: Jest27TransformOptions // TODO(NOW): Fix naming, jsdoc
   ): string {
-    // TODO(STENCIL-306): Drop support for versions of Jest <27
-    /**
-     * As of Jest 27, `jestConfig` changes its shape (as it's been moved into `transformOptions`). To preserve
-     * backwards compatability, we allow Jest to pass 4 arguments and check the shape of the third and fourth arguments
-     * to run Jest properly (in lieu of a global Jest version available to us). Support for this functionality will be
-     * removed in a future major version of Stencil.
-     */
-    if (isJest27TransformOptions(jestConfig)) {
-      // being called from Jest 27+, backfill `transformOptions`
-      transformOptions = jestConfig.config;
-    }
-
-    /**
-     * At this point, `transformOptions` should be a truthy value:
-     * - if we're running Jest 27, it should have been assigned in the previous conditional
-     * - if we're running Jest 26 and under, it should have been provided to us
-     */
-    if (!transformOptions) {
-      throw 'Unable to find Jest transformation options.';
-    }
+    const transformOptions = jestConfig.config;
 
     if (shouldTransform(sourcePath, sourceText)) {
       const opts: TranspileOptions = {
@@ -125,36 +92,14 @@ export const jestPreprocessor = {
    * @param sourcePath the path to the source file
    * @param jestConfigStr a stringified version of the jest configuration when called by Jest 26 and lower. This
    * parameter takes the shape of `transformOptions` when called by Jest 27+.
-   * @param transformOptions an object containing the various transformation options. In Jest 27+ this parameter occurs
-   * third in this function signature (and no fourth parameter is formally accepted)
    * @returns the key to cache a file with
    */
   getCacheKey(
     sourceText: string,
     sourcePath: string,
-    jestConfigStr: string | Jest27TransformOptions,
-    transformOptions?: Jest26CacheKeyOptions
+    jestConfigStr: Jest27TransformOptions // TODO(NOW): FIx name and jsdoc
   ): string {
-    // TODO(STENCIL-306): Remove support for earlier versions of Jest
-    /**
-     * As of Jest 27, jestConfigStr is no longer an accepted argument (as it's been moved into `transformOptions`). To
-     * preserve backwards compatability, we allow Jest to pass 4 arguments and check the shape of the third and fourth
-     * arguments to run Jest properly (in lieu of a global Jest version available to us). Support for this
-     * functionality will be removed in a future major version of Stencil.
-     */
-    if (isJest27TransformOptions(jestConfigStr)) {
-      // being called from Jest 27+, backfill `transformOptions`
-      transformOptions = jestConfigStr.config;
-    }
-
-    /**
-     * At this point, `transformOptions` should be a truthy value:
-     * - if we're running Jest 27, it should have been assigned in the previous conditional
-     * - if we're running Jest 26 and under, it should have been provided to us
-     */
-    if (!transformOptions) {
-      throw 'Unable to find Jest transformation options.';
-    }
+    const transformOptions = jestConfigStr.config;
 
     if (!_tsCompilerOptionsKey) {
       const opts = getCompilerOptions(transformOptions.rootDir);

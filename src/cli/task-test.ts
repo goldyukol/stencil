@@ -1,5 +1,5 @@
 import type { TestingRunOptions, ValidatedConfig } from '../declarations';
-import { getTestingModuleNames } from '../testing/jest/jest-version';
+// import { getTestingModuleNames } from '../testing/jest/jest-version';
 
 /**
  * Entrypoint for any Stencil tests
@@ -16,9 +16,9 @@ export const taskTest = async (config: ValidatedConfig): Promise<void> => {
     updateScreenshot: !!config.flags.updateScreenshot,
   };
 
-  // TODO(NOW): Why do we do this??
+  // TODO(NOW):
   // always ensure we have jest modules installed
-  const ensureModuleIds = getTestingModuleNames();
+  const ensureModuleIds = ['@types/jest', 'jest', 'jest-cli']; //getTestingModuleNames();
 
   if (testingRunOpts.e2e) {
     // if it's an e2e test, also make sure we're got

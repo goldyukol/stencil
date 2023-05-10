@@ -3,7 +3,8 @@ import type * as d from '@stencil/core/internal';
 
 import type { ConfigFlags } from '../../cli/config-flags';
 import { setScreenshotEmulateData } from '../puppeteer/puppeteer-emulate';
-import { buildJestArgv, getProjectListFromCLIArgs } from './jest-config';
+import { getProjectListFromCLIArgs } from './jest-config';
+import { buildJestArgvFactory } from './jest-version';
 
 export async function runJest(config: d.ValidatedConfig, env: d.E2EProcessEnv) {
   let success = false;
@@ -26,7 +27,7 @@ export async function runJest(config: d.ValidatedConfig, env: d.E2EProcessEnv) {
     config.logger.debug(`default timeout: ${env.__STENCIL_DEFAULT_TIMEOUT__}`);
 
     // build up our args from our already know list of args in the config
-    const jestArgv = buildJestArgv(config);
+    const jestArgv = buildJestArgvFactory({ config });
     // build up the project paths, which is basically the app's root dir
     const projects = getProjectListFromCLIArgs(config, jestArgv);
 

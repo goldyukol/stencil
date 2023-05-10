@@ -11,6 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        jest: ['27', '28']
         node: ['16', '18', '20']
         os: ['ubuntu-latest', 'windows-latest']
     runs-on: ${{ matrix.os }}
@@ -89,6 +90,9 @@ jobs:
         run: npm run build
         working-directory: ./tmp-component-starter
         shell: bash
+
+      - name: Install Jest
+        run: npm install --dev-dependencies jest@${{ matrix.jest }} jest-cli@${{ matrix.jest }} @types/jest@${{ matrix.jest }}
 
       - name: Test Starter Project
         run: npm run test -- --no-build # the project was just built, don't build it again

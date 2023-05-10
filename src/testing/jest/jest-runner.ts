@@ -3,7 +3,8 @@ import type * as d from '@stencil/core/internal';
 
 import type { ConfigFlags } from '../../cli/config-flags';
 import { setScreenshotEmulateData } from '../puppeteer/puppeteer-emulate';
-import { getProjectListFromCLIArgs } from './jest-config';
+// TODO(NOW)
+import { getProjectListFromCLIArgs } from './experimental/jest-27-and-under/jest-config';
 import { buildJestArgvFactory } from './jest-version';
 
 export async function runJest(config: d.ValidatedConfig, env: d.E2EProcessEnv) {

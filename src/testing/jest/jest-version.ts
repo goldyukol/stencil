@@ -2,8 +2,8 @@ import type { Config } from '@jest/types';
 import { ValidatedConfig } from '@stencil/core/declarations';
 import semverMajor from 'semver/functions/major';
 
+import { buildJestArgv as buildJest27Argv } from './experimental/jest-27-and-under/jest-config';
 import { buildJestArgv as buildJest28Argv } from './experimental/jest-28/jest-config';
-import { buildJestArgv as buildJest27Argv } from './jest-config';
 import { getVersion } from './jest-facade';
 
 // TODO(NOW): Fixup w examples

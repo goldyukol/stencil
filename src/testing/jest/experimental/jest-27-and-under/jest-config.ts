@@ -2,7 +2,7 @@ import type { Config } from '@jest/types';
 import type * as d from '@stencil/core/internal';
 import { isString } from '@utils';
 
-import { getJestRunner } from './jest-version';
+import { getJestRunner } from '../../jest-version';
 
 /**
  * Helper function for retrieving legacy Jest options. These options have been provided as defaults to Stencil users

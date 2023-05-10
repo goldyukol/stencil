@@ -1,4 +1,4 @@
-import {getJestMajorVersion} from "./jest-version";
+import { getJestMajorVersion } from './jest-version';
 
 // TODO(STENCIL-306): Remove support for earlier versions of Jest
 type Jest26Config = { instrument: boolean; rootDir: string };
@@ -40,5 +40,5 @@ export const jestPreprocessor = {
     } else {
       throw new Error('Not implemented!');
     }
-  }
+  },
 };

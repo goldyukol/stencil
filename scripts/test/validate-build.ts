@@ -90,6 +90,7 @@ const pkgs: TestPackage[] = [
   },
   {
     // testing
+    // TODO(NOW): Gonna have to think through this
     packageJson: 'testing/package.json',
     files: [
       'testing/jest-environment.js',

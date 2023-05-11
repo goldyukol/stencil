@@ -28,6 +28,7 @@ export async function startPuppeteerBrowser(config: ValidatedConfig) {
 
   env.__STENCIL_BROWSER_WAIT_UNTIL = config.testing.browserWaitUntil;
 
+  // TODO(NOW): Mutation of testing
   if (config.flags.devtools) {
     env.__STENCIL_E2E_DEVTOOLS__ = 'true';
   }
@@ -62,6 +63,7 @@ export async function startPuppeteerBrowser(config: ValidatedConfig) {
     });
   } else {
     const launchOpts: puppeteer.BrowserLaunchArgumentOptions & puppeteer.LaunchOptions & puppeteer.ConnectOptions = {
+      // TODO(NOW): possible mutation
       args: config.testing.browserArgs,
       headless: config.testing.browserHeadless,
       devtools: config.testing.browserDevtools,

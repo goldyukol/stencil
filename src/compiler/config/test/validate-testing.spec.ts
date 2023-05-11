@@ -517,6 +517,57 @@ describe('validateTesting', () => {
     });
   });
 
+  describe('allowableMismatchedRatio', () => {
+    it.each([-0, 0, 0.5, 1.0])(
+      'does nothing if a value between 0 and 1 is provided (%s)',
+      (allowableMismatchedRatio) => {
+        userConfig.flags = { ...flags, e2e: true };
+        userConfig.testing = {
+          allowableMismatchedRatio,
+        };
+        const { config } = validateConfig(userConfig, mockLoadConfigInit());
+        expect(config.testing).toBeDefined();
+        expect(config.testing.allowableMismatchedRatio).toBe(allowableMismatchedRatio);
+      }
+    );
+
+    it.each([-0.1, -1, 1.1, 2])(
+      'creates an error if a number outside 0 and 1 is provided (%s)',
+      (allowableMismatchedRatio) => {
+        userConfig.flags = { ...flags, e2e: true };
+        userConfig.testing = {
+          allowableMismatchedRatio,
+        };
+
+        const { config, diagnostics } = validateConfig(userConfig, mockLoadConfigInit());
+
+        expect(config.testing).toBeDefined();
+        expect(config.testing.allowableMismatchedRatio).toBe(allowableMismatchedRatio);
+        expect(diagnostics).toHaveLength(1);
+        expect(diagnostics[0]).toEqual({
+          absFilePath: null,
+          header: 'Build Error',
+          level: 'error',
+          lines: [],
+          messageText: 'allowableMismatchedRatio must be a value ranging from 0 to 1',
+          relFilePath: null,
+          type: 'build',
+        });
+      }
+    );
+
+    it.each([true, null])('does nothing when a non-number (%s) is provided', (allowableMismatchedRatio) => {
+      userConfig.flags = { ...flags, e2e: true };
+      userConfig.testing = {
+        // the nature of this test requires using a non-number, hence th type assertion
+        allowableMismatchedRatio: allowableMismatchedRatio as unknown as number,
+      };
+      const { config } = validateConfig(userConfig, mockLoadConfigInit());
+      expect(config.testing).toBeDefined();
+      expect(config.testing.allowableMismatchedRatio).toBe(allowableMismatchedRatio);
+    });
+  });
+
   describe('testRegex', () => {
     let testRegex: RegExp;
 

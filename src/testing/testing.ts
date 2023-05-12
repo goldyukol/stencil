@@ -103,9 +103,11 @@ export const createTesting = async (config: ValidatedConfig): Promise<Testing> =
           }
         }
 
-        config.devServer.openBrowser = false;
-        config.devServer.gzip = false;
-        config.devServer.reloadStrategy = null;
+        if (config.devServer) {
+          config.devServer.openBrowser = false;
+          config.devServer.gzip = false;
+          config.devServer.reloadStrategy = null;
+        }
 
         const startupResults = await Promise.all([
           start(config.devServer, config.logger),

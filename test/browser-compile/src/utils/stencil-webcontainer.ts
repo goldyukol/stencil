@@ -1,6 +1,6 @@
-import { TranspileOptions } from "@stencil/core/compiler";
-import { WebContainer } from "@webcontainer/api";
-import { files } from "./stencil-container-files";
+import { TranspileOptions } from '@stencil/core/compiler';
+import { WebContainer } from '@webcontainer/api';
+import { files } from './stencil-container-files';
 
 /**
  * This just does initial setup for a web container
@@ -9,7 +9,7 @@ export async function createStencilContainer() {
   const webcontainerInstance = await WebContainer.boot();
 
   await webcontainerInstance.mount(files);
-  let install = await webcontainerInstance.spawn("npm", ["i"], {
+  let install = await webcontainerInstance.spawn('npm', ['i'], {
     // output: false
   });
   await install.exit;
@@ -17,7 +17,7 @@ export async function createStencilContainer() {
 }
 
 export async function runStencilInfo(wc: WebContainer) {
-  const result = await wc.spawn("npx", ["stencil", "info"]);
+  const result = await wc.spawn('npx', ['stencil', 'info']);
   result.output.pipeTo(
     new WritableStream({
       write(data) {
@@ -32,14 +32,11 @@ export async function saveStencilComponentFile(wc: WebContainer, filename: strin
   await wc.fs.writeFile(filename, data);
 }
 
-export async function saveStencilTranspileOptions(
-  wc: WebContainer,
-  data: TranspileOptions
-) {
-  await wc.fs.writeFile("options.json", JSON.stringify(data));
+export async function saveStencilTranspileOptions(wc: WebContainer, data: TranspileOptions) {
+  await wc.fs.writeFile('options.json', JSON.stringify(data));
 }
 
 export async function runCompilation(wc: WebContainer, stream: WritableStream) {
-  const result = await wc.spawn("node", ["compile.js"]);
+  const result = await wc.spawn('node', ['compile.js']);
   result.output.pipeTo(stream);
 }

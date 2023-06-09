@@ -1,24 +1,24 @@
 export const files = {
-  "index.tsx": {
+  'index.tsx': {
     file: {
-      contents: "",
+      contents: '',
     },
   },
-  "package.json": {
+  'package.json': {
     file: {
       contents: JSON.stringify({
-        name: "stencil-browser-playground",
-        type: "module",
+        name: 'stencil-browser-playground',
+        type: 'module',
         dependencies: {
           // 3.1.0-dev.1678219461.af742f8 is a build of ap/remove-browser-support
           // performed on 3/7/23. See here:
           // https://github.com/ionic-team/stencil/actions/runs/4358070181/jobs/7618247756
-          "@stencil/core": "3.1.0-dev.1678219461.af742f8",
+          '@stencil/core': '3.1.0-dev.1678219461.af742f8',
         },
       }),
     },
   },
-  "compile.js": {
+  'compile.js': {
     file: {
       contents: `
 import { transpileSync } from '@stencil/core/compiler/stencil.js';

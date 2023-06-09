@@ -5,8 +5,13 @@ import type RollupTypes from 'rollup';
 import { cssTemplatePlugin } from '../../utils/css-template-plugin';
 import { loadDeps } from '../../utils/load-deps';
 import { templates, templateList } from '../../utils/templates';
-import { createStencilContainer, saveStencilTranspileOptions, saveStencilComponentFile, runCompilation } from '../../utils/stencil-webcontainer'
-import {WebContainer} from '@webcontainer/api';
+import {
+  createStencilContainer,
+  saveStencilTranspileOptions,
+  saveStencilComponentFile,
+  runCompilation,
+} from '../../utils/stencil-webcontainer';
+import { WebContainer } from '@webcontainer/api';
 
 @Component({
   tag: 'app-root',
@@ -49,7 +54,6 @@ export class AppRoot {
   async componentDidLoad() {
     const wc = await createStencilContainer();
     this.wc = wc;
-    console.log(wc);
     this.loadTemplate(templates.keys().next().value);
   }
 
@@ -78,9 +82,9 @@ export class AppRoot {
     };
 
     await saveStencilTranspileOptions(this.wc, opts);
-    await saveStencilComponentFile(this.wc, this.file.value, this.sourceCodeInput.value )
+    await saveStencilComponentFile(this.wc, this.file.value, this.sourceCodeInput.value);
 
-    const transpiledData = this.transpiledInput
+    const transpiledData = this.transpiledInput;
     const writeableStream = new WritableStream({
       write(data) {
         console.log(data);
@@ -94,7 +98,7 @@ export class AppRoot {
     // });
 
     // this.transpiledInput.value = output
-    this.diagnostics = []
+    this.diagnostics = [];
     this.wrap = 'off';
 
     this.diagnostics.forEach((d: any) => {

@@ -45,11 +45,20 @@ export class AppRoot {
   @State() bundledLength = 0;
   @State() diagnostics: any = [];
   @State() wc: WebContainer | null = null;
+  @State() stencilVersions: string[] | null = null;
 
   async componentDidLoad() {
     const wc = await createStencilContainer();
     this.wc = wc;
     this.loadTemplate(templates.keys().next().value);
+    this.fetchStencilVersions();
+  }
+
+  async fetchStencilVersions() {
+    const response = await fetch('https://registry.npmjs.org/@stencil/core');
+    const json = await response.json();
+    const versionsAndTags = [...Object.keys(json.versions), ...Object.keys(json['dist-tags'])];
+    this.stencilVersions = versionsAndTags;
   }
 
   loadTemplate(fileName: string) {

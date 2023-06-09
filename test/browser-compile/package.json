@@ -5,8 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "node ../../bin/stencil build",
-    "start": "node ../../bin/stencil build --debug --watch --dev --serve"
+    "build": "rm -rf www && node ../../bin/stencil build",
+    "start": "node ../../bin/stencil build --watch --dev",
+    "serve": "node devserver.js"
+
   },
   "author": "Ionic Team",
   "license": "MIT",

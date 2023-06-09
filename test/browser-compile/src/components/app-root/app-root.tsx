@@ -3,7 +3,6 @@ import type StencilTypes from '@stencil/core/compiler';
 import type TypeScriptTypes from 'typescript';
 import type RollupTypes from 'rollup';
 import { cssTemplatePlugin } from '../../utils/css-template-plugin';
-import { loadDeps } from '../../utils/load-deps';
 import { templates, templateList } from '../../utils/templates';
 import {
   createStencilContainer,
@@ -47,10 +46,6 @@ export class AppRoot {
   @State() diagnostics: any = [];
   @State() wc: WebContainer | null = null;
 
-  componentWillLoad() {
-    return loadDeps(this.resolveLookup, this.fs);
-  }
-
   async componentDidLoad() {
     const wc = await createStencilContainer();
     this.wc = wc;
@@ -66,52 +61,45 @@ export class AppRoot {
   }
 
   async compile() {
-    console.log(`compile: stencil v${stencil.version}, typescript v${stencil.versions.typescript}`);
+    if (this.wc) {
+      const opts: StencilTypes.TranspileOptions = {
+        file: this.file.value,
+        componentExport: this.componentExport.value,
+        componentMetadata: this.componentMetadata.value,
+        coreImportPath: this.coreImportPath.value !== 'null' ? this.coreImportPath.value : null,
+        proxy: this.proxy.value,
+        module: this.module.value,
+        target: this.target.value,
+        sourceMap: this.sourceMap.value === 'true' ? true : this.sourceMap.value === 'inline' ? 'inline' : false,
+        style: this.style.value,
+        styleImportData: this.styleImportData.value,
+      };
 
-    const opts: StencilTypes.TranspileOptions = {
-      file: this.file.value,
-      componentExport: this.componentExport.value,
-      componentMetadata: this.componentMetadata.value,
-      coreImportPath: this.coreImportPath.value !== 'null' ? this.coreImportPath.value : null,
-      proxy: this.proxy.value,
-      module: this.module.value,
-      target: this.target.value,
-      sourceMap: this.sourceMap.value === 'true' ? true : this.sourceMap.value === 'inline' ? 'inline' : false,
-      style: this.style.value,
-      styleImportData: this.styleImportData.value,
-    };
+      await saveStencilTranspileOptions(this.wc, opts);
+      await saveStencilComponentFile(this.wc, this.file.value, this.sourceCodeInput.value);
 
-    await saveStencilTranspileOptions(this.wc, opts);
-    await saveStencilComponentFile(this.wc, this.file.value, this.sourceCodeInput.value);
+      const transpiledData = this.transpiledInput;
+      const writeableStream = new WritableStream({
+        write(data) {
+          console.log(data);
+          transpiledData.value = data;
+        },
+      });
+      await runCompilation(this.wc, writeableStream);
 
-    const transpiledData = this.transpiledInput;
-    const writeableStream = new WritableStream({
-      write(data) {
-        console.log(data);
-        transpiledData.value = data;
-      },
-    });
-    await runCompilation(this.wc, writeableStream);
+      this.diagnostics = [];
+      this.wrap = 'off';
 
-    // results.imports.forEach((imprt) => {
-    //   console.log('import:', imprt);
-    // });
-
-    // this.transpiledInput.value = output
-    this.diagnostics = [];
-    this.wrap = 'off';
-
-    this.diagnostics.forEach((d: any) => {
-      if (d.level === 'error') {
-        console.error(d.messageText);
-      } else if (d.level === 'warn') {
-        console.warn(d.messageText);
-      } else {
-        console.info(d.messageText);
-      }
-    });
-
-    // await this.bundle();
+      this.diagnostics.forEach((d: any) => {
+        if (d.level === 'error') {
+          console.error(d.messageText);
+        } else if (d.level === 'warn') {
+          console.warn(d.messageText);
+        } else {
+          console.info(d.messageText);
+        }
+      });
+    }
   }
 
   async bundle() {

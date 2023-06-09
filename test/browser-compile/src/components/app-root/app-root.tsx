@@ -68,7 +68,7 @@ export class AppRoot {
         componentMetadata: this.componentMetadata.value,
         coreImportPath: this.coreImportPath.value !== 'null' ? this.coreImportPath.value : null,
         proxy: this.proxy.value,
-        module: this.module.value,
+        module: this.module.value ?? 'esm',
         target: this.target.value,
         sourceMap: this.sourceMap.value === 'true' ? true : this.sourceMap.value === 'inline' ? 'inline' : false,
         style: this.style.value,

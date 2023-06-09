@@ -36,7 +36,18 @@ export async function saveStencilTranspileOptions(wc: WebContainer, data: Transp
   await wc.fs.writeFile('options.json', JSON.stringify(data));
 }
 
-export async function runCompilation(wc: WebContainer, stream: WritableStream) {
+function debounce<F, T extends Array<F>>(fn: (...args: T) => void, delay: number) {
+  let timeout: any;
+
+  return function (...args: T) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+}
+
+export const runCompilation = debounce(async (wc: WebContainer, stream: WritableStream) => {
   const result = await wc.spawn('node', ['compile.js']);
   result.output.pipeTo(stream);
-}
+}, 300);

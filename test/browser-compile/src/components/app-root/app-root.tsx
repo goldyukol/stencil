@@ -57,6 +57,7 @@ export class AppRoot {
   @State() wc: WebContainer | null = null;
   @State() stencilVersions: string[] = [];
   @State() selectedStencilVersion = 'latest';
+  @State() transpiledCode = '';
   /**
    * We use this to indicate both the initial setup (which covers both setting
    * up the WebContainer and installing `@stencil/core@latest`) and any
@@ -116,11 +117,12 @@ export class AppRoot {
       await saveStencilTranspileOptions(this.wc, opts);
       await saveStencilComponentFile(this.wc, this.file.value, this.sourceCodeInput.value);
 
-      const transpiledData = this.transpiledInput;
+      const component = this;
       const writeableStream = new WritableStream({
         write(data) {
           console.log(data);
-          transpiledData.value = data;
+          // this writes the transpiled output JS into the textarea
+          component.transpiledCode = data;
         },
       });
       await runCompilation(this.wc, writeableStream);
@@ -138,6 +140,9 @@ export class AppRoot {
         }
       });
     }
+
+    // // @ts-ignore trust me
+    // window.hljs.highlightAll();
   }
 
   async bundle() {
@@ -428,14 +433,11 @@ export class AppRoot {
           <section class="build" hidden={this.diagnostics.length > 0}>
             <header>{this.buildView === 'transpiled' ? 'Transpiled Build' : 'Bundled Build'}</header>
 
-            <textarea
-              ref={(el) => (this.transpiledInput = el)}
-              // onInput={this.bundle.bind(this)}
-              hidden={this.buildView !== 'transpiled'}
-              spellcheck="false"
-              autocapitalize="off"
-              wrap="off"
-            />
+            <div class="transpiled">
+              <pre>
+                <code class="language-javascript">{this.transpiledCode}</code>
+              </pre>
+            </div>
 
             <textarea
               ref={(el) => (this.bundledInput = el)}

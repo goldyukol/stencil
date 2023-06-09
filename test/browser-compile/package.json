@@ -8,11 +8,11 @@
     "build": "rm -rf www && node ../../bin/stencil build",
     "start": "node ../../bin/stencil build --watch --dev",
     "serve": "node devserver.js"
-
   },
   "author": "Ionic Team",
   "license": "MIT",
   "devDependencies": {
+    "@highlightjs/cdn-assets": "^11.8.0",
     "@webcontainer/api": "^1.0.2",
     "express": "^4.18.2"
   }

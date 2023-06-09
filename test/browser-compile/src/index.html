@@ -4,8 +4,18 @@
   <meta charset="UTF-8">
   <title>Stencil Browser Compile</title>
   <script type="module" src="/build/browsercompile.esm.js"></script>
+  <script type="module" src="/highlight.js"></script>
+  <link rel="stylesheet" href="/highlightjs.css"></link>
 </head>
 <body>
   <app-root></app-root>
+
+  <script type="module">
+    import hljs from '/highlight.js';
+    import javascript from '/highlight-javascript.js';
+    hljs.registerLanguage('javascript', javascript);
+    window.hljs = hljs;
+  </script>
+
 </body>
 </html>

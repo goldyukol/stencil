@@ -13,7 +13,17 @@ export async function createStencilContainer() {
     // output: false
   });
   await install.exit;
+  // we install `@stencil/core@latest` by default, and we do it in our
+  // WebContainer setup function to ensure that the package is always present
+  // (we return the wc from this function, which implies it's ready to 'do
+  // work', so we want to make sure that's the case)
+  await installStencil(webcontainerInstance, 'latest');
   return webcontainerInstance;
+}
+
+export async function installStencil(wc: WebContainer, version: string) {
+  let install = await wc.spawn('npm', ['i', `@stencil/core@${version}`], {});
+  await install.exit;
 }
 
 export async function runStencilInfo(wc: WebContainer) {

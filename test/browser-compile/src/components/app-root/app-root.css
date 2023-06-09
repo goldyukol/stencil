@@ -12,17 +12,26 @@ body {
   background: #f7f7f7;
 }
 
-app-root {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+main {
   overflow: auto;
   display: flex;
   width: 100%;
   height: 100vh;
-  padding: 5px;
+}
+
+.stencil-version {
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+}
+
+.stencil-version select {
+  min-width: 250px;
+}
+
+.stencil-version .install-action {
+  padding-left: 5px;
+  font-size: 14px;
 }
 
 section {

@@ -1,4 +1,4 @@
-import { Component, Host, h, State } from '@stencil/core';
+import { Component, Host, h, State, Watch } from '@stencil/core';
 import type StencilTypes from '@stencil/core/compiler';
 import type TypeScriptTypes from 'typescript';
 import type RollupTypes from 'rollup';
@@ -9,8 +9,18 @@ import {
   saveStencilTranspileOptions,
   saveStencilComponentFile,
   runCompilation,
+  installStencil,
+  // installStencil,
 } from '../../utils/stencil-webcontainer';
 import { WebContainer } from '@webcontainer/api';
+
+const INSTALL_ACTIONS = {
+  install: 'installing Stencil...',
+  initialize: 'initializing environment, installing Stencil...',
+  none: '',
+};
+
+type InstallAction = keyof typeof INSTALL_ACTIONS;
 
 @Component({
   tag: 'app-root',
@@ -45,19 +55,38 @@ export class AppRoot {
   @State() bundledLength = 0;
   @State() diagnostics: any = [];
   @State() wc: WebContainer | null = null;
-  @State() stencilVersions: string[] | null = null;
+  @State() stencilVersions: string[] = [];
+  @State() selectedStencilVersion = 'latest';
+  /**
+   * We use this to indicate both the initial setup (which covers both setting
+   * up the WebContainer and installing `@stencil/core@latest`) and any
+   * subsequent installs of `@stencil/core` that happen if we switch versions.
+   *
+   * Thus we start with this `true`!
+   */
+  @State() currentInstallAction: InstallAction = 'initialize';
 
   async componentDidLoad() {
+    this.fetchStencilVersions();
     const wc = await createStencilContainer();
     this.wc = wc;
     this.loadTemplate(templates.keys().next().value);
-    this.fetchStencilVersions();
+    this.currentInstallAction = 'none';
+  }
+
+  @Watch('selectedStencilVersion')
+  async watchSelectedStencilVersion(newVal: string, _oldVal: string) {
+    this.currentInstallAction = 'install';
+    await installStencil(this.wc, newVal);
+    this.currentInstallAction = 'none';
   }
 
   async fetchStencilVersions() {
     const response = await fetch('https://registry.npmjs.org/@stencil/core');
     const json = await response.json();
-    const versionsAndTags = [...Object.keys(json.versions), ...Object.keys(json['dist-tags'])];
+    const versionsAndTags = [...Object.keys(json.versions), ...Object.keys(json['dist-tags'])]
+      .filter((v) => v !== 'latest')
+      .reverse();
     this.stencilVersions = versionsAndTags;
   }
 
@@ -112,8 +141,6 @@ export class AppRoot {
   }
 
   async bundle() {
-    console.log(`bundle: rollup v${rollup.VERSION}`);
-
     let entryId = this.file.value;
     if (!entryId.startsWith('/')) {
       entryId = '/' + entryId;
@@ -262,197 +289,223 @@ export class AppRoot {
   render() {
     return (
       <Host>
-        <section class="source">
-          <header>Source</header>
-          <textarea
-            spellcheck="false"
-            wrap="off"
-            autocapitalize="off"
-            ref={(el) => (this.sourceCodeInput = el)}
-            onInput={() => this.compile()}
-          />
+        <div class="stencil-version">
+          <label>
+            <span>Stencil version:</span>
+            <select
+              ref={(el) => (this.componentExport = el)}
+              onInput={(e: any) => {
+                const newSelectedVersion = e.target.value;
+                this.selectedStencilVersion = newSelectedVersion;
+              }}
+            >
+              <option value="latest" selected>
+                latest (default)
+              </option>
+              {this.stencilVersions.map((version) => (
+                <option value={version}>{version}</option>
+              ))}
+            </select>
+          </label>
+          {this.currentInstallAction ? (
+            <span class="install-action">
+              <em>{INSTALL_ACTIONS[this.currentInstallAction]}</em>
+            </span>
+          ) : null}
+        </div>
+        <main>
+          <section class="source">
+            <header>Source</header>
+            <textarea
+              spellcheck="false"
+              wrap="off"
+              autocapitalize="off"
+              ref={(el) => (this.sourceCodeInput = el)}
+              onInput={() => this.compile()}
+            />
 
-          <div class="options">
-            <label>
-              <span>Templates:</span>
-              <select
-                ref={(el) => (this.fileTemplate = el)}
-                onInput={(ev: any) => {
-                  this.loadTemplate(ev.target.value);
-                }}
-              >
-                {templateList.map((fileName) => (
-                  <option value={fileName}>{fileName.replace('.tsx', '')}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>File:</span>
-              <input ref={(el) => (this.file = el)} onInput={this.compile.bind(this)} />
-            </label>
-            <label>
-              <span>Export:</span>
-              <select ref={(el) => (this.componentExport = el)} onInput={this.compile.bind(this)}>
-                <option value="customelement">customelement</option>
-                <option value="module">module</option>
-                <option value="null">null</option>
-              </select>
-            </label>
-            <label>
-              <span>Module:</span>
-              <select ref={(el) => (this.module = el)} onInput={this.compile.bind(this)}>
-                <option value="esm">esm</option>
-                <option value="cjs">cjs</option>
-                <option value="null">null</option>
-              </select>
-            </label>
-            <label>
-              <span>Target:</span>
-              <select ref={(el) => (this.target = el)} onInput={this.compile.bind(this)}>
-                <option value="latest">latest</option>
-                <option value="esnext">esnext</option>
-                <option value="es2020">es2020</option>
-                <option value="es2017">es2017</option>
-                <option value="es2015">es2015</option>
-                <option value="es5">es5</option>
-                <option value="null">null</option>
-              </select>
-            </label>
-            <label>
-              <span>Source Map:</span>
-              <select ref={(el) => (this.sourceMap = el)} onInput={this.compile.bind(this)}>
-                <option value="true">true</option>
-                <option value="inline">inline</option>
-                <option value="false">false</option>
-                <option value="null">null</option>
-              </select>
-            </label>
-            <label>
-              <span>Style:</span>
-              <select ref={(el) => (this.style = el)} onInput={this.compile.bind(this)}>
-                <option value="static">static</option>
-                <option value="null">null</option>
-              </select>
-            </label>
-            <label>
-              <span>Style Import Data:</span>
-              <select ref={(el) => (this.styleImportData = el)} onInput={this.compile.bind(this)}>
-                <option value="queryparams">queryparams</option>
-                <option value="null">null</option>
-              </select>
-            </label>
-            <label>
-              <span>Proxy:</span>
-              <select ref={(el) => (this.proxy = el)} onInput={this.compile.bind(this)}>
-                <option value="defineproperty">defineproperty</option>
-                <option value="null">null</option>
-              </select>
-            </label>
-            <label>
-              <span>Metadata:</span>
-              <select ref={(el) => (this.componentMetadata = el)} onInput={this.compile.bind(this)}>
-                <option value="null">null</option>
-                <option value="compilerstatic">compilerstatic</option>
-              </select>
-            </label>
-            <label>
-              <span>Core:</span>
-              <select ref={(el) => (this.coreImportPath = el)} onInput={this.compile.bind(this)}>
-                <option value="null">null</option>
-                <option value="@stencil/core/internal/client">@stencil/core/internal/client</option>
-                <option value="@stencil/core/internal/testing">@stencil/core/internal/testing</option>
-              </select>
-            </label>
-            <label>
-              <span>Transpiler:</span>
-              <select ref={(el) => (this.transpilerThread = el)} onInput={this.compile.bind(this)}>
-                <option value="main">Main thread</option>
-                <option value="worker">Worker thread</option>
-              </select>
-            </label>
-          </div>
-        </section>
+            <div class="options">
+              <label>
+                <span>Templates:</span>
+                <select
+                  ref={(el) => (this.fileTemplate = el)}
+                  onInput={(ev: any) => {
+                    this.loadTemplate(ev.target.value);
+                  }}
+                >
+                  {templateList.map((fileName) => (
+                    <option value={fileName}>{fileName.replace('.tsx', '')}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>File:</span>
+                <input ref={(el) => (this.file = el)} onInput={this.compile.bind(this)} />
+              </label>
+              <label>
+                <span>Export:</span>
+                <select ref={(el) => (this.componentExport = el)} onInput={this.compile.bind(this)}>
+                  <option value="customelement">customelement</option>
+                  <option value="module">module</option>
+                  <option value="null">null</option>
+                </select>
+              </label>
+              <label>
+                <span>Module:</span>
+                <select ref={(el) => (this.module = el)} onInput={this.compile.bind(this)}>
+                  <option value="esm">esm</option>
+                  <option value="cjs">cjs</option>
+                  <option value="null">null</option>
+                </select>
+              </label>
+              <label>
+                <span>Target:</span>
+                <select ref={(el) => (this.target = el)} onInput={this.compile.bind(this)}>
+                  <option value="latest">latest</option>
+                  <option value="esnext">esnext</option>
+                  <option value="es2020">es2020</option>
+                  <option value="es2017">es2017</option>
+                  <option value="es2015">es2015</option>
+                  <option value="es5">es5</option>
+                  <option value="null">null</option>
+                </select>
+              </label>
+              <label>
+                <span>Source Map:</span>
+                <select ref={(el) => (this.sourceMap = el)} onInput={this.compile.bind(this)}>
+                  <option value="true">true</option>
+                  <option value="inline">inline</option>
+                  <option value="false">false</option>
+                  <option value="null">null</option>
+                </select>
+              </label>
+              <label>
+                <span>Style:</span>
+                <select ref={(el) => (this.style = el)} onInput={this.compile.bind(this)}>
+                  <option value="static">static</option>
+                  <option value="null">null</option>
+                </select>
+              </label>
+              <label>
+                <span>Style Import Data:</span>
+                <select ref={(el) => (this.styleImportData = el)} onInput={this.compile.bind(this)}>
+                  <option value="queryparams">queryparams</option>
+                  <option value="null">null</option>
+                </select>
+              </label>
+              <label>
+                <span>Proxy:</span>
+                <select ref={(el) => (this.proxy = el)} onInput={this.compile.bind(this)}>
+                  <option value="defineproperty">defineproperty</option>
+                  <option value="null">null</option>
+                </select>
+              </label>
+              <label>
+                <span>Metadata:</span>
+                <select ref={(el) => (this.componentMetadata = el)} onInput={this.compile.bind(this)}>
+                  <option value="null">null</option>
+                  <option value="compilerstatic">compilerstatic</option>
+                </select>
+              </label>
+              <label>
+                <span>Core:</span>
+                <select ref={(el) => (this.coreImportPath = el)} onInput={this.compile.bind(this)}>
+                  <option value="null">null</option>
+                  <option value="@stencil/core/internal/client">@stencil/core/internal/client</option>
+                  <option value="@stencil/core/internal/testing">@stencil/core/internal/testing</option>
+                </select>
+              </label>
+              <label>
+                <span>Transpiler:</span>
+                <select ref={(el) => (this.transpilerThread = el)} onInput={this.compile.bind(this)}>
+                  <option value="main">Main thread</option>
+                  <option value="worker">Worker thread</option>
+                </select>
+              </label>
+            </div>
+          </section>
 
-        <section class="build" hidden={this.diagnostics.length > 0}>
-          <header>{this.buildView === 'transpiled' ? 'Transpiled Build' : 'Bundled Build'}</header>
+          <section class="build" hidden={this.diagnostics.length > 0}>
+            <header>{this.buildView === 'transpiled' ? 'Transpiled Build' : 'Bundled Build'}</header>
 
-          <textarea
-            ref={(el) => (this.transpiledInput = el)}
-            // onInput={this.bundle.bind(this)}
-            hidden={this.buildView !== 'transpiled'}
-            spellcheck="false"
-            autocapitalize="off"
-            wrap="off"
-          />
+            <textarea
+              ref={(el) => (this.transpiledInput = el)}
+              // onInput={this.bundle.bind(this)}
+              hidden={this.buildView !== 'transpiled'}
+              spellcheck="false"
+              autocapitalize="off"
+              wrap="off"
+            />
 
-          <textarea
-            ref={(el) => (this.bundledInput = el)}
-            onInput={this.preview.bind(this)}
-            hidden={this.buildView !== 'bundled'}
-            spellcheck="false"
-            autocapitalize="off"
-            wrap={this.wrap}
-          />
+            <textarea
+              ref={(el) => (this.bundledInput = el)}
+              onInput={this.preview.bind(this)}
+              hidden={this.buildView !== 'bundled'}
+              spellcheck="false"
+              autocapitalize="off"
+              wrap={this.wrap}
+            />
 
-          <div class="options">
-            <label>
-              <span>Build:</span>
-              <select
-                ref={(el) => (this.build = el)}
-                onInput={(ev: any) => {
-                  this.buildView = ev.target.value;
-                }}
-              >
-                <option value="transpiled">Transpiled</option>
-                <option value="bundled">Bundled</option>
-              </select>
-            </label>
+            <div class="options">
+              <label>
+                <span>Build:</span>
+                <select
+                  ref={(el) => (this.build = el)}
+                  onInput={(ev: any) => {
+                    this.buildView = ev.target.value;
+                  }}
+                >
+                  <option value="transpiled">Transpiled</option>
+                  <option value="bundled">Bundled</option>
+                </select>
+              </label>
 
-            <label hidden={this.buildView !== 'bundled'}>
-              <span>Minify:</span>
-              <select
-                onInput={(ev: any) => {
-                  this.minified = ev.target.value;
-                  this.bundle();
-                }}
-              >
-                <option value="uncompressed">Uncompressed</option>
-                <option value="pretty">Pretty Minified</option>
-                <option value="minified">Minified</option>
-              </select>
-              <span class="file-size">{this.bundledLength} b</span>
-            </label>
-          </div>
-        </section>
+              <label hidden={this.buildView !== 'bundled'}>
+                <span>Minify:</span>
+                <select
+                  onInput={(ev: any) => {
+                    this.minified = ev.target.value;
+                    this.bundle();
+                  }}
+                >
+                  <option value="uncompressed">Uncompressed</option>
+                  <option value="pretty">Pretty Minified</option>
+                  <option value="minified">Minified</option>
+                </select>
+                <span class="file-size">{this.bundledLength} b</span>
+              </label>
+            </div>
+          </section>
 
-        <section class="diagnostics" hidden={this.diagnostics.length === 0}>
-          <header>Diagnostics</header>
-          {this.diagnostics.map((d: any) => (
-            <div>{d.messageText}</div>
-          ))}
-        </section>
+          <section class="diagnostics" hidden={this.diagnostics.length === 0}>
+            <header>Diagnostics</header>
+            {this.diagnostics.map((d: any) => (
+              <div>{d.messageText}</div>
+            ))}
+          </section>
 
-        <section class="preview">
-          <header>HTML</header>
-          <textarea
-            spellcheck="false"
-            wrap="off"
-            autocapitalize="off"
-            ref={(el) => (this.htmlCodeInput = el)}
-            onInput={this.preview.bind(this)}
-          />
-          <div class="options"></div>
+          <section class="preview">
+            <header>HTML</header>
+            <textarea
+              spellcheck="false"
+              wrap="off"
+              autocapitalize="off"
+              ref={(el) => (this.htmlCodeInput = el)}
+              onInput={this.preview.bind(this)}
+            />
+            <div class="options"></div>
 
-          <div class="view">
-            <header>
-              Preview
-              <a href="#" onClick={this.openInWindow}>
-                Open in window
-              </a>
-            </header>
-            <iframe ref={(el) => (this.iframe = el)}></iframe>
-          </div>
-        </section>
+            <div class="view">
+              <header>
+                Preview
+                <a href="#" onClick={this.openInWindow}>
+                  Open in window
+                </a>
+              </header>
+              <iframe ref={(el) => (this.iframe = el)}></iframe>
+            </div>
+          </section>
+        </main>
       </Host>
     );
   }

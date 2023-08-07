@@ -118,7 +118,7 @@ export function buildJestConfig(config: d.ValidatedConfig): string {
   return JSON.stringify(jestConfig);
 }
 
-export function getProjectListFromCLIArgs(config: d.Config, argv: Config.Argv): Config.Path[] {
+export function getProjectListFromCLIArgs(config: d.Config, argv: Config.Argv): string[] {
   const projects = argv.projects ? argv.projects : [];
 
   projects.push(config.rootDir);

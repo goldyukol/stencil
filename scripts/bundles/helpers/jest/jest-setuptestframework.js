@@ -1,3 +1,8 @@
-const { jestSetupTestFramework } = require('./index.js');
+const jestVersion = 28;
+const jestSetupTestFramework = `jestSetupTestFramework${jestVersion}`;
 
-jestSetupTestFramework();
+const testing = require('./index.js');
+
+const setup = testing[jestSetupTestFramework];
+
+setup();

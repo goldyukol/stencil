@@ -62,15 +62,11 @@ section .transpiled,textarea {
   outline: 0;
 }
 
-textarea {
+textarea .internal {
   width: 100%;
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
   resize: none;
-}
-
-.source textarea {
-  height: calc(100% - 315px);
 }
 
 .build textarea {
@@ -110,4 +106,9 @@ iframe {
   height: 230px;
   border: 0;
   background: white;
+}
+
+.monaco-editor-container {
+  height: 70%;
+  width: 100%;
 }

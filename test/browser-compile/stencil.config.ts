@@ -24,6 +24,11 @@ export const config: Config = {
           warn: true,
         },
         {
+          src: "../node_modules/monaco-editor",
+          dest: "monaco-editor",
+          warn: true
+        },
+        {
           src: 'preview.html',
           warn: true,
         },

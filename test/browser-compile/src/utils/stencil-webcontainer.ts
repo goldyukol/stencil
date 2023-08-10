@@ -33,7 +33,7 @@ export async function runStencilInfo(wc: WebContainer) {
       write(data) {
         console.log(data);
       },
-    })
+    }),
   );
   await result.exit;
 }

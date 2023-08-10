@@ -10,12 +10,12 @@ export const config: Config = {
       copy: [
         {
           src: '../node_modules/@highlightjs/cdn-assets/es/highlight.js',
-          dest: "highlight.js",
+          dest: 'highlight.js',
           warn: true,
         },
         {
           src: '../node_modules/@highlightjs/cdn-assets/es/languages/javascript.min.js',
-          dest: "highlight-javascript.js",
+          dest: 'highlight-javascript.js',
           warn: true,
         },
         {

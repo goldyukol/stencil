@@ -13,9 +13,9 @@ import {
   // installStencil,
 } from '../../utils/stencil-webcontainer';
 import { WebContainer } from '@webcontainer/api';
-import { EditorView, basicSetup } from "codemirror"
+import { EditorView, basicSetup } from 'codemirror';
 import { ViewUpdate } from '@codemirror/view';
-import { javascript } from "@codemirror/lang-javascript"
+import { javascript } from '@codemirror/lang-javascript';
 
 const INSTALL_ACTIONS = {
   install: 'installing Stencil...',
@@ -77,17 +77,17 @@ export class AppRoot {
       extensions: [
         javascript({
           jsx: true,
-          typescript: true
+          typescript: true,
         }),
         basicSetup,
-        EditorView.updateListener.of((v:ViewUpdate) => {
+        EditorView.updateListener.of((v: ViewUpdate) => {
           if (v.docChanged) {
             this.compile();
           }
-        })
+        }),
       ],
       parent: this.sourceCodeInput,
-    })
+    });
     this.loadTemplate(templates.keys().next().value);
 
     const wc = await createStencilContainer();

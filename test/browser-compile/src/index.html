@@ -3,26 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Stencil Browser Compile</title>
-  <script src="/monaco-editor/min/vs/loader.js"></script>
-  <script>
-    require.config({ paths: { vs: '/monaco-editor/min/vs' } });
-
-    require(['vs/editor/editor.main'], function () {
-      console.log("ABOUT TOSET UP!!")
-      window.monaco = monaco;
-      // var editor = monaco.editor.create(document.getElementById('container'), {
-      // value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-      // language: 'javascript'
-      // });
-    });
-  </script>
-
   <script type="module" src="/build/browsercompile.esm.js"></script>
   <script type="module" src="/highlight.js"></script>
-
-  <link rel="stylesheet" type="text/css" data-name="vs/editor/editor.main" href="/monaco-editor/min/vs/editor/editor.main.css">
   <link rel="stylesheet" href="/highlightjs.css"></link>
-
 </head>
 <body>
   <app-root></app-root>

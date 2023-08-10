@@ -13,37 +13,9 @@ import {
   // installStencil,
 } from '../../utils/stencil-webcontainer';
 import { WebContainer } from '@webcontainer/api';
-import type * as monaco from 'monaco-editor';
-// // @ts-ignore
-// import * as editorWorker from 'monaco-editor/esm/vs/editor/editor.worker';
-// // @ts-ignore
-// import * as jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker';
-// // @ts-ignore
-// import * as cssWorker from 'monaco-editor/esm/vs/language/css/css.worker';
-// // @ts-ignore
-// import * as htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker';
-// // @ts-ignore
-// import * as tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker';
-// // import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-
-// self.MonacoEnvironment = {
-//   // @ts-ignore
-//   getWorker(_, label) {
-//     if (label === 'json') {
-//       return jsonWorker;
-//     }
-//     if (label === 'css' || label === 'scss' || label === 'less') {
-//       return cssWorker;
-//     }
-//     if (label === 'html' || label === 'handlebars' || label === 'razor') {
-//       return htmlWorker;
-//     }
-//     if (label === 'typescript' || label === 'javascript') {
-//       return tsWorker;
-//     }
-//     return editorWorker;
-//   }
-// };
+import { EditorView, basicSetup } from "codemirror"
+import { ViewUpdate } from '@codemirror/view';
+import { javascript } from "@codemirror/lang-javascript"
 
 const INSTALL_ACTIONS = {
   install: 'installing Stencil...',
@@ -52,17 +24,6 @@ const INSTALL_ACTIONS = {
 };
 
 type InstallAction = keyof typeof INSTALL_ACTIONS;
-
-function waitFor(value: any, cb: any) {
-  const checkedVal = value()
-  if (checkedVal !== null && checkedVal !== undefined) {
-    cb();
-  } else {
-    setTimeout(() => {
-      waitFor(value, cb)
-    }, 500);
-  }
-}
 
 @Component({
   tag: 'app-root',
@@ -100,7 +61,7 @@ export class AppRoot {
   @State() stencilVersions: string[] = [];
   @State() selectedStencilVersion = 'latest';
   @State() transpiledCode = '';
-  @State() monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null;
+  @State() editorView: EditorView | null = null;
   /**
    * We use this to indicate both the initial setup (which covers both setting
    * up the WebContainer and installing `@stencil/core@latest`) and any
@@ -112,19 +73,22 @@ export class AppRoot {
 
   async componentDidLoad() {
     this.fetchStencilVersions();
-    // @ts-ignore
-    const that = this;
-    waitFor(() => {
-      // @ts-ignore
-      return window.monaco;
-    }, () => {
-      // @ts-ignore
-      that.monacoEditor = (window.monaco as unknown as (typeof monaco)).editor.create(this.sourceCodeInput, {
-        value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-        language: 'typescript'
-      });
-      that.loadTemplate(templates.keys().next().value);
+    this.editorView = new EditorView({
+      extensions: [
+        javascript({
+          jsx: true,
+          typescript: true
+        }),
+        basicSetup,
+        EditorView.updateListener.of((v:ViewUpdate) => {
+          if (v.docChanged) {
+            this.compile();
+          }
+        })
+      ],
+      parent: this.sourceCodeInput,
     })
+    this.loadTemplate(templates.keys().next().value);
 
     const wc = await createStencilContainer();
     this.wc = wc;
@@ -150,7 +114,15 @@ export class AppRoot {
   loadTemplate(fileName: string) {
     this.file.value = fileName;
     const tmp = templates.get(fileName);
-    this.monacoEditor.setValue(tmp.source.trim());
+
+    const updateTransaction = this.editorView.state.update({
+      changes: {
+        from: 0,
+        to: this.editorView.state?.doc.length,
+        insert: tmp.source.trim(),
+      },
+    });
+    this.editorView.dispatch(updateTransaction);
     this.htmlCodeInput.value = tmp.html.trim();
     this.compile();
   }
@@ -171,7 +143,8 @@ export class AppRoot {
       };
 
       await saveStencilTranspileOptions(this.wc, opts);
-      await saveStencilComponentFile(this.wc, this.file.value, this.monacoEditor.getValue());
+      const currentValue = this.editorView.state.doc.toString();
+      await saveStencilComponentFile(this.wc, this.file.value, currentValue);
 
       const component = this;
       const writeableStream = new WritableStream({
@@ -377,7 +350,7 @@ export class AppRoot {
         <main>
           <section class="source">
             <header>Source</header>
-            <div class="monaco-editor-container" ref={(el) => (this.sourceCodeInput = el)} />
+            <div class="codemirrorr-container" ref={(el) => (this.sourceCodeInput = el)} />
             <div class="options">
               <label>
                 <span>Templates:</span>

@@ -27,6 +27,10 @@ export const config: Config = {
           src: 'preview.html',
           warn: true,
         },
+        {
+          src: '../node_modules/xterm/css/xterm.css',
+          dest: 'xterm.css'
+        }
       ],
     },
   ],

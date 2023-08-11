@@ -4,16 +4,21 @@ export const files = {
       contents: '',
     },
   },
+  src: {
+    directory: {
+      components: {
+        directory: {},
+      },
+    },
+  },
   'package.json': {
     file: {
       contents: JSON.stringify({
         name: 'stencil-browser-playground',
         type: 'module',
         dependencies: {
-          // 3.1.0-dev.1678219461.af742f8 is a build of ap/remove-browser-support
-          // performed on 3/7/23. See here:
-          // https://github.com/ionic-team/stencil/actions/runs/4358070181/jobs/7618247756
-          // '@stencil/core': '3.1.0-dev.1678219461.af742f8',
+          '@stencil/core': 'latest',
+          express: '4.18.2',
         },
       }),
     },
@@ -30,6 +35,60 @@ const componentString = String(readFileSync(options.file));
 const transpiled = transpileSync(componentString, options);
 console.log(transpiled.code);
   `,
+    },
+  },
+  'dev-server.js': {
+    file: {
+      contents: `
+import express from 'express';
+const app = express();
+const port = 3111;
+
+app.use(express.static('www'));
+
+app.listen(port, () => {
+  console.log(\`App is live at http://localhost:\${port}\`);
+});`,
+    },
+  },
+  'stencil.config.ts': {
+    file: {
+      contents: `import { Config } from '@stencil/core';
+
+export const config: Config = {
+  namespace: 'stencil-browser-playground',
+  outputTargets: [
+    {
+      type: 'www',
+      serviceWorker: null, // disable service workers
+    },
+  ],
+  testing: {
+    browserHeadless: "new",
+  },
+};`,
+    },
+  },
+  'tsconfig.json': {
+    file: {
+      contents: JSON.stringify({
+        compilerOptions: {
+          allowSyntheticDefaultImports: true,
+          allowUnreachableCode: false,
+          declaration: false,
+          experimentalDecorators: true,
+          lib: ['dom', 'es2017'],
+          moduleResolution: 'node',
+          module: 'esnext',
+          target: 'es2017',
+          noUnusedLocals: true,
+          noUnusedParameters: true,
+          jsx: 'react',
+          jsxFactory: 'h',
+        },
+        include: ['src'],
+        exclude: ['node_modules'],
+      }),
     },
   },
 };

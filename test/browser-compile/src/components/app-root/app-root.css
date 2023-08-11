@@ -29,14 +29,22 @@ main {
   min-width: 250px;
 }
 
-.stencil-version .install-action {
+.stencil-version .install-action, .stencil-version .compiler-state {
   padding-left: 5px;
   font-size: 14px;
 }
 
 section {
+  max-width: calc(100% / 3);
   flex: 1;
   padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+section.source {
+  max-height: calc(100% - 26px);
 }
 
 section header {
@@ -53,20 +61,16 @@ section header a {
   margin-right: 8px;
 }
 
-section .transpiled,textarea {
-  width: 100%;
+textarea.html {
   border: 0;
-  padding: 5px;
-  border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
-  outline: 0;
-}
-
-textarea .internal {
-  width: 100%;
+  border-bottom-right-radius: 5px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
+  outline: 0;
+  padding: 5px;
   resize: none;
+  width: 100%;
 }
 
 .build textarea {
@@ -108,7 +112,7 @@ iframe {
   background: white;
 }
 
-.monaco-editor-container {
-  height: 70%;
-  width: 100%;
+.codemirror-container {
+  flex-grow: 1;
+  overflow: scroll;
 }

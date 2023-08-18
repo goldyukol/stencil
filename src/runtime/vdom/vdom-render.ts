@@ -355,17 +355,25 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
   let node: Node;
   let elmToMove: d.VNode;
 
+  const prefix = `updateChildren_{(Math.random() + 1).toString(36).substring(7)} `;
+
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    console.log(prefix + 'RECONCILING CHILDREN');
     if (oldStartVnode == null) {
+      console.log(prefix + 'HEY NO 1');
       // VNode might have been moved left
       oldStartVnode = oldCh[++oldStartIdx];
     } else if (oldEndVnode == null) {
+      console.log(prefix + 'HEY NO 2');
       oldEndVnode = oldCh[--oldEndIdx];
     } else if (newStartVnode == null) {
+      console.log(prefix + 'HEY NO 3');
       newStartVnode = newCh[++newStartIdx];
     } else if (newEndVnode == null) {
+      console.log(prefix + 'HEY NO 4');
       newEndVnode = newCh[--newEndIdx];
     } else if (isSameVnode(oldStartVnode, newStartVnode)) {
+      console.log(prefix + 'SAME START');
       // if the start nodes are the same then we should patch the new VNode
       // onto the old one, and increment our `newStartIdx` and `oldStartIdx`
       // indices to reflect that. We don't need to move any DOM Nodes around
@@ -374,6 +382,7 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
       oldStartVnode = oldCh[++oldStartIdx];
       newStartVnode = newCh[++newStartIdx];
     } else if (isSameVnode(oldEndVnode, newEndVnode)) {
+      console.log(prefix + 'SAME END');
       // likewise, if the end nodes are the same we patch new onto old and
       // decrement our end indices, and also likewise in this case we don't
       // need to move any DOM Nodes.
@@ -381,6 +390,7 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
       oldEndVnode = oldCh[--oldEndIdx];
       newEndVnode = newCh[--newEndIdx];
     } else if (isSameVnode(oldStartVnode, newEndVnode)) {
+      console.log(prefix + 'OLD START AND NEW END IDENTICAL');
       // case: "Vnode moved right"
       //
       // We've found that the last node in our window on the new children is
@@ -396,6 +406,7 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
       // In this situation we need to patch `newEndVnode` onto `oldStartVnode`
       // and move the DOM element for `oldStartVnode`.
       if (BUILD.slotRelocation && (oldStartVnode.$tag$ === 'slot' || newEndVnode.$tag$ === 'slot')) {
+        console.log(prefix + 'updateChildren::putBackInOriginalLocation::1');
         putBackInOriginalLocation(oldStartVnode.$elm$.parentNode, false);
       }
       patch(oldStartVnode, newEndVnode);
@@ -420,6 +431,7 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
       oldStartVnode = oldCh[++oldStartIdx];
       newEndVnode = newCh[--newEndIdx];
     } else if (isSameVnode(oldEndVnode, newStartVnode)) {
+      console.log(prefix + 'OLD END AND NEW START IDENTICAL');
       // case: "Vnode moved left"
       //
       // We've found that the first node in our window on the new children is
@@ -436,6 +448,7 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
       // children etc) but we also need to move the DOM node to which
       // `oldEndVnode` corresponds.
       if (BUILD.slotRelocation && (oldStartVnode.$tag$ === 'slot' || newEndVnode.$tag$ === 'slot')) {
+        console.log(prefix + 'updateChildren::putBackInOriginalLocation::2');
         putBackInOriginalLocation(oldEndVnode.$elm$.parentNode, false);
       }
       patch(oldEndVnode, newStartVnode);
@@ -448,6 +461,7 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
       oldEndVnode = oldCh[--oldEndIdx];
       newStartVnode = newCh[++newStartIdx];
     } else {
+      console.log(prefix + 'ELSING IT');
       // Here we do some checks to match up old and new nodes based on the
       // `$key$` attribute, which is set by putting a `key="my-key"` attribute
       // in the JSX for a DOM element in the implementation of a Stencil
@@ -581,7 +595,12 @@ export const patch = (oldVNode: d.VNode, newVNode: d.VNode) => {
   const text = newVNode.$text$;
   let defaultHolder: Comment;
 
+  const prefix = `patch_${(Math.random() + 1).toString(36).substring(7)} `;
+
+  console.log(prefix + 'DESCEND INTO PATCH WHY NOT?');
+
   if (!BUILD.vdomText || text === null) {
+    console.log(prefix + 'TEXT, NOT NULL! tag:', tag);
     if (BUILD.svg) {
       // test if we're rendering an svg element, or still rendering nodes inside of one
       // only add this to the when the compiler sees we're using an svg somewhere
@@ -590,6 +609,7 @@ export const patch = (oldVNode: d.VNode, newVNode: d.VNode) => {
 
     if (BUILD.vdomAttribute || BUILD.reflect) {
       if (BUILD.slot && tag === 'slot') {
+        console.log(prefix + 'DO WE GO HERE? SHOULD WE? SLOT CLEANED UP 🧹');
         // minifier will clean this up
       } else {
         // either this is the first render of an element OR it's an update
@@ -620,12 +640,15 @@ export const patch = (oldVNode: d.VNode, newVNode: d.VNode) => {
       isSvgMode = false;
     }
   } else if (BUILD.vdomText && BUILD.slotRelocation && (defaultHolder = elm['s-cr'] as any)) {
+    console.log(prefix + 'OH WE WENT THERE! YEAH!');
     // this element has slotted content
     defaultHolder.parentNode.textContent = text;
   } else if (BUILD.vdomText && oldVNode.$text$ !== text) {
     // update the text content for the text only vnode
     // and also only if the text is different than before
     elm.data = text;
+  } else {
+    console.log(prefix + 'A BIG FAT ELSE, NO THANKS!');
   }
 };
 

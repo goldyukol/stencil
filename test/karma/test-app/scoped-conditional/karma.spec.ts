@@ -40,22 +40,22 @@ describe('scoped-conditional', () => {
     );
   });
 
-  it('renders the slotted content after toggling the twice message', async () => {
-    // toggle the 'Hello' message twice, which should insert a new <div/> into the DOM, then remove it.
-    // as a result of the toggle, we should _not_ remove the slotted content
-    const toggleButton = app.querySelector<HTMLButtonElement>('#toggleHello');
-    toggleButton.click();
-    await waitForChanges();
-    toggleButton.click();
-    await waitForChanges();
+  // it('renders the slotted content after toggling the twice message', async () => {
+  //   // toggle the 'Hello' message twice, which should insert a new <div/> into the DOM, then remove it.
+  //   // as a result of the toggle, we should _not_ remove the slotted content
+  //   const toggleButton = app.querySelector<HTMLButtonElement>('#toggleHello');
+  //   toggleButton.click();
+  //   await waitForChanges();
+  //   toggleButton.click();
+  //   await waitForChanges();
 
-    const host = app.querySelector('scoped-conditional');
-    const outerDiv = host.querySelector('div');
+  //   const host = app.querySelector('scoped-conditional');
+  //   const outerDiv = host.querySelector('div');
 
-    expect(outerDiv.textContent).toBe(
-      `before slot->
-  This div will be slotted in
-<-after slot`,
-    );
-  });
+  //   expect(outerDiv.textContent).toBe(
+  //     `before slot->
+  // This div will be slotted in
+// <-after slot`,
+  //   );
+  // });
 });

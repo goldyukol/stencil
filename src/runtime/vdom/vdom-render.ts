@@ -355,10 +355,15 @@ const updateChildren = (parentElm: d.RenderNode, oldCh: d.VNode[], newVNode: d.V
   let node: Node;
   let elmToMove: d.VNode;
 
-  const prefix = `updateChildren_{(Math.random() + 1).toString(36).substring(7)} `;
+  const prefix = `updateChildren_${(Math.random() + 1).toString(36).substring(7)} `;
 
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-    console.log(prefix + 'RECONCILING CHILDREN');
+    console.log(prefix + `RECONCILING ${oldCh.length}' OLD CHILDREN AND ${newCh.length} NEW CHILDREN`);
+        console.log(prefix + 'oldChildren');
+        vdomNodesPettyPrinter(oldCh);
+        console.log(prefix + 'newChildren');
+        vdomNodesPettyPrinter(newCh);
+
     if (oldStartVnode == null) {
       console.log(prefix + 'HEY NO 1');
       // VNode might have been moved left
@@ -579,6 +584,56 @@ const referenceNode = (node: d.RenderNode) => {
 
 const parentReferenceNode = (node: d.RenderNode) => (node['s-ol'] ? node['s-ol'] : node).parentNode;
 
+const vdomNodesPettyPrinter = (nodes: d.VNode[]) => {
+  for (const child of nodes) {
+    console.log(vdomNodePrettyPrinter(child));
+  }
+}
+
+
+
+const vdomNodePrettyPrinter = (node: d.VNode, prefix = ''): string => {
+  const out: string[] = [];
+
+  function addLine(line: string) {
+    out.push(prefix + line);
+  }
+
+  addLine(`____`)
+  addLine(`VDom Node ${node.$name$ ?? 'UNNAMED'}`);
+  // TODO might need adjustment
+  addLine(`tag: ${node.$tag$}`);
+  if (node.$key$) {
+    addLine(`key: ${node.$key$}`);
+  }
+  addLine(`flags: ${node.$flags$}`);
+
+  if (node.$elm$) {
+    addLine(`elm: ${node?.$elm$?.tagName || "NO TAGNAME"}`);
+  } else {
+    addLine(`elm: NONE`);
+  }
+
+  addLine(`text: ${node.$text$}`);
+
+  if (node.$attrs$) {
+    addLine('attrs:');
+    for (let [k, v] of Object.entries(node.$attrs$)) {
+      addLine(`  ${k}: ${v}`);
+    }
+  }
+
+  if (node.$children$ && node?.$children$?.length !== 0) {
+    addLine('children:');
+
+    for (const child of (node.$children$ ?? [])) {
+      addLine(vdomNodePrettyPrinter(child, '  '));
+    }
+  }
+
+  return out.join('\n');
+};
+
 /**
  * Handle reconciling an outdated VNode with a new one which corresponds to
  * it. This function handles flushing updates to the DOM and reconciling the
@@ -600,7 +655,7 @@ export const patch = (oldVNode: d.VNode, newVNode: d.VNode) => {
   console.log(prefix + 'DESCEND INTO PATCH WHY NOT?');
 
   if (!BUILD.vdomText || text === null) {
-    console.log(prefix + 'TEXT, NOT NULL! tag:', tag);
+    console.log(prefix + 'TEXT, NULL! tag:', tag);
     if (BUILD.svg) {
       // test if we're rendering an svg element, or still rendering nodes inside of one
       // only add this to the when the compiler sees we're using an svg somewhere
@@ -612,6 +667,7 @@ export const patch = (oldVNode: d.VNode, newVNode: d.VNode) => {
         console.log(prefix + 'DO WE GO HERE? SHOULD WE? SLOT CLEANED UP 🧹');
         // minifier will clean this up
       } else {
+        console.log(prefix + 'OK UPDATE THEN WHY NOT?');
         // either this is the first render of an element OR it's an update
         // AND we already know it's possible it could have changed
         // this updates the element's css classes, attrs, props, listeners, etc.
@@ -620,6 +676,14 @@ export const patch = (oldVNode: d.VNode, newVNode: d.VNode) => {
     }
 
     if (BUILD.updatable && oldChildren !== null && newChildren !== null) {
+      console.log(prefix + 'BUILD UPDATABLE! GOOD NEWS! also children');
+      if (tag !== null) {
+        console.log(prefix + 'AND TAG NOT NULL! NEAT!');
+        console.log(prefix + 'oldChildren');
+        vdomNodesPettyPrinter(oldChildren);
+        console.log(prefix + 'newChildren');
+        vdomNodesPettyPrinter(newChildren);
+      }
       // looks like there's child vnodes for both the old and new vnodes
       // so we need to call `updateChildren` to reconcile them
       updateChildren(elm, oldChildren, newVNode, newChildren);

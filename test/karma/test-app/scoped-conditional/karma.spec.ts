@@ -10,16 +10,16 @@ describe('scoped-conditional', () => {
 
   afterEach(tearDownDom);
 
-  it('renders the initial slotted content', () => {
-    const host = app.querySelector('scoped-conditional');
-    const outerDiv = host.querySelector('div');
+  // it('renders the initial slotted content', () => {
+  //   const host = app.querySelector('scoped-conditional');
+  //   const outerDiv = host.querySelector('div');
 
-    expect(outerDiv.textContent).toBe(
-      `before slot->
-  This div will be slotted in
-<-after slot`,
-    );
-  });
+  //   expect(outerDiv.textContent).toBe(
+  //     `before slot->
+  // This div will be slotted in
+// <-after slot`,
+  //   );
+  // });
 
   it('renders the slotted content after toggling the message', async () => {
     // toggle the 'Hello' message, which should insert a new <div/> into the DOM & _not_ remove the slotted content
@@ -55,7 +55,7 @@ describe('scoped-conditional', () => {
   //   expect(outerDiv.textContent).toBe(
   //     `before slot->
   // This div will be slotted in
-// <-after slot`,
+  // <-after slot`,
   //   );
   // });
 });

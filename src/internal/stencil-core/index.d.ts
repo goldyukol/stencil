@@ -30,6 +30,7 @@ export {
   Event,
   forceUpdate,
   Fragment,
+  FormInternals,
   getAssetPath,
   getElement,
   getMode,

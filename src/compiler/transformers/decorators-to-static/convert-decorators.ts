@@ -22,6 +22,7 @@ import { methodDecoratorsToStatic, validateMethods } from './method-decorator';
 import { propDecoratorsToStatic } from './prop-decorator';
 import { stateDecoratorsToStatic } from './state-decorator';
 import { watchDecoratorsToStatic } from './watch-decorator';
+import { formInternalsDecoratorsToStatic } from './form-internals-decorator';
 
 /**
  * Create a {@link ts.TransformerFactory} which will handle converting any
@@ -102,7 +103,7 @@ const visitClassDeclaration = (
   // create an array of all class members which are _not_ methods decorated
   // with a Stencil decorator. We do this here because we'll implement the
   // behavior specified for those decorated methods later on.
-  const filteredMethodsAndFields = removeStencilMethodDecorators(Array.from(classMembers), diagnostics);
+  let filteredMethodsAndFields = removeStencilMethodDecorators(Array.from(classMembers), diagnostics);
 
   // parser component decorator (Component)
   componentDecoratorToStatic(config, typeChecker, diagnostics, classNode, filteredMethodsAndFields, componentDecorator);
@@ -125,6 +126,12 @@ const visitClassDeclaration = (
     elementDecoratorsToStatic(diagnostics, decoratedMembers, typeChecker, filteredMethodsAndFields);
     watchDecoratorsToStatic(typeChecker, decoratedMembers, filteredMethodsAndFields);
     listenDecoratorsToStatic(diagnostics, typeChecker, decoratedMembers, filteredMethodsAndFields);
+    filteredMethodsAndFields = formInternalsDecoratorsToStatic(
+      diagnostics,
+      classNode,
+      decoratedMembers,
+      filteredMethodsAndFields,
+    );
   }
 
   // We call the `handleClassFields` method which handles transforming any

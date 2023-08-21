@@ -61,6 +61,17 @@ export interface ShadowRootOptions {
    * focusable part is given focus, and the shadow host is given any available `:focus` styling.
    */
   delegatesFocus?: boolean;
+
+  /**
+   * When set to `true` this component will be form-associated. See #TODO for
+   * documentation on how to build form-associated Stencil components that
+   * integrate into forms like native browser elements such as `<input>` and
+   * `<textarea>`.
+   *
+   * The {@link FormInternals} decorator allows for access to the
+   * `ElementInternals` object to modify the associated form.
+   */
+  formAssociated?: boolean;
 }
 
 export interface ModeStyles {
@@ -124,6 +135,10 @@ export interface EventOptions {
    * A Boolean value indicating whether or not the event can bubble across the boundary between the shadow DOM and the regular DOM.
    */
   composed?: boolean;
+}
+
+export interface FormInternalsDecorator {
+  (): PropertyDecorator;
 }
 
 export interface ListenDecorator {
@@ -203,6 +218,13 @@ export declare const Element: ElementDecorator;
  * https://stenciljs.com/docs/events
  */
 export declare const Event: EventDecorator;
+
+/**
+ * If the `formAssociated` option is set in the shadow DOM options passed to
+ * the `@Component()` decorator then this decorator may we used to get access
+ * to `ElementInternals` instance associated with the component.
+ */
+export declare const FormInternals: FormInternalsDecorator;
 
 /**
  * The `Listen()` decorator is for listening DOM events, including the ones

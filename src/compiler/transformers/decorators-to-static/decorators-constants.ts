@@ -5,6 +5,7 @@ export const STENCIL_DECORATORS = [
   'Component',
   'Element',
   'Event',
+  'FormInternals',
   'Listen',
   'Method',
   'Prop',
@@ -27,6 +28,7 @@ export const CLASS_DECORATORS_TO_REMOVE = ['Component'] as const satisfies reado
 export const MEMBER_DECORATORS_TO_REMOVE = [
   'Element',
   'Event',
+  'FormInternals',
   'Listen',
   'Method',
   'Prop',

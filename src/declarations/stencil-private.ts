@@ -600,26 +600,6 @@ export interface ComponentCompilerFeatures {
 export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
   assetsDirs: CompilerAssetDir[];
   componentClassName: string;
-  elementRef: string;
-  encapsulation: Encapsulation;
-  shadowDelegatesFocus: boolean;
-  excludeFromCollection: boolean;
-  isCollectionDependency: boolean;
-  docs: CompilerJsDoc;
-  jsFilePath: string;
-  sourceMapPath: string;
-  listeners: ComponentCompilerListener[];
-  events: ComponentCompilerEvent[];
-  methods: ComponentCompilerMethod[];
-  virtualProperties: ComponentCompilerVirtualProperty[];
-  properties: ComponentCompilerProperty[];
-  watchers: ComponentCompilerWatch[];
-  sourceFilePath: string;
-  states: ComponentCompilerState[];
-  styleDocs: CompilerStyleDoc[];
-  styles: StyleCompiler[];
-  tagName: string;
-  internal: boolean;
   /**
    * A list of web component tag names that are either:
    * - directly referenced in a Stencil component's JSX/h() function
@@ -640,6 +620,30 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
    * A list of web component tag names that the current component directly in their JSX/h() function
    */
   directDependents?: string[];
+  docs: CompilerJsDoc;
+  elementRef: string;
+  encapsulation: Encapsulation;
+  events: ComponentCompilerEvent[];
+  excludeFromCollection: boolean;
+  /**
+   * Whether or not the component is form-associated
+   */
+  // formAssociated: boolean;
+  internal: boolean;
+  isCollectionDependency: boolean;
+  jsFilePath: string;
+  listeners: ComponentCompilerListener[];
+  methods: ComponentCompilerMethod[];
+  properties: ComponentCompilerProperty[];
+  shadowDelegatesFocus: boolean;
+  sourceFilePath: string;
+  sourceMapPath: string;
+  states: ComponentCompilerState[];
+  styleDocs: CompilerStyleDoc[];
+  styles: StyleCompiler[];
+  tagName: string;
+  virtualProperties: ComponentCompilerVirtualProperty[];
+  watchers: ComponentCompilerWatch[];
 }
 
 /**

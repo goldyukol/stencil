@@ -53,6 +53,11 @@ export const componentDecoratorToStatic = (
       if (componentOptions.shadow.delegatesFocus === true) {
         newMembers.push(createStaticGetter('delegatesFocus', convertValueToLiteral(true)));
       }
+
+      // we only support building form-associated components with shadow DOM
+      if (componentOptions.shadow.formAssociated === true) {
+        newMembers.push(createStaticGetter('formAssociated', convertValueToLiteral(true)));
+      }
     }
   } else if (componentOptions.scoped) {
     newMembers.push(createStaticGetter('encapsulation', convertValueToLiteral('scoped')));

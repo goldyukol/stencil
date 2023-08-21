@@ -43,6 +43,10 @@ export const runTsProgram = async (
   const emittedDts: string[] = [];
   const emitCallback: ts.WriteFileCallback = (emitFilePath, data, _w, _e, tsSourceFiles) => {
     if (emitFilePath.endsWith('.js') || emitFilePath.endsWith('js.map')) {
+      if (emitFilePath.endsWith('my-component.js')) {
+        console.log(`found ${emitFilePath}`);
+        console.log(data);
+      }
       updateModule(config, compilerCtx, buildCtx, tsSourceFiles[0], data, emitFilePath, tsTypeChecker, null);
     } else if (
       emitFilePath.endsWith('.e2e.d.ts') ||

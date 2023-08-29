@@ -1,6 +1,11 @@
 import ts from 'typescript';
+
 import type * as d from '../../../declarations';
 
+/**
+ * TODO JSDoc
+ * @param cmp
+ */
 export function addFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
   if (cmp.formInternalsProp) {
     return [

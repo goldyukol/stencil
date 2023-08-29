@@ -2,6 +2,7 @@ import { buildError } from '@utils';
 import ts from 'typescript';
 
 import type * as d from '../../../declarations';
+import { FORM_INTERNALS_STATIC_PROP_NAME } from '../constants';
 import {
   convertValueToLiteral,
   createStaticGetter,
@@ -9,7 +10,6 @@ import {
   tsPropDeclNameAsString,
 } from '../transform-utils';
 import { isDecoratorNamed, updateConstructor } from './decorator-utils';
-import { FORM_INTERNALS_STATIC_PROP_NAME } from '../constants';
 
 /**
  * Convert the form internals decorator to static, saving the name of the decorated

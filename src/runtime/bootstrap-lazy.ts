@@ -95,6 +95,9 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
           super(self);
           self = this;
 
+          // TODO intervene here! We have statically the name we assigned (via
+          // `@FormInternals`) so let's bind it to an `attachInternals` call
+
           registerHost(self, cmpMeta);
           if (BUILD.shadowDom && cmpMeta.$flags$ & CMP_FLAGS.shadowDomEncapsulation) {
             // this component is using shadow dom

@@ -11,6 +11,7 @@ import { parseClassMethods } from './class-methods';
 import { parseStaticElementRef } from './element-ref';
 import { parseStaticEncapsulation, parseStaticShadowDelegatesFocus } from './encapsulation';
 import { parseStaticEvents } from './events';
+import { parseFormInternals } from './form-internals';
 import { parseStaticListeners } from './listeners';
 import { parseStaticMethods } from './methods';
 import { parseStaticProps } from './props';
@@ -18,7 +19,6 @@ import { parseStaticStates } from './states';
 import { parseStringLiteral } from './string-literal';
 import { parseStaticStyles } from './styles';
 import { parseStaticWatchers } from './watchers';
-import { parseFormInternals } from './form-internals';
 
 /**
  * Given an instance of TypeScript's Intermediate Representation (IR) for a

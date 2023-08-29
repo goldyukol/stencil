@@ -30,6 +30,7 @@ export const removeStaticMetaProperties = (classNode: ts.ClassDeclaration): ts.C
 /**
  * A list of the static getters to remove here, which is a subset of the total
  * set of static getters used by Stencil during the compilation process.
+ * TODO why is this a set???
  */
 const STATIC_GETTERS_TO_REMOVE = [
   'elementRef',

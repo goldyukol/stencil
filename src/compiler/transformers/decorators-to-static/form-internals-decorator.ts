@@ -2,12 +2,18 @@ import { buildError } from '@utils';
 import ts from 'typescript';
 
 import type * as d from '../../../declarations';
-import { createStaticGetter, retrieveTsDecorators, tsPropDeclNameAsString } from '../transform-utils';
+import {
+  convertValueToLiteral,
+  createStaticGetter,
+  retrieveTsDecorators,
+  tsPropDeclNameAsString,
+} from '../transform-utils';
 import { isDecoratorNamed, updateConstructor } from './decorator-utils';
+import { FORM_INTERNALS_STATIC_PROP_NAME } from '../constants';
 
 /**
- * Convert the form internals decorator to the static code which implements its
- * documented behavior.
+ * Convert the form internals decorator to static, saving the name of the decorated
+ * property so an `ElementInternals` object can be bound to it later on.
  *
  * The `@FormInternals` decorator is used to indicate a field on a class where
  * the return value of the `HTMLElement.attachInternals` method should be bound.
@@ -32,18 +38,15 @@ export const formInternalsDecoratorsToStatic = (
   decoratedMembers: ts.ClassElement[],
   newMembers: ts.ClassElement[],
 ) => {
-  const formInternalsMembers = decoratedMembers
-    .filter(ts.isPropertyDeclaration)
-    .filter(ts.isPropertyDeclaration)
-    .filter((prop) => {
-      return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('FormInternals'));
-    });
+  const formInternalsMembers = decoratedMembers.filter(ts.isPropertyDeclaration).filter((prop) => {
+    return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('FormInternals'));
+  });
 
   // no decorator fields, return!
   // TODO print a warning if the component was form-associated but no decorator
   // was found?
   if (formInternalsMembers.length === 0) {
-    return newMembers;
+    return;
   }
 
   // found too many!
@@ -56,22 +59,24 @@ export const formInternalsDecoratorsToStatic = (
 
   const name = tsPropDeclNameAsString(decoratedProp);
 
-  const newCtorStatements = [
-    ts.factory.createExpressionStatement(
-      ts.factory.createBinaryExpression(
-        ts.factory.createPropertyAccessExpression(ts.factory.createThis(), ts.factory.createIdentifier(name)),
-        ts.factory.createToken(ts.SyntaxKind.EqualsToken),
-        ts.factory.createCallExpression(
-          ts.factory.createPropertyAccessExpression(
-            ts.factory.createThis(),
-            ts.factory.createIdentifier('attachInternals'),
-          ),
-          undefined,
-          [],
-        ),
-      ),
-    ),
-  ];
+  newMembers.push(createStaticGetter(FORM_INTERNALS_STATIC_PROP_NAME, convertValueToLiteral(name)));
 
-  return updateConstructor(classNode, newMembers, newCtorStatements);
+  // const newCtorStatements = [
+  //   ts.factory.createExpressionStatement(
+  //     ts.factory.createBinaryExpression(
+  //       ts.factory.createPropertyAccessExpression(ts.factory.createThis(), ts.factory.createIdentifier(name)),
+  //       ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+  //       ts.factory.createCallExpression(
+  //         ts.factory.createPropertyAccessExpression(
+  //           ts.factory.createThis(),
+  //           ts.factory.createIdentifier('attachInternals'),
+  //         ),
+  //         undefined,
+  //         [],
+  //       ),
+  //     ),
+  //   ),
+  // ];
+
+  // return updateConstructor(classNode, newMembers, newCtorStatements);
 };

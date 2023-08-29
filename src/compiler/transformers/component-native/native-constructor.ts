@@ -2,7 +2,14 @@ import ts from 'typescript';
 
 import type * as d from '../../../declarations';
 import { addCreateEvents } from '../create-event';
+<<<<<<< HEAD
 import { updateConstructor } from '../transform-utils';
+||||||| parent of 81cf16291 (ok)
+import { retrieveTsModifiers } from '../transform-utils';
+=======
+import { retrieveTsModifiers } from '../transform-utils';
+import { addFormInternalsBinding } from './native-form-internals';
+>>>>>>> 81cf16291 (ok)
 
 /**
  * Updates a constructor to include:
@@ -24,13 +31,18 @@ export const updateNativeConstructor = (
   cmp: d.ComponentCompilerMeta,
   classNode: ts.ClassDeclaration,
 ): void => {
+  // TODO refactor this to use updateConstructor function instead
   if (cmp.isPlain) {
     return;
   }
 
-  const nativeCstrStatements = [...nativeInit(cmp), ...addCreateEvents(moduleFile, cmp)];
-
-  updateConstructor(classNode, classMembers, nativeCstrStatements);
+  let statements: ts.Statement[] = [
+    ...nativeInit(cmp),
+    ...addCreateEvents(moduleFile, cmp),
+    ...addFormInternalsBinding(cmp),
+    ...cstrBodyStatements,
+  ];
+  updateConstructor(classNode, classMembers, statements);
 };
 
 /**

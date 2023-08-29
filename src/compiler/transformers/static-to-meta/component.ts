@@ -18,6 +18,7 @@ import { parseStaticStates } from './states';
 import { parseStringLiteral } from './string-literal';
 import { parseStaticStyles } from './styles';
 import { parseStaticWatchers } from './watchers';
+import { parseFormInternals } from './form-internals';
 
 /**
  * Given an instance of TypeScript's Intermediate Representation (IR) for a
@@ -77,6 +78,7 @@ export const parseStaticComponentMeta = (
     jsFilePath: moduleFile.jsFilePath,
     sourceFilePath: moduleFile.sourceFilePath,
     sourceMapPath: moduleFile.sourceMapPath,
+    formInternalsProp: parseFormInternals(staticMembers),
 
     hasAttributeChangedCallbackFn: false,
     hasComponentWillLoadFn: false,
@@ -130,6 +132,9 @@ export const parseStaticComponentMeta = (
     isUpdateable: false,
     potentialCmpRefs: [],
   };
+
+  console.log('JUST STATIC TO META!');
+  console.log('formInternalsProp:', cmp.formInternalsProp);
 
   const visitComponentChildNode = (node: ts.Node) => {
     if (ts.isCallExpression(node)) {

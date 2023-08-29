@@ -528,7 +528,12 @@ export interface CompilerCtx {
 
 export type NodeMap = WeakMap<any, ComponentCompilerMeta>;
 
-/** Must be serializable to JSON!! */
+/**
+ * Record, for a specific component, whether or not it has various features
+ * which need to be handled correctly in the compilation pipeline.
+ *
+ * Note: this must be serializable to JSON.
+ */
 export interface ComponentCompilerFeatures {
   hasAttribute: boolean;
   hasAttributeChangedCallbackFn: boolean;
@@ -596,7 +601,11 @@ export interface ComponentCompilerFeatures {
   potentialCmpRefs: string[];
 }
 
-/** Must be serializable to JSON!! */
+/**
+ * Metadata about a given component
+ *
+ * Note: must be serializable to JSON!
+ */
 export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
   assetsDirs: CompilerAssetDir[];
   componentClassName: string;
@@ -635,6 +644,7 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
   listeners: ComponentCompilerListener[];
   methods: ComponentCompilerMethod[];
   properties: ComponentCompilerProperty[];
+  formInternalsProp: string | null;
   shadowDelegatesFocus: boolean;
   sourceFilePath: string;
   sourceMapPath: string;

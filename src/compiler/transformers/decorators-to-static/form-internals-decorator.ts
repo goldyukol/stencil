@@ -18,10 +18,13 @@ import { isDecoratorNamed, updateConstructor } from './decorator-utils';
  * **Note**: this function does not validate that the `formAssociated` option
  * was set in the `@Component` decorator.
  *
- * @param diagnostics
- * @param classNode
- * @param decoratedMembers
- * @param newMembers
+ * Additionally, this function will mutate the `newMembers` parameter in
+ * order to add new members to the class.
+ *
+ * @param diagnostics for reporting errors and warnings
+ * @param classNode the class node of interest
+ * @param decoratedMembers the decorated members found on the class
+ * @param newMembers an out param for new class members
  */
 export const formInternalsDecoratorsToStatic = (
   diagnostics: d.Diagnostic[],

@@ -1,5 +1,6 @@
 import { buildError } from '@utils';
 import ts from 'typescript';
+
 import type * as d from '../../../declarations';
 import { createStaticGetter, retrieveTsDecorators, tsPropDeclNameAsString } from '../transform-utils';
 import { isDecoratorNamed, updateConstructor } from './decorator-utils';
@@ -17,6 +18,10 @@ import { isDecoratorNamed, updateConstructor } from './decorator-utils';
  * **Note**: this function does not validate that the `formAssociated` option
  * was set in the `@Component` decorator.
  *
+ * @param diagnostics
+ * @param classNode
+ * @param decoratedMembers
+ * @param newMembers
  */
 export const formInternalsDecoratorsToStatic = (
   diagnostics: d.Diagnostic[],

@@ -17,12 +17,12 @@ import {
 } from './decorators-constants';
 import { elementDecoratorsToStatic } from './element-decorator';
 import { eventDecoratorsToStatic } from './event-decorator';
+import { formInternalsDecoratorsToStatic } from './form-internals-decorator';
 import { listenDecoratorsToStatic } from './listen-decorator';
 import { methodDecoratorsToStatic, validateMethods } from './method-decorator';
 import { propDecoratorsToStatic } from './prop-decorator';
 import { stateDecoratorsToStatic } from './state-decorator';
 import { watchDecoratorsToStatic } from './watch-decorator';
-import { formInternalsDecoratorsToStatic } from './form-internals-decorator';
 
 /**
  * Create a {@link ts.TransformerFactory} which will handle converting any

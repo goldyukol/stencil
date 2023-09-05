@@ -19,6 +19,7 @@ import { parseStaticStates } from './states';
 import { parseStringLiteral } from './string-literal';
 import { parseStaticStyles } from './styles';
 import { parseStaticWatchers } from './watchers';
+import { parseFormAssociated } from './form-associated'
 
 /**
  * Given an instance of TypeScript's Intermediate Representation (IR) for a
@@ -78,6 +79,7 @@ export const parseStaticComponentMeta = (
     jsFilePath: moduleFile.jsFilePath,
     sourceFilePath: moduleFile.sourceFilePath,
     sourceMapPath: moduleFile.sourceMapPath,
+    formAssociated: parseFormAssociated(staticMembers),
     formInternalsProp: parseFormInternals(staticMembers),
 
     hasAttributeChangedCallbackFn: false,

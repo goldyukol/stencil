@@ -7,12 +7,13 @@ import type * as d from '../../../declarations';
  * @param cmp
  */
 export function addFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
-  if (cmp.formInternalsProp) {
+  if (cmp.formAssociated && cmp.formInternalsProp) {
     return [
       ts.factory.createExpressionStatement(
         ts.factory.createBinaryExpression(
           ts.factory.createPropertyAccessExpression(
             ts.factory.createThis(),
+            // use the name set on the {@link d.ComponentCompilerMeta}
             ts.factory.createIdentifier(cmp.formInternalsProp),
           ),
           ts.factory.createToken(ts.SyntaxKind.EqualsToken),

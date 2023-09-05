@@ -116,6 +116,13 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
             } else if (!BUILD.hydrateServerSide && !('shadowRoot' in self)) {
               (self as any).shadowRoot = self;
             }
+
+            // check both that there is a form-associated component in the build (for
+            // tree-shaking)
+            if (BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
+              // TODO here I need to get the value of the formAssociatedProp from the
+              // ComponentCompilerMeta somehow
+            }
           }
         }
 
@@ -158,6 +165,10 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         if (BUILD.scopedSlotTextContentFix) {
           patchTextContent(HostElement.prototype, cmpMeta);
         }
+      }
+
+      if (BUILD.formAssociated) {
+        HostElement.formAssociated = true;
       }
 
       if (BUILD.hotModuleReplacement) {

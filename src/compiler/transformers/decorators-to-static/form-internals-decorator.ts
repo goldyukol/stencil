@@ -60,23 +60,4 @@ export const formInternalsDecoratorsToStatic = (
   const name = tsPropDeclNameAsString(decoratedProp);
 
   newMembers.push(createStaticGetter(FORM_INTERNALS_STATIC_PROP_NAME, convertValueToLiteral(name)));
-
-  // const newCtorStatements = [
-  //   ts.factory.createExpressionStatement(
-  //     ts.factory.createBinaryExpression(
-  //       ts.factory.createPropertyAccessExpression(ts.factory.createThis(), ts.factory.createIdentifier(name)),
-  //       ts.factory.createToken(ts.SyntaxKind.EqualsToken),
-  //       ts.factory.createCallExpression(
-  //         ts.factory.createPropertyAccessExpression(
-  //           ts.factory.createThis(),
-  //           ts.factory.createIdentifier('attachInternals'),
-  //         ),
-  //         undefined,
-  //         [],
-  //       ),
-  //     ),
-  //   ),
-  // ];
-
-  // return updateConstructor(classNode, newMembers, newCtorStatements);
 };

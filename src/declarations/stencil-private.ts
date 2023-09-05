@@ -74,11 +74,13 @@ export interface BuildFeatures {
   // encapsulation
   style: boolean;
   mode: boolean;
+  formAssociated: boolean;
 
   // dom
   shadowDom: boolean;
   shadowDelegatesFocus: boolean;
   scoped: boolean;
+
 
   // render
   /**
@@ -637,13 +639,20 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
   /**
    * Whether or not the component is form-associated
    */
-  // formAssociated: boolean;
+  formAssociated: boolean;
   internal: boolean;
   isCollectionDependency: boolean;
   jsFilePath: string;
   listeners: ComponentCompilerListener[];
   methods: ComponentCompilerMethod[];
   properties: ComponentCompilerProperty[];
+  /**
+   * The name to which an `ElementInternals` object (the return value of
+   * `HTMLElement.attachInternals`) should be attached at runtime. If this is
+   * `null` then the function should not be called.
+   *
+ * TODO is this the best name?
+   */
   formInternalsProp: string | null;
   shadowDelegatesFocus: boolean;
   sourceFilePath: string;

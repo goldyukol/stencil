@@ -9,6 +9,7 @@ export const enum MEMBER_FLAGS {
   Method = 1 << 6,
   Event = 1 << 7,
   Element = 1 << 8,
+  FormInternals = 1 << 11,
 
   ReflectAttr = 1 << 9,
   Mutable = 1 << 10,
@@ -106,9 +107,9 @@ export const enum CMP_FLAGS {
    */
   needsScopedEncapsulation = scopedCssEncapsulation | needsShadowDomShim,
   /**
-  * Determines if a component is form-associated or not. This is set based on
-  * options passed to the `@Component` decorator.
-  */
+   * Determines if a component is form-associated or not. This is set based on
+   * options passed to the `@Component` decorator.
+   */
   formAssociated = 1 << 6,
 }
 

@@ -1,6 +1,6 @@
 import { BUILD } from '@app-data';
 import { doc, getHostRef, plt, registerHost, supportsShadow, win } from '@platform';
-import { CMP_FLAGS, queryNonceMetaTagContent } from '@utils';
+import { CMP_FLAGS, MEMBER_FLAGS, queryNonceMetaTagContent } from '@utils';
 
 import type * as d from '../declarations';
 import { connectedCallback } from './connected-callback';
@@ -122,6 +122,15 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
             if (BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
               // TODO here I need to get the value of the formAssociatedProp from the
               // ComponentCompilerMeta somehow
+              const formInternalsMember = Object.entries(cmpMeta.$members$).find(
+                ([k, v]) => v[0] === MEMBER_FLAGS.FormInternals,
+              );
+
+              if (formInternalsMember) {
+                // key is the name to bind!
+                // @ts-ignore
+                self[formInternalsMember[0]] = self.attachInternals();
+              }
             }
           }
         }
@@ -168,7 +177,9 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
       }
 
       if (BUILD.formAssociated) {
-        HostElement.formAssociated = true;
+        // TODO what should I do here exactly?
+        // @ts-ignore
+        HostElement.prototype.formAssociated = true;
       }
 
       if (BUILD.hotModuleReplacement) {

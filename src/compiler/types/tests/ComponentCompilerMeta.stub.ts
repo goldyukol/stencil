@@ -21,6 +21,7 @@ export const stubComponentCompilerMeta = (
   encapsulation: 'none',
   events: [],
   excludeFromCollection: false,
+  formAssociated: false,
   formInternalsProp: null,
   hasAttribute: false,
   hasAttributeChangedCallbackFn: false,

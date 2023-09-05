@@ -88,6 +88,7 @@ const formatComponentRuntimeMembers = (
   return {
     ...formatPropertiesRuntimeMember(compilerMeta.properties),
     ...formatStatesRuntimeMember(compilerMeta.states),
+    ...formatFormInternalsRuntimeMember(compilerMeta),
     ...(includeMethods ? formatMethodsRuntimeMember(compilerMeta.methods) : {}),
   };
 };
@@ -191,6 +192,21 @@ const formatHostListeners = (compilerMeta: d.ComponentCompilerMeta) => {
     return hostListener;
   });
 };
+
+/**
+ * Format a component runtime member record corresponding to the values set in
+ * the `@FormInternals` decorator on the component.
+ * @param compilerMeta
+ */
+function formatFormInternalsRuntimeMember(compilerMeta: d.ComponentCompilerMeta): d.ComponentRuntimeMembers {
+  const runtimeMembers: d.ComponentRuntimeMembers = {};
+
+  if (compilerMeta.formAssociated && compilerMeta.formInternalsProp) {
+    runtimeMembers[compilerMeta.formInternalsProp] = [MEMBER_FLAGS.FormInternals];
+  }
+
+  return runtimeMembers;
+}
 
 const computeListenerFlags = (listener: d.ComponentCompilerListener) => {
   let flags = 0;

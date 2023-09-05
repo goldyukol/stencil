@@ -11,7 +11,7 @@ import { getStaticValue } from '../transform-utils';
 export const parseFormAssociated = (staticMembers: ts.ClassElement[]): boolean => {
   const isFormAssociated = getStaticValue(staticMembers, 'formAssociated');
 
-  if (typeof isFormAssociated === "boolean" && isFormAssociated) {
+  if (typeof isFormAssociated === 'boolean' && isFormAssociated) {
     return true;
   } else {
     return false;

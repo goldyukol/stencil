@@ -81,7 +81,6 @@ export interface BuildFeatures {
   shadowDelegatesFocus: boolean;
   scoped: boolean;
 
-
   // render
   /**
    * Every component has a render function
@@ -651,7 +650,7 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
    * `HTMLElement.attachInternals`) should be attached at runtime. If this is
    * `null` then the function should not be called.
    *
- * TODO is this the best name?
+   * TODO is this the best name?
    */
   formInternalsProp: string | null;
   shadowDelegatesFocus: boolean;

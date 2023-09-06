@@ -52,17 +52,6 @@ const updateLazyComponentMembers = (
 ): ts.ClassElement[] => {
   const classMembers = removeStaticMetaProperties(classNode);
 
-
-  classMembers.push(
-    ts.factory.createPropertyDeclaration(
-      undefined,
-      ts.factory.createIdentifier('test'),
-      undefined,
-      ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral('property')),
-      undefined,
-    ),
-  );
-
   updateLazyComponentConstructor(classMembers, classNode, moduleFile, cmp);
   addLazyElementGetter(classMembers, moduleFile, cmp);
   addWatchers(classMembers, cmp);

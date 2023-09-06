@@ -25,7 +25,6 @@ export const updateNativeConstructor = (
   cmp: d.ComponentCompilerMeta,
   classNode: ts.ClassDeclaration,
 ): void => {
-  // TODO refactor this to use updateConstructor function instead
   if (cmp.isPlain) {
     return;
   }

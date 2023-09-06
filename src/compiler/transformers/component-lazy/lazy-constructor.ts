@@ -25,9 +25,10 @@ export const updateLazyComponentConstructor = (
     ts.factory.createParameterDeclaration(undefined, undefined, ts.factory.createIdentifier(HOST_REF_ARG)),
   ];
 
-  const cstrStatements = [registerInstanceStatement(moduleFile), ...addCreateEvents(moduleFile, cmp)];
+  const cstrStatements = [registerInstanceStatement(moduleFile), ...addCreateEvents(moduleFile, cmp), ...createNativeFormInternalsBinding()];
 
   updateConstructor(classNode, classMembers, cstrStatements, cstrMethodArgs);
+
 };
 
 /**

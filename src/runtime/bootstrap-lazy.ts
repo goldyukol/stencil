@@ -160,14 +160,12 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         }
       }
 
-      if (BUILD.formAssociated) {
-        if (BUILD.shadowDom && BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
-          console.log('about to make form-associated');
-          Object.defineProperty(HostElement, 'formAssociated', {
-            writable: false,
-            value: true,
-          });
-        }
+      // TODO is this even necessary at all?
+      if (BUILD.shadowDom && BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
+        Object.defineProperty(HostElement, 'formAssociated', {
+          writable: false,
+          value: true,
+        });
       }
 
       if (BUILD.hotModuleReplacement) {

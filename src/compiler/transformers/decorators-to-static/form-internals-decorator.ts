@@ -60,40 +60,9 @@ export const formInternalsDecoratorsToStatic = (
 
   // TODO do we fully need this? Probalby we do for bootstrapLazy?
   newMembers.push(createStaticGetter('formInternalsProp', convertValueToLiteral(name)));
-
-  const formInternalsBinding = createFormInternalsBinding(name);
-  updateConstructor(classNode, newMembers, [formInternalsBinding]);
 };
 
 const factory = ts.factory;
-
-/**
- * TODO JSDoc
- * @param cmp
- */
-export function createFormInternalsBinding(name: string): ts.ExpressionStatement {
-  return ts.factory.createExpressionStatement(
-    ts.factory.createBinaryExpression(
-      ts.factory.createPropertyAccessExpression(ts.factory.createThis(), ts.factory.createIdentifier(name)),
-      ts.factory.createToken(ts.SyntaxKind.EqualsToken),
-
-      factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createPropertyAccessExpression(
-            factory.createPropertyAccessExpression(
-              factory.createIdentifier('HTMLElement'),
-              factory.createIdentifier('prototype'),
-            ),
-            factory.createIdentifier('attachInternals'),
-          ),
-          factory.createIdentifier('call'),
-        ),
-        undefined,
-        [factory.createIdentifier('hostRef')],
-      ),
-    ),
-  );
-}
 
 // [
 //   factory.createExpressionStatement(factory.createCallExpression(

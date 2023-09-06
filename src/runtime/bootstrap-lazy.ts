@@ -115,29 +115,6 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
             } else if (!BUILD.hydrateServerSide && !('shadowRoot' in self)) {
               (self as any).shadowRoot = self;
             }
-
-            // check both that there is a form-associated component in the build (for
-            // tree-shaking)
-            // if (BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
-              // TODO here I need to get the value of the formAssociatedProp from the
-              // ComponentCompilerMeta somehow
-              const formInternalsMember = Object.entries(cmpMeta.$members$).find(
-                ([k, v]) => v[0] === MEMBER_FLAGS.FormInternals,
-              );
-
-              if (formInternalsMember) {
-                // key is the name to bind!
-                console.log('about to attach!');
-                // @ts-ignore
-                console.log('is it associated?', self.formAssociated);
-                const internals = self.attachInternals();
-                console.log('internals:', internals);
-                console.log('name:',  formInternalsMember[0]);
-                // @ts-ignore
-                (self as unknown)[formInternalsMember[0]] = internals
-                console.log(self);
-              }
-            // }
           }
           console.log('constructor end');
         }

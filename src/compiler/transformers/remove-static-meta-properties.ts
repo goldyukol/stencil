@@ -47,4 +47,5 @@ const STATIC_GETTERS_TO_REMOVE = [
   'styleUrls',
   'styles',
   'watchers',
+  'formInternalsProp',
 ] as const satisfies readonly StencilStaticGetter[];

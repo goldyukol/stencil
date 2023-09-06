@@ -13,6 +13,7 @@ export const loadModule = (
   // loadModuleImport
   const exportName = cmpMeta.$tagName$.replace(/-/g, '_');
   const bundleId = cmpMeta.$lazyBundleId$;
+  console.log('loading with bundleId', bundleId);
   if (BUILD.isDev && typeof bundleId !== 'string') {
     consoleDevError(
       `Trying to lazily load component <${cmpMeta.$tagName$}> with style mode "${hostRef.$modeName$}", but it does not exist.`,

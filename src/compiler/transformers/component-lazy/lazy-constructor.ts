@@ -4,6 +4,7 @@ import type * as d from '../../../declarations';
 import { addCoreRuntimeApi, REGISTER_INSTANCE, RUNTIME_APIS } from '../core-runtime-apis';
 import { addCreateEvents } from '../create-event';
 import { updateConstructor } from '../transform-utils';
+import { createNativeFormInternalsBinding } from '../form-internals';
 
 /**
  * Update the constructor for a Stencil component's class in order to prepare

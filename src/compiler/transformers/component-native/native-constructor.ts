@@ -2,14 +2,8 @@ import ts from 'typescript';
 
 import type * as d from '../../../declarations';
 import { addCreateEvents } from '../create-event';
-<<<<<<< HEAD
-import { updateConstructor } from '../transform-utils';
-||||||| parent of 81cf16291 (ok)
-import { retrieveTsModifiers } from '../transform-utils';
-=======
-import { retrieveTsModifiers } from '../transform-utils';
-import { addFormInternalsBinding } from './native-form-internals';
->>>>>>> 81cf16291 (ok)
+import { updateConstructor, retrieveTsModifiers } from '../transform-utils';
+import { createNativeFormInternalsBinding } from '../form-internals';
 
 /**
  * Updates a constructor to include:
@@ -39,7 +33,7 @@ export const updateNativeConstructor = (
   let statements: ts.Statement[] = [
     ...nativeInit(cmp),
     ...addCreateEvents(moduleFile, cmp),
-    ...addFormInternalsBinding(cmp),
+    ...createNativeFormInternalsBinding(cmp),
     ...cstrBodyStatements,
   ];
   updateConstructor(classNode, classMembers, statements);

@@ -66,6 +66,8 @@ export const STATIC_GETTER_NAMES = [
   'styleUrls',
   'styles',
   'watchers',
+  'formAssociated',
+  'formInternalsProp',
 ] as const;
 
 export type StencilStaticGetter = (typeof STATIC_GETTER_NAMES)[number];

@@ -1,6 +1,5 @@
 import ts from 'typescript';
 
-import { FORM_INTERNALS_STATIC_PROP_NAME } from '../constants';
 import { getStaticValue } from '../transform-utils';
 
 /**
@@ -9,7 +8,7 @@ import { getStaticValue } from '../transform-utils';
  * @param staticMembers
  */
 export const parseFormInternals = (staticMembers: ts.ClassElement[]): string | null => {
-  const parsedFormInternalsPropName = getStaticValue(staticMembers, FORM_INTERNALS_STATIC_PROP_NAME);
+  const parsedFormInternalsPropName = getStaticValue(staticMembers, 'formInternalsProp');
   if (parsedFormInternalsPropName) {
     return parsedFormInternalsPropName;
   } else {

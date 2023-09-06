@@ -1,12 +1,12 @@
 import ts from 'typescript';
 
-import type * as d from '../../../declarations';
+import type * as d from '@stencil/core/declarations';
 
 /**
  * TODO JSDoc
  * @param cmp
  */
-export function addFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
+export function createFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
   if (cmp.formAssociated && cmp.formInternalsProp) {
     return [
       ts.factory.createExpressionStatement(

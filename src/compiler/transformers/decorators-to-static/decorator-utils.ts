@@ -106,10 +106,9 @@ export const updateConstructor = (
       statements = [createConstructorBodyWithSuper(), ...statements];
     }
 
-    classMembers = [
+    classMembers.unshift(
       ts.factory.createConstructorDeclaration(undefined, [], ts.factory.createBlock(statements, true)),
-      ...classMembers,
-    ];
+    );
   }
 
   return classMembers;

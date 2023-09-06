@@ -91,12 +91,10 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
 
         // StencilLazyHost
         constructor(self: HTMLElement) {
+          console.log('constructor start');
           // @ts-ignore
           super(self);
           self = this;
-
-          // TODO intervene here! We have statically the name we assigned (via
-          // `@FormInternals`) so let's bind it to an `attachInternals` call
 
           registerHost(self, cmpMeta);
           if (BUILD.shadowDom && cmpMeta.$flags$ & CMP_FLAGS.shadowDomEncapsulation) {
@@ -128,11 +126,13 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
 
               if (formInternalsMember) {
                 // key is the name to bind!
-                // @ts-ignore
-                self[formInternalsMember[0]] = self.attachInternals();
+                console.log('about to attach!');
+                (self as unknown)[formInternalsMember[0]] = self.attachInternals();
+                console.log(self);
               }
             }
           }
+          console.log('constructor end');
         }
 
         connectedCallback() {

@@ -85,6 +85,7 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         BUILD.transformTagName && options.transformTagName
           ? options.transformTagName(cmpMeta.$tagName$)
           : cmpMeta.$tagName$;
+
       const HostElement = class extends HTMLElement {
         ['s-p']: Promise<void>[];
         ['s-rc']: (() => void)[];
@@ -117,7 +118,7 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
 
             // check both that there is a form-associated component in the build (for
             // tree-shaking)
-            if (BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
+            // if (BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
               // TODO here I need to get the value of the formAssociatedProp from the
               // ComponentCompilerMeta somehow
               const formInternalsMember = Object.entries(cmpMeta.$members$).find(
@@ -127,10 +128,16 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
               if (formInternalsMember) {
                 // key is the name to bind!
                 console.log('about to attach!');
-                (self as unknown)[formInternalsMember[0]] = self.attachInternals();
+                // @ts-ignore
+                console.log('is it associated?', self.formAssociated);
+                const internals = self.attachInternals();
+                console.log('internals:', internals);
+                console.log('name:',  formInternalsMember[0]);
+                // @ts-ignore
+                (self as unknown)[formInternalsMember[0]] = internals
                 console.log(self);
               }
-            }
+            // }
           }
           console.log('constructor end');
         }
@@ -177,9 +184,13 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
       }
 
       if (BUILD.formAssociated) {
-        // TODO what should I do here exactly?
-        // @ts-ignore
-        HostElement.prototype.formAssociated = true;
+        if (BUILD.shadowDom && BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
+          console.log('about to make form-associated');
+          Object.defineProperty(HostElement, 'formAssociated', {
+            writable: false,
+            value: true,
+          });
+        }
       }
 
       if (BUILD.hotModuleReplacement) {

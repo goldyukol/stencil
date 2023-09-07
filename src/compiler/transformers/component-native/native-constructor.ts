@@ -2,7 +2,7 @@ import ts from 'typescript';
 
 import type * as d from '../../../declarations';
 import { addCreateEvents } from '../create-event';
-import { updateConstructor, retrieveTsModifiers } from '../transform-utils';
+import { updateConstructor } from '../transform-utils';
 import { createNativeFormInternalsBinding } from './form-internals';
 
 /**

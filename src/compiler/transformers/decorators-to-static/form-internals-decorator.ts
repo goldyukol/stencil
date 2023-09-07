@@ -18,7 +18,7 @@ import { isDecoratorNamed } from './decorator-utils';
  * the return value of the `HTMLElement.attachInternals` method should be bound.
  * This then allows component authors to use that interface to make their
  * Stencil components rich participants in whatever `HTMLFormElement` instances
- * they find themselves inside in the future.
+ * they find themselves inside of in the future.
  *
  * **Note**: this function does not validate that the `formAssociated` option
  * was set in the `@Component` decorator.
@@ -58,19 +58,3 @@ export const formInternalsDecoratorsToStatic = (
 
   newMembers.push(createStaticGetter('formInternalsProp', convertValueToLiteral(name)));
 };
-
-const factory = ts.factory;
-
-// [
-//   factory.createExpressionStatement(factory.createCallExpression(
-//     factory.createPropertyAccessExpression(
-//       factory.createPropertyAccessExpression(
-//         factory.createIdentifier("HTMLElement"),
-//         factory.createIdentifier("prototype")
-//       ),
-//       factory.createIdentifier("attachInternals")
-//     ),
-//     undefined,
-//     []
-//   ))
-// ];

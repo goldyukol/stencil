@@ -21,8 +21,6 @@ export const proxyComponent = (
   cmpMeta: d.ComponentRuntimeMeta,
   flags: number,
 ): d.ComponentConstructor => {
-  console.log('going to proxy component:');
-  console.log(Cstr);
   if (BUILD.member && cmpMeta.$members$) {
     if (BUILD.watchCallback && Cstr.watchers) {
       cmpMeta.$watchers$ = Cstr.watchers;
@@ -191,9 +189,6 @@ export const proxyComponent = (
       );
     }
   }
-
-  console.log('done proxying component:');
-  console.log(Cstr);
 
   return Cstr;
 };

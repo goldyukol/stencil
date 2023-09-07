@@ -1,6 +1,6 @@
+import type * as d from '@stencil/core/declarations';
 import ts from 'typescript';
 
-import type * as d from '@stencil/core/declarations';
 import { HOST_REF_ARG } from './constants';
 
 /**

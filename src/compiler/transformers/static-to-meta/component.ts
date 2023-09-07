@@ -135,9 +135,6 @@ export const parseStaticComponentMeta = (
     potentialCmpRefs: [],
   };
 
-  console.log('JUST STATIC TO META!');
-  console.log('formInternalsProp:', cmp.formInternalsProp);
-
   const visitComponentChildNode = (node: ts.Node) => {
     if (ts.isCallExpression(node)) {
       parseCallExpression(cmp, node);

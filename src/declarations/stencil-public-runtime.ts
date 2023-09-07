@@ -221,8 +221,10 @@ export declare const Event: EventDecorator;
 
 /**
  * If the `formAssociated` option is set in the shadow DOM options passed to
- * the `@Component()` decorator then this decorator may we used to get access
+ * the `@Component()` decorator then this decorator may be used to get access
  * to `ElementInternals` instance associated with the component.
+ *
+ * TODO improve this docstring
  */
 export declare const FormInternals: FormInternalsDecorator;
 

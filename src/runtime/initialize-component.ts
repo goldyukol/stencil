@@ -27,7 +27,6 @@ export const initializeComponent = async (
   hmrVersionId?: string,
 ) => {
   let Cstr: any;
-  console.log('initializeComponent::elm::', elm);
   // initializeComponent
   if ((hostRef.$flags$ & HOST_FLAGS.hasInitializedComponent) === 0) {
     // Let the runtime know that the component has been initialized
@@ -38,8 +37,6 @@ export const initializeComponent = async (
       // request the component's implementation to be
       // wired up with the host element
       Cstr = loadModule(cmpMeta, hostRef, hmrVersionId);
-      console.log('we just loaded');
-      console.log('Cstr:', Cstr);
       if (Cstr.then) {
         // Await creates a micro-task avoid if possible
         const endLoad = uniqueTime(
@@ -75,8 +72,6 @@ export const initializeComponent = async (
       // construction in order to directly wire together the
       // host element and the lazy-loaded instance
       try {
-        console.log('about to do this crazy stuff');
-        console.log('calling with hostRef', hostRef);
         new (Cstr as any)(hostRef);
       } catch (e) {
         consoleError(e);

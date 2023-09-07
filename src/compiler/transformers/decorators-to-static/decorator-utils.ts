@@ -1,7 +1,7 @@
 import ts from 'typescript';
 
 import { objectLiteralToObjectMap, retrieveTsModifiers } from '../transform-utils';
-import type { StencilDecorator } from './decorators-constants';
+import { StencilDecorator } from './decorators-constants';
 
 export const getDecoratorParameters: GetDecoratorParameters = (
   decorator: ts.Decorator,

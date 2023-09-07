@@ -1,6 +1,6 @@
 import { BUILD } from '@app-data';
 import { doc, getHostRef, plt, registerHost, supportsShadow, win } from '@platform';
-import { CMP_FLAGS, MEMBER_FLAGS, queryNonceMetaTagContent } from '@utils';
+import { CMP_FLAGS, queryNonceMetaTagContent } from '@utils';
 
 import type * as d from '../declarations';
 import { connectedCallback } from './connected-callback';
@@ -85,14 +85,12 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         BUILD.transformTagName && options.transformTagName
           ? options.transformTagName(cmpMeta.$tagName$)
           : cmpMeta.$tagName$;
-
       const HostElement = class extends HTMLElement {
         ['s-p']: Promise<void>[];
         ['s-rc']: (() => void)[];
 
         // StencilLazyHost
         constructor(self: HTMLElement) {
-          console.log('constructor start');
           // @ts-ignore
           super(self);
           self = this;
@@ -116,7 +114,6 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
               (self as any).shadowRoot = self;
             }
           }
-          console.log('constructor end');
         }
 
         connectedCallback() {

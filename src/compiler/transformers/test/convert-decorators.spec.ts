@@ -395,6 +395,28 @@ describe('convert-decorators', () => {
     );
   });
 
+  it('should set formAssociated', async () => {
+     const t = transpileModule(`
+    @Component({
+      tag: 'cmp-a',
+      formAssociated: true
+    })
+    export class CmpA {
+    }
+    `);
+    // we test the whole output here to ensure that the field has been
+    // removed from the class body correctly and replaced with an initializer
+    // in the constructor
+    expect(await formatCode(t.outputText)).toBe(
+      await c`export class CmpA {
+        static get is() {
+          return "cmp-a";
+        }
+      }`
+    );
+
+  });
+
   describe('filterDecorators', () => {
     it.each<ReadonlyArray<ReadonlyArray<string>>>([[[]], [['ExcludedDecorator']]])(
       'returns undefined when no decorators are provided',

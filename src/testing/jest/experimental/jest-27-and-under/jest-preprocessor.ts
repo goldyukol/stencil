@@ -59,6 +59,7 @@ export const jestPreprocessor = {
     jestConfig: Jest26Config | Jest27TransformOptions,
     transformOptions?: Jest26Config,
   ): string {
+    console.log(`hello ryan27`)
     // TODO(STENCIL-306): Drop support for versions of Jest <27
     /**
      * As of Jest 27, `jestConfig` changes its shape (as it's been moved into `transformOptions`). To preserve

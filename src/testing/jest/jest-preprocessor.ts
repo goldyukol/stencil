@@ -1,4 +1,5 @@
 import { getJestMajorVersion } from './jest-version';
+import {jestPreprocessor27, jestPreprocessor28} from "../index";
 
 // TODO(STENCIL-306): Remove support for earlier versions of Jest
 type Jest26Config = { instrument: boolean; rootDir: string };
@@ -30,12 +31,14 @@ export const jestPreprocessor = {
     jestConfig: Jest26Config | Jest27TransformOptions,
     transformOptions?: Jest26Config
   ): string {
+    console.log(`hello ryan`)
     const jestVersion = getJestMajorVersion();
     if (jestVersion <= 27) {
-      const { process } = require('./experimental/jest-27-and-under/jest-preprocessor');
+      const { process } = jestPreprocessor27
       return process(sourceText, sourcePath, jestConfig, transformOptions);
     } else if (jestVersion === 28) {
-      const { process } = require('./experimental/jest-28/jest-preprocessor');
+      const { process } = jestPreprocessor28
+      // @ts-expect-error
       return process(sourceText, sourcePath, jestConfig, transformOptions);
     } else {
       throw new Error('Not implemented!');

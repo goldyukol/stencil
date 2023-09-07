@@ -8,7 +8,7 @@ import {
   retrieveTsDecorators,
   tsPropDeclNameAsString,
 } from '../transform-utils';
-import { isDecoratorNamed, updateConstructor } from './decorator-utils';
+import { isDecoratorNamed } from './decorator-utils';
 
 /**
  * Convert the form internals decorator to static, saving the name of the decorated
@@ -27,13 +27,11 @@ import { isDecoratorNamed, updateConstructor } from './decorator-utils';
  * order to add new members to the class.
  *
  * @param diagnostics for reporting errors and warnings
- * @param classNode the class node of interest
  * @param decoratedMembers the decorated members found on the class
  * @param newMembers an out param for new class members
  */
 export const formInternalsDecoratorsToStatic = (
   diagnostics: d.Diagnostic[],
-  classNode: ts.ClassDeclaration,
   decoratedMembers: ts.ClassElement[],
   newMembers: ts.ClassElement[],
 ) => {
@@ -58,7 +56,6 @@ export const formInternalsDecoratorsToStatic = (
 
   const name = tsPropDeclNameAsString(decoratedProp);
 
-  // TODO do we fully need this? Probalby we do for bootstrapLazy?
   newMembers.push(createStaticGetter('formInternalsProp', convertValueToLiteral(name)));
 };
 

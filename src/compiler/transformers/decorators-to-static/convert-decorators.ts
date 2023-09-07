@@ -126,7 +126,7 @@ const visitClassDeclaration = (
     elementDecoratorsToStatic(diagnostics, decoratedMembers, typeChecker, filteredMethodsAndFields);
     watchDecoratorsToStatic(typeChecker, decoratedMembers, filteredMethodsAndFields);
     listenDecoratorsToStatic(diagnostics, typeChecker, decoratedMembers, filteredMethodsAndFields);
-    formInternalsDecoratorsToStatic(diagnostics, classNode, decoratedMembers, filteredMethodsAndFields);
+    formInternalsDecoratorsToStatic(diagnostics, decoratedMembers, filteredMethodsAndFields);
   }
 
   // We call the `handleClassFields` method which handles transforming any

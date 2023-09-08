@@ -1,16 +1,16 @@
 import type { E2EProcessEnv, JestEnvironmentGlobal } from '@stencil/core/internal';
 
-import { connectBrowser, disconnectBrowser, newBrowserPage } from '../puppeteer/puppeteer-browser';
+import { connectBrowser, disconnectBrowser, newBrowserPage } from '../../../puppeteer/puppeteer-browser';
 
-export function createJestPuppeteerEnvironmentTodoRmThis() {
-  const NodeEnvironment = require('jest-environment-node');
-  const JestEnvironment = class extends (NodeEnvironment as any) {
+export function createJestPuppeteerEnvironment() {
+  const NodeEnvironment = require('jest-environment-node').TestEnvironment;
+  const JestEnvironment = class extends (NodeEnvironment) {
     global: JestEnvironmentGlobal;
     browser: any = null;
     pages: any[] = [];
 
-    constructor(config: any) {
-      super(config);
+    constructor(config: any, context: any) {
+      super(config, context);
     }
 
     async setup() {

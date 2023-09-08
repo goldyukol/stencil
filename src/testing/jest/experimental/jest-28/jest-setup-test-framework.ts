@@ -62,15 +62,16 @@ export function jestSetupTestFramework() {
     global.resourcesUrl = '/build';
   });
 
+  // TODO(NOW): Add this back for jest-circus
   // TODO(STENCIL-307): Remove usage of the Jasmine global
-  const jasmineEnv = (jasmine as any).getEnv();
-  if (jasmineEnv != null) {
-    jasmineEnv.addReporter({
-      specStarted: (spec: any) => {
-        global.currentSpec = spec;
-      },
-    });
-  }
+  // const jasmineEnv = (jasmine as any).getEnv();
+  // if (jasmineEnv != null) {
+  //   jasmineEnv.addReporter({
+  //     specStarted: (spec: any) => {
+  //       global.currentSpec = spec;
+  //     },
+  //   });
+  // }
 
   global.screenshotDescriptions = new Set();
 
@@ -82,7 +83,7 @@ export function jestSetupTestFramework() {
     jest.setTimeout(time * 1.5);
     // TODO(STENCIL-307): Remove usage of the Jasmine global
     // eslint-disable-next-line jest/no-jasmine-globals -- these will be removed when we migrate to jest-circus
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = time;
+    // jasmine.DEFAULT_TIMEOUT_INTERVAL = time;
   }
   if (typeof env.__STENCIL_ENV__ === 'string') {
     const stencilEnv = JSON.parse(env.__STENCIL_ENV__);

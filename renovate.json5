@@ -1,5 +1,6 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  // TODO(NOW): If you move fwd with pkg roots, setup renovate to not bump each dir to the latest
   /**
    * Documentation: https://docs.renovatebot.com/configuration-options
    *

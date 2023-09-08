@@ -5,7 +5,7 @@ import {jestPreprocessor27, jestPreprocessor28} from "../index";
 type Jest26Config = { instrument: boolean; rootDir: string };
 type Jest27TransformOptions = { config: Jest26Config };
 
-export const jestPreprocessor = {
+export const jestPreprocessorTodoRemove = {
   /**
    * Transforms a file to CommonJS to be used by Jest. The API for `process` is described in the
    * ["Writing custom transformers"](https://jestjs.io/docs/code-transformation#writing-custom-transformers)

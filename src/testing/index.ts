@@ -3,8 +3,10 @@ export { createJestPuppeteerEnvironment } from './jest/jest-environment';
 export { jestPreprocessor as jestPreprocessor27 } from './jest/experimental/jest-27-and-under/jest-preprocessor';
 export { jestPreprocessor as jestPreprocessor28 } from './jest/experimental/jest-28/jest-preprocessor';
 export { createTestRunner } from './jest/jest-runner';
+export { getJestMajorVersion } from './jest/jest-version';
 // TODO(NOW): Which to export
 export { jestSetupTestFramework as jestSetupTestFramework27 } from './jest/experimental/jest-27-and-under/jest-setup-test-framework';
+export { jestSetupTestFramework as jestSetupTestFramework28 } from './jest/experimental/jest-27-and-under/jest-setup-test-framework';
 export {
   mockFetch,
   MockHeaders,

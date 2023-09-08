@@ -44,7 +44,7 @@ export const jestPreprocessor = {
     sourceText: string,
     sourcePath: string,
     jestConfig: Jest27TransformOptions // TODO(NOW): Fix naming, jsdoc
-  ): string {
+  ): { code: string } {
     const transformOptions = jestConfig.config;
 
     if (shouldTransform(sourcePath, sourceText)) {
@@ -72,10 +72,10 @@ export const jestPreprocessor = {
         throw new Error(msg);
       }
 
-      return results.code;
+      return {code: results.code };
     }
 
-    return sourceText;
+    return {code: sourceText};
   },
 
   /**

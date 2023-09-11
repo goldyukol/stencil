@@ -9,7 +9,6 @@ export const enum MEMBER_FLAGS {
   Method = 1 << 6,
   Event = 1 << 7,
   Element = 1 << 8,
-  FormInternals = 1 << 11,
 
   ReflectAttr = 1 << 9,
   Mutable = 1 << 10,

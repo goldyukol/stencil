@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 
 import { filterDecorators } from '../decorators-to-static/convert-decorators';
 import { getStaticGetter, transpileModule } from './transpile';
-import { c,formatCode } from './utils';
+import { c, formatCode } from './utils';
 
 describe('convert-decorators', () => {
   it('should convert `@Prop` class fields to properties', async () => {

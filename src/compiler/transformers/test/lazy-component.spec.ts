@@ -62,4 +62,33 @@ describe('lazy-component', () => {
     expect(t.outputText).toContain(`get el() { return __stencil_getElement(this); } };`);
     expect(t.outputText).not.toContain(`el;`);
   });
+
+  it('adds an `attachInternals` call with a `@FormInternals` decoration', () => {
+    const compilerCtx = mockCompilerCtx();
+    const transformOpts: d.TransformOptions = {
+      coreImportPath: '@stencil/core',
+      componentExport: 'lazy',
+      componentMetadata: null,
+      currentDirectory: '/',
+      proxy: null,
+      style: 'static',
+      styleImportData: null,
+    };
+
+    const code = `
+      @Component({
+        tag: 'cmp-a',
+        shadow: { formAssociated: true }
+      })
+      export class CmpA {
+        @FormInternals() internals: ElementInternals;
+      }
+    `;
+
+    const transformer = lazyComponentTransform(compilerCtx, transformOpts);
+
+    const t = transpileModule(code, null, compilerCtx, [], [transformer]);
+
+    expect(t.outputText).toContain(`this.internals = hostRef.$hostElement$.attachInternals()`);
+  });
 });

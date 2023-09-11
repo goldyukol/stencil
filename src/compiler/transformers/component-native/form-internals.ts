@@ -15,7 +15,6 @@ import ts from 'typescript';
  * @returns an expression statement syntax tree node
  */
 export function createNativeFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
-  console.log(cmp);
   if (cmp.formAssociated && cmp.formInternalsProp) {
     return [
       ts.factory.createExpressionStatement(

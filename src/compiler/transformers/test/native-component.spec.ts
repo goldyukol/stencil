@@ -127,17 +127,19 @@ describe('nativeComponentTransform', () => {
 
       expect(await formatCode(transpiledModule.outputText)).toContain(
         await c`const CmpA = class extends HTMLElement {
+          constructor() {
+            super();
+            this.__registerHost();
+            this.__attachShadow();
+          }
           static get formAssociated() {
             return true;
-          }
-          static get is() {
-            return 'cmp-a';
           }
         }`,
       );
     });
 
-    it.only('adds a binding for @FormInternals', async () => {
+    it('adds a binding for @FormInternals', async () => {
       const code = `
         @Component({
           tag: 'cmp-a', shadow: { formAssociated: true }
@@ -150,20 +152,19 @@ describe('nativeComponentTransform', () => {
       const transformer = nativeComponentTransform(compilerCtx, transformOpts);
 
       const transpiledModule = transpileModule(code, null, compilerCtx, [], [transformer]);
-      console.log(compilerCtx.moduleMap);
-
-      console.log(transpiledModule.outputText);
-      // console.log(transpiledModule.collection);
 
       expect(await formatCode(transpiledModule.outputText)).toContain(
         await c`const CmpA = class extends HTMLElement {
+          constructor() {
+            super();
+            this.__registerHost();
+            this.__attachShadow();
+            this.internals = this.attachInternals();
+          }
           static get formAssociated() {
             return true;
           }
-          static get is() {
-            return 'cmp-a';
-          }
-        }`,
+        };`,
       );
     });
   });

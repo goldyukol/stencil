@@ -160,10 +160,6 @@ export const parseStaticComponentMeta = (
   // add to node map
   compilerCtx.nodeMap.set(cmpNode, cmp);
 
-  console.log('adding to thing');
-  console.log(cmp.formAssociated);
-  console.log(cmp.formInternalsProp);
-
   return cmpNode;
 };
 

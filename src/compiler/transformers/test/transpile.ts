@@ -108,10 +108,23 @@ export function transpileModule(
     styleImportData: 'queryparams',
   };
 
+  const collection: d.CollectionCompilerMeta = {
+    collectionName: 'test',
+    moduleId: 'test',
+    moduleFiles: [],
+    dependencies: [],
+    compiler: {
+      name: '',
+      version: '',
+      typescriptVersion: '',
+    },
+    bundles: [],
+  };
+
   tsProgram.emit(undefined, undefined, undefined, undefined, {
     before: [convertDecoratorsToStatic(config, buildCtx.diagnostics, tsTypeChecker, tsProgram), ...beforeTransformers],
     after: [
-      convertStaticToMeta(config, compilerCtx, buildCtx, tsTypeChecker, null, transformOpts),
+      convertStaticToMeta(config, compilerCtx, buildCtx, tsTypeChecker, collection, transformOpts),
       ...afterTransformers,
     ],
     afterDeclarations,
@@ -140,6 +153,7 @@ export function transpileModule(
     cmp,
     cmps,
     compilerCtx,
+    collection,
     componentClassName,
     declarationOutputText,
     diagnostics: buildCtx.diagnostics,

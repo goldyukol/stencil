@@ -3,6 +3,7 @@ import { mockCompilerCtx } from '@stencil/core/testing';
 
 import { nativeComponentTransform } from '../component-native/tranform-to-native-component';
 import { transpileModule } from './transpile';
+import { c, formatCode } from './utils';
 
 describe('nativeComponentTransform', () => {
   let compilerCtx: d.CompilerCtx;
@@ -21,6 +22,29 @@ describe('nativeComponentTransform', () => {
     };
   });
 
+  it('outputs a component extending HTMLElement', async () => {
+    const code = `
+    @Component({
+      tag: 'cmp-a',
+    })
+    export class CmpA {
+    }
+    `;
+
+    const transformer = nativeComponentTransform(compilerCtx, transformOpts);
+    const transpiledModule = transpileModule(code, null, compilerCtx, [], [transformer]);
+
+    expect(await formatCode(transpiledModule.outputText)).toBe(
+      await c`import { HTMLElement } from "@stencil/core";
+        const CmpA = class extends HTMLElement {
+          static get is() {
+            return 'cmp-a';
+          }
+        };
+        customElements.define("cmp-a", CmpA);`,
+    );
+  });
+
   describe('updateNativeComponentClass', () => {
     it("adds __attachShadow() calls when a component doesn't have a constructor", () => {
       const code = `
@@ -34,7 +58,6 @@ describe('nativeComponentTransform', () => {
         `;
 
       const transformer = nativeComponentTransform(compilerCtx, transformOpts);
-
       const transpiledModule = transpileModule(code, null, compilerCtx, [], [transformer]);
 
       expect(transpiledModule.outputText).toContain(
@@ -84,6 +107,64 @@ describe('nativeComponentTransform', () => {
 
       expect(transpiledModule.outputText).toContain(`get el() { return this; }`);
       expect(transpiledModule.outputText).not.toContain(`el;`);
+    });
+  });
+
+  describe('updateNativeConstructor', () => {
+    it('adds a getter for formAssociated', async () => {
+      const code = `
+        @Component({
+          tag: 'cmp-a', shadow: { formAssociated: true }
+        })
+        export class CmpA {
+        }
+      `;
+
+      const transformer = nativeComponentTransform(compilerCtx, transformOpts);
+
+      const transpiledModule = transpileModule(code, null, compilerCtx, [], [transformer]);
+      await formatCode(transpiledModule.outputText);
+
+      expect(await formatCode(transpiledModule.outputText)).toContain(
+        await c`const CmpA = class extends HTMLElement {
+          static get formAssociated() {
+            return true;
+          }
+          static get is() {
+            return 'cmp-a';
+          }
+        }`,
+      );
+    });
+
+    it.only('adds a binding for @FormInternals', async () => {
+      const code = `
+        @Component({
+          tag: 'cmp-a', shadow: { formAssociated: true }
+        })
+        export class CmpA {
+          @FormInternals() internals;
+        }
+      `;
+
+      const transformer = nativeComponentTransform(compilerCtx, transformOpts);
+
+      const transpiledModule = transpileModule(code, null, compilerCtx, [], [transformer]);
+      console.log(compilerCtx.moduleMap);
+
+      console.log(transpiledModule.outputText);
+      // console.log(transpiledModule.collection);
+
+      expect(await formatCode(transpiledModule.outputText)).toContain(
+        await c`const CmpA = class extends HTMLElement {
+          static get formAssociated() {
+            return true;
+          }
+          static get is() {
+            return 'cmp-a';
+          }
+        }`,
+      );
     });
   });
 });

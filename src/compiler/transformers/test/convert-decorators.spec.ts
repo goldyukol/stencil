@@ -1,22 +1,8 @@
 import * as ts from 'typescript';
 
 import { filterDecorators } from '../decorators-to-static/convert-decorators';
-import { transpileModule } from './transpile';
-import { formatCode } from './utils';
-
-/**
- * c for compact, c for class declaration, make of it what you will!
- *
- * a little util to take a multiline template literal and convert it to a
- * single line, with any whitespace substrings converting to single spaces.
- * this can help us compare with the output of `transpileModule`.
- *
- * @param strings an array of strings from a template literal
- * @returns a formatted string!
- */
-function c(strings: TemplateStringsArray) {
-  return formatCode(strings.join(''));
-}
+import { getStaticGetter, transpileModule } from './transpile';
+import { c,formatCode } from './utils';
 
 describe('convert-decorators', () => {
   it('should convert `@Prop` class fields to properties', async () => {
@@ -395,26 +381,31 @@ describe('convert-decorators', () => {
     );
   });
 
-  it('should set formAssociated', async () => {
-     const t = transpileModule(`
-    @Component({
-      tag: 'cmp-a',
-      formAssociated: true
-    })
-    export class CmpA {
+  it('should create formAssociated static getter', async () => {
+    const t = transpileModule(`
+     @Component({
+       tag: 'cmp-a',
+       shadow: { formAssociated: true },
+     })
+      export class CmpA {
     }
     `);
-    // we test the whole output here to ensure that the field has been
-    // removed from the class body correctly and replaced with an initializer
-    // in the constructor
-    expect(await formatCode(t.outputText)).toBe(
-      await c`export class CmpA {
-        static get is() {
-          return "cmp-a";
-        }
-      }`
-    );
 
+    expect(getStaticGetter(t.outputText, 'encapsulation')).toBe('shadow');
+    expect(getStaticGetter(t.outputText, 'formAssociated')).toBe(true);
+  });
+
+  it('should create formInternalsProp static getter', async () => {
+    const t = transpileModule(`
+     @Component({
+       tag: 'cmp-a',
+     })
+      export class CmpA {
+      @FormInternals()
+      formInternals;
+    }
+    `);
+    expect(getStaticGetter(t.outputText, 'formInternalsProp')).toBe('formInternals');
   });
 
   describe('filterDecorators', () => {

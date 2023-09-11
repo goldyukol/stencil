@@ -21,6 +21,8 @@ export const convertStaticToMeta = (
     let moduleFile: d.Module;
 
     const visitNode = (node: ts.Node): ts.VisitResult<ts.Node> => {
+      console.log('heyo!');
+      console.log('moduleFile:', moduleFile);
       if (ts.isClassDeclaration(node)) {
         return parseStaticComponentMeta(compilerCtx, typeChecker, node, moduleFile, transformOpts);
       } else if (ts.isImportDeclaration(node)) {

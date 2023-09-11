@@ -11,8 +11,7 @@ import { parseClassMethods } from './class-methods';
 import { parseStaticElementRef } from './element-ref';
 import { parseStaticEncapsulation, parseStaticShadowDelegatesFocus } from './encapsulation';
 import { parseStaticEvents } from './events';
-import { parseFormAssociated } from './form-associated';
-import { parseFormInternals } from './form-internals';
+import { parseFormAssociatedProperties } from './form-associated';
 import { parseStaticListeners } from './listeners';
 import { parseStaticMethods } from './methods';
 import { parseStaticProps } from './props';
@@ -79,8 +78,8 @@ export const parseStaticComponentMeta = (
     jsFilePath: moduleFile.jsFilePath,
     sourceFilePath: moduleFile.sourceFilePath,
     sourceMapPath: moduleFile.sourceMapPath,
-    formAssociated: parseFormAssociated(staticMembers),
-    formInternalsProp: parseFormInternals(staticMembers),
+
+    ...parseFormAssociatedProperties(staticMembers),
 
     hasAttributeChangedCallbackFn: false,
     hasComponentWillLoadFn: false,
@@ -160,6 +159,10 @@ export const parseStaticComponentMeta = (
 
   // add to node map
   compilerCtx.nodeMap.set(cmpNode, cmp);
+
+  console.log('adding to thing');
+  console.log(cmp.formAssociated);
+  console.log(cmp.formInternalsProp);
 
   return cmpNode;
 };

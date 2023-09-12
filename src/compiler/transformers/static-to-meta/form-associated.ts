@@ -19,7 +19,7 @@ const parseFormAssociated = (staticMembers: ts.ClassElement[]): boolean => {
 };
 
 /**
- * Parse the name of  form internals prop from a transformed Stencil compoment
+ * Parse the name of  form internals prop from a transformed Stencil component
  * if present
  *
  * @param staticMembers class members for the Stencil component of interest

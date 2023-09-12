@@ -16,21 +16,25 @@ abstract class JestFacade {
    * @returns the version of Jest.
    */
   static getVersion = (): string => {
-    throw 'not implemented';
+    return jestGetVersion();
   };
 
   // @ts-ignore let this be unused
   someRandoFunction = () => {
     throw 'not implemented';
   };
+
+  static getRunner = () => {
+    throw 'not implemented';
+  }
 }
 
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-class Jest27Facade extends JestFacade {
-  static override getVersion = (): string => {
-    return jestGetVersion();
-  };
+class Jest27StencilAdapter extends JestFacade {
+  static override getRunner() {
+
+  }
 }
 
 export const getVersion = (): string => {

@@ -1,7 +1,7 @@
 import type * as d from '@stencil/core/declarations';
 
 import { ConfigFlags, createConfigFlags } from '../../../../../cli/config-flags';
-import { getEmulateConfigs, includeTestFile } from '../../../jest-runner';
+import { getEmulateConfigs, includeTestFile } from '../jest-runner';
 
 describe('jest-runner', () => {
   it('should include for /path/prefix.spec.ts with --spec', () => {

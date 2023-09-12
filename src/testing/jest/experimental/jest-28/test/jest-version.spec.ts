@@ -1,5 +1,5 @@
-import * as JestFacade from '../jest-facade';
-import { getJestMajorVersion, getJestRunner, getTestingModuleNames } from '../jest-version';
+import * as JestFacade from '../../../jest-facade';
+import { getJestMajorVersion, getJestRunner, getTestingModuleNames } from '../../../jest-version';
 
 describe('jest-utils', () => {
   let getVersionSpy: jest.SpyInstance<

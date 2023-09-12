@@ -43,7 +43,7 @@ export const jestPreprocessor = {
   process(
     sourceText: string,
     sourcePath: string,
-    jestConfig: Jest27TransformOptions // TODO(NOW): Fix naming, jsdoc
+    jestConfig: Jest27TransformOptions, // TODO(NOW): Fix naming, jsdoc
   ): { code: string } {
     const transformOptions = jestConfig.config;
 
@@ -72,10 +72,10 @@ export const jestPreprocessor = {
         throw new Error(msg);
       }
 
-      return {code: results.code };
+      return { code: results.code };
     }
 
-    return {code: sourceText};
+    return { code: sourceText };
   },
 
   /**
@@ -97,7 +97,7 @@ export const jestPreprocessor = {
   getCacheKey(
     sourceText: string,
     sourcePath: string,
-    jestConfigStr: Jest27TransformOptions // TODO(NOW): FIx name and jsdoc
+    jestConfigStr: Jest27TransformOptions, // TODO(NOW): FIx name and jsdoc
   ): string {
     const transformOptions = jestConfigStr.config;
 
@@ -171,7 +171,7 @@ function getCompilerOptions(rootDir: string): ts.CompilerOptions | null {
     ts.sys,
     rootDir,
     undefined,
-    tsconfigFilePath
+    tsconfigFilePath,
   );
 
   _tsCompilerOptions = parseResult.options;

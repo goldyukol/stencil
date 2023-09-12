@@ -26,6 +26,7 @@ module.exports = {
     '^@stencil/core/testing$': path.join(testingDir, 'index.js'),
     '^@stencil/core$': path.join(internalDir, 'testing', 'index.js'),
   },
+  // TODO(NOW): Ensure this all works (items with testingDir in the generated path)
   setupFilesAfterEnv: [path.join(testingDir, 'jest-setuptestframework.js')],
   testEnvironment: path.join(testingDir, 'jest-environment.js'),
   testPathIgnorePatterns: ['/.cache', '/.stencil', '/.vscode', '/dist', '/node_modules', '/www'],

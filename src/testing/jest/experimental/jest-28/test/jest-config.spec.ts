@@ -3,9 +3,8 @@ import type * as d from '@stencil/core/declarations';
 import { mockValidatedConfig } from '@stencil/core/testing';
 import path from 'path';
 
-import { parseFlags } from '../../../cli/parse-flags';
-// TODO(NOW): Consider tests
-import { buildJestArgv } from '../experimental/jest-27-and-under/jest-config';
+import { parseFlags } from '../../../../../cli/parse-flags';
+import { buildJestArgv } from '../jest-config';
 
 describe('jest-config', () => {
   it('pass --maxWorkers=2 arg when --max-workers=2', () => {

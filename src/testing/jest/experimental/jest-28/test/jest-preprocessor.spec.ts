@@ -1,5 +1,4 @@
-// TODO(NOW)
-import { shouldTransform } from '../experimental/jest-27-and-under/jest-preprocessor';
+import { shouldTransform } from '../jest-preprocessor';
 
 describe('jest preprocessor', () => {
   it('shouldTransform', () => {

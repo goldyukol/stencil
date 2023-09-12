@@ -4,4 +4,3 @@ const jestVersion = testing['getJestMajorVersion']();
 const createJestPuppeteerEnvironment = `createJestPuppeteerEnvironment${jestVersion}`;
 
 module.exports = testing[createJestPuppeteerEnvironment]();
-

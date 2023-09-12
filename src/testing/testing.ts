@@ -13,11 +13,9 @@ import type {
 import { hasError } from '@utils';
 import type * as puppeteer from 'puppeteer';
 
-// TODO(NOW): Fix this abstraction
-import { runJest } from './jest/experimental/jest-28/jest-runner';
-import { runJestScreenshot } from './jest/experimental/jest-28/jest-screenshot';
 import { startPuppeteerBrowser } from './puppeteer/puppeteer-browser';
 import { getAppScriptUrl, getAppStyleUrl } from './testing-utils';
+import { getRunner, getScreenshot } from './jest/jest-facade';
 
 export const createTesting = async (config: ValidatedConfig): Promise<Testing> => {
   config = setupTestingConfig(config);
@@ -147,8 +145,10 @@ export const createTesting = async (config: ValidatedConfig): Promise<Testing> =
 
     try {
       if (doScreenshots) {
+        const { runJestScreenshot } = await getScreenshot();
         passed = await runJestScreenshot(config, env);
       } else {
+        const { runJest } = await getRunner();
         passed = await runJest(config, env);
       }
       config.logger.info('');

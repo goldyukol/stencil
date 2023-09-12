@@ -1,3 +1,4 @@
+import { getJestMajorVersion } from '@stencil/core/testing';
 import { getVersion as jestGetVersion } from 'jest';
 
 // Probably a good bit of over-engineering
@@ -24,18 +25,66 @@ abstract class JestFacade {
     throw 'not implemented';
   };
 
-  static getRunner = () => {
+  static getRunner = async (): Promise<any> => {
     throw 'not implemented';
-  }
+  };
+  static getScreenshot = async (): Promise<any> => {
+    throw 'not implemented';
+  };
 }
 
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class Jest27StencilAdapter extends JestFacade {
-  static override getRunner() {
-
+  static override async getRunner() {
+    return await import('./experimental/jest-27-and-under/jest-runner');
+  }
+  static override async getScreenshot() {
+    return await import('./experimental/jest-27-and-under/jest-screenshot');
   }
 }
+
+class Jest28StencilAdapter extends JestFacade {
+  static override async getRunner() {
+    return await import('./experimental/jest-28/jest-runner');
+  }
+  static override async getScreenshot() {
+    return await import('./experimental/jest-28/jest-screenshot');
+  }
+}
+
+export const getRunner = async () => {
+  // TODO(NOW): Cyclic deps
+  const majorVersion = getJestMajorVersion();
+  switch (majorVersion) {
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+      return await Jest27StencilAdapter.getRunner();
+    case 28:
+    case 29:
+      // TODO(29)
+      return await Jest28StencilAdapter.getRunner();
+    default:
+      throw new Error('TODO');
+  }
+};
+export const getScreenshot = async () => {
+  // TODO(NOW): Cyclic deps
+  const majorVersion = getJestMajorVersion();
+  switch (majorVersion) {
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+      return await Jest27StencilAdapter.getScreenshot();
+    case 28:
+    case 29:
+      // TODO(29)
+      return await Jest28StencilAdapter.getScreenshot();
+    default:
+      throw new Error('TODO');
+  }
+};
 
 export const getVersion = (): string => {
   return jestGetVersion();

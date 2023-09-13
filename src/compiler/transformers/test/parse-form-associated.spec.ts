@@ -31,7 +31,7 @@ describe('parse form associated', function () {
     expect(t.cmp.formInternalsProp).toBe('myProp');
   });
 
-  it('should not set formInternalsProp if not also formAssociated', async () => {
+  it('should error out the build if @FormInternals is used but not formAssociated', async () => {
     const t = transpileModule(`
     @Component({
       tag: 'cmp-a',
@@ -41,8 +41,14 @@ describe('parse form associated', function () {
       myProp;
     }
     `);
-    expect(t.cmp.formAssociated).toBe(false);
-    expect(t.cmp.formInternalsProp).toBe(null);
+    const [diagnostic] = t.diagnostics;
+    expect(diagnostic.level).toBe('error');
+    expect(diagnostic.type).toBe('build');
+    expect(diagnostic.header).toBe('Build Error');
+    expect(diagnostic.messageText).toBe(
+      `In order to use the @FormInternals() decorator to access ElementInternals a
+    component must set shadow.formAssociated to true.`,
+    );
   });
 
   it('should not set formInternalsProp or formAssociated if neither set', async () => {

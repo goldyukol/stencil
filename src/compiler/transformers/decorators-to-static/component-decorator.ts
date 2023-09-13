@@ -122,7 +122,7 @@ const validateComponent = (
     (typeof componentOptions.shadow === 'boolean' || !componentOptions?.shadow?.formAssociated)
   ) {
     const err = buildError(diagnostics);
-    err.messageText = `In order to use the @FormInternals() decorator to access ElementInternal a
+    err.messageText = `In order to use the @FormInternals() decorator to access ElementInternals a
     component must set shadow.formAssociated to true.`;
     augmentDiagnosticWithNode(err, formInternalsMembers[0]);
     return false;

@@ -62,4 +62,17 @@ describe('parse form associated', function () {
     expect(t.cmp!.formAssociated).toBe(false);
     expect(t.cmp!.formInternalsMemberName).toBe(null);
   });
+
+  it('should not set formInternalsMemberName or formAssociated if neither set and scoped', async () => {
+    const t = transpileModule(`
+    @Component({
+      tag: 'cmp-a',
+      scoped: true,
+    })
+    export class CmpA {
+    }
+    `);
+    expect(t.cmp!.formAssociated).toBe(false);
+    expect(t.cmp!.formInternalsMemberName).toBe(null);
+  });
 });

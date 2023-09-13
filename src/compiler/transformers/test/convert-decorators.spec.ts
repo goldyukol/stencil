@@ -395,7 +395,7 @@ describe('convert-decorators', () => {
     expect(getStaticGetter(t.outputText, 'formAssociated')).toBe(true);
   });
 
-  it('should create formInternalsProp static getter', async () => {
+  it('should create formInternalsMemberName static getter', async () => {
     const t = transpileModule(`
      @Component({
        tag: 'cmp-a',
@@ -405,7 +405,7 @@ describe('convert-decorators', () => {
       formInternals;
     }
     `);
-    expect(getStaticGetter(t.outputText, 'formInternalsProp')).toBe('formInternals');
+    expect(getStaticGetter(t.outputText, 'formInternalsMemberName')).toBe('formInternals');
   });
 
   describe('filterDecorators', () => {

@@ -22,9 +22,9 @@ const parseFormAssociated = (staticMembers: ts.ClassElement[]): boolean => {
  * @returns the parsed value, if present, else null
  */
 const parseFormInternals = (staticMembers: ts.ClassElement[]): string | null => {
-  const parsedFormInternalsPropName = getStaticValue(staticMembers, 'formInternalsMemberName');
-  if (parsedFormInternalsPropName && typeof parsedFormInternalsPropName === 'string') {
-    return parsedFormInternalsPropName;
+  const parsedFormInternalsMemberName = getStaticValue(staticMembers, 'formInternalsMemberName');
+  if (parsedFormInternalsMemberName && typeof parsedFormInternalsMemberName === 'string') {
+    return parsedFormInternalsMemberName;
   } else {
     return null;
   }
@@ -34,12 +34,12 @@ type FormAssociatedProperties = Pick<ComponentCompilerMeta, 'formAssociated' | '
 
 /**
  * Parse both of the static properties for form associated custom elements,
- * `formAssociated` and `formInternalsProp`, and return suitable values. In
+ * `formAssociated` and `formInternalsMemberName`, and return suitable values. In
  * particular, if `formAssociated` is not set to `true` in the `@Component`
- * decorator we should always return `null` for `formInternalsProp`.
+ * decorator we should always return `null` for `formInternalsMemberName`.
  *
  * @param staticMembers class members for the Stencil component of interest
- * @returns an object with `formAssociated` and `formInternalsProp` set on
+ * @returns an object with `formAssociated` and `formInternalsMemberName` set on
  * it
  */
 export const parseFormAssociatedProperties = (staticMembers: ts.ClassElement[]): FormAssociatedProperties => {

@@ -11,12 +11,12 @@ describe('parse form associated', function () {
     }
     `);
     expect(t.cmp!.formAssociated).toBe(true);
-    // the formInternalsProp should be null since the `@FormInternals` decorator
+    // the formInternalsMemberName should be null since the `@FormInternals` decorator
     // isn't used
     expect(t.cmp!.formInternalsMemberName).toBe(null);
   });
 
-  it('should set formInternalsProp and formAssociated when both set', async () => {
+  it('should set formInternalsMemberName and formAssociated when both set', async () => {
     const t = transpileModule(`
     @Component({
       tag: 'cmp-a',
@@ -51,7 +51,7 @@ describe('parse form associated', function () {
     );
   });
 
-  it('should not set formInternalsProp or formAssociated if neither set', async () => {
+  it('should not set formInternalsMemberName or formAssociated if neither set', async () => {
     const t = transpileModule(`
     @Component({
       tag: 'cmp-a',

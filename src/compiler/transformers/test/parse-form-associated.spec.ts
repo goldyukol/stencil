@@ -10,10 +10,10 @@ describe('parse form associated', function () {
     export class CmpA {
     }
     `);
-    expect(t.cmp.formAssociated).toBe(true);
+    expect(t.cmp!.formAssociated).toBe(true);
     // the formInternalsProp should be null since the `@FormInternals` decorator
     // isn't used
-    expect(t.cmp.formInternalsProp).toBe(null);
+    expect(t.cmp!.formInternalsProp).toBe(null);
   });
 
   it('should set formInternalsProp and formAssociated when both set', async () => {
@@ -27,8 +27,8 @@ describe('parse form associated', function () {
       myProp;
     }
     `);
-    expect(t.cmp.formAssociated).toBe(true);
-    expect(t.cmp.formInternalsProp).toBe('myProp');
+    expect(t.cmp!.formAssociated).toBe(true);
+    expect(t.cmp!.formInternalsProp).toBe('myProp');
   });
 
   it('should error out the build if @FormInternals is used but not formAssociated', async () => {
@@ -59,7 +59,7 @@ describe('parse form associated', function () {
     export class CmpA {
     }
     `);
-    expect(t.cmp.formAssociated).toBe(false);
-    expect(t.cmp.formInternalsProp).toBe(null);
+    expect(t.cmp!.formAssociated).toBe(false);
+    expect(t.cmp!.formInternalsProp).toBe(null);
   });
 });

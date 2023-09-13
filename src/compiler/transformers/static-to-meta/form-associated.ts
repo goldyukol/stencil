@@ -11,7 +11,7 @@ import { getStaticValue } from '../transform-utils';
  */
 const parseFormAssociated = (staticMembers: ts.ClassElement[]): boolean => {
   const isFormAssociated = getStaticValue(staticMembers, 'formAssociated');
-  return typeof isFormAssociated === "boolean" && isFormAssociated;
+  return typeof isFormAssociated === 'boolean' && isFormAssociated;
 };
 
 /**
@@ -23,7 +23,7 @@ const parseFormAssociated = (staticMembers: ts.ClassElement[]): boolean => {
  */
 const parseFormInternals = (staticMembers: ts.ClassElement[]): string | null => {
   const parsedFormInternalsPropName = getStaticValue(staticMembers, 'formInternalsMemberName');
-  if (parsedFormInternalsPropName && typeof parsedFormInternalsPropName === "string") {
+  if (parsedFormInternalsPropName && typeof parsedFormInternalsPropName === 'string') {
     return parsedFormInternalsPropName;
   } else {
     return null;

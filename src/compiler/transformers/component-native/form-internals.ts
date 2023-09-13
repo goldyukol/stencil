@@ -15,14 +15,14 @@ import ts from 'typescript';
  * @returns an expression statement syntax tree node
  */
 export function createNativeFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
-  if (cmp.formAssociated && cmp.formInternalsProp) {
+  if (cmp.formAssociated && cmp.formInternalsMemberName) {
     return [
       ts.factory.createExpressionStatement(
         ts.factory.createBinaryExpression(
           ts.factory.createPropertyAccessExpression(
             ts.factory.createThis(),
             // use the name set on the {@link d.ComponentCompilerMeta}
-            ts.factory.createIdentifier(cmp.formInternalsProp),
+            ts.factory.createIdentifier(cmp.formInternalsMemberName),
           ),
           ts.factory.createToken(ts.SyntaxKind.EqualsToken),
           ts.factory.createCallExpression(

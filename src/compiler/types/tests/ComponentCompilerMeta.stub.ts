@@ -22,7 +22,7 @@ export const stubComponentCompilerMeta = (
   events: [],
   excludeFromCollection: false,
   formAssociated: false,
-  formInternalsProp: null,
+  formInternalsMemberName: null,
   hasAttribute: false,
   hasAttributeChangedCallbackFn: false,
   hasComponentDidLoadFn: false,

@@ -652,7 +652,7 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
    *
    * TODO is this the best name?
    */
-  formInternalsProp: string | null;
+  formInternalsMemberName: string | null;
   shadowDelegatesFocus: boolean;
   sourceFilePath: string;
   sourceMapPath: string;

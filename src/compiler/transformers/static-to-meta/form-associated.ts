@@ -1,3 +1,4 @@
+import { ComponentCompilerMeta } from '@stencil/core/declarations';
 import ts from 'typescript';
 
 import { getStaticValue } from '../transform-utils';
@@ -34,6 +35,8 @@ const parseFormInternals = (staticMembers: ts.ClassElement[]): string | null => 
   }
 };
 
+type FormAssociatedProperties = Pick<ComponentCompilerMeta, 'formAssociated' | 'formInternalsMemberName'>;
+
 /**
  * Parse both of the static properties for form associated custom elements,
  * `formAssociated` and `formInternalsProp`, and return suitable values. In
@@ -44,17 +47,16 @@ const parseFormInternals = (staticMembers: ts.ClassElement[]): string | null => 
  * @returns an object with `formAssociated` and `formInternalsProp` set on
  * it
  */
-export const parseFormAssociatedProperties = (staticMembers: ts.ClassElement[]) => {
+export const parseFormAssociatedProperties = (staticMembers: ts.ClassElement[]): FormAssociatedProperties => {
   const formAssociated = parseFormAssociated(staticMembers);
-  const formInternalsProp = parseFormInternals(staticMembers);
+  const formInternalsMemberName = parseFormInternals(staticMembers);
 
   if (formAssociated) {
-    return { formAssociated, formInternalsProp };
+    return { formAssociated, formInternalsMemberName };
   } else {
     return {
       formAssociated: false,
-      // @ts-ignore
-      formInternalsProp: null,
+      formInternalsMemberName,
     };
   }
 };

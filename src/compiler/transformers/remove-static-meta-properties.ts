@@ -47,5 +47,9 @@ const STATIC_GETTERS_TO_REMOVE = [
   'styleUrls',
   'styles',
   'watchers',
+  // we want to remove `formInternalsMemberName`, which is an 'internal' static
+  // property used to pass a string value along from the 'decorators-to-static'
+  // step through to the `ComponentCompilerMeta` phase, but we want to keep the
+  // `formAssociated` prop that we also set at the same time.
   'formInternalsMemberName',
 ] as const satisfies readonly StencilStaticGetter[];

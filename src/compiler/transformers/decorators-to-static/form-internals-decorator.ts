@@ -40,8 +40,6 @@ export const formInternalsDecoratorsToStatic = (
   });
 
   // no decorator fields, return!
-  // TODO print a warning if the component was form-associated but no decorator
-  // was found?
   if (formInternalsMembers.length === 0) {
     return;
   }

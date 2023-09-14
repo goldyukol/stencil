@@ -639,20 +639,18 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
    * Whether or not the component is form-associated
    */
   formAssociated: boolean;
+  /**
+   * The name to which an `ElementInternals` object (the return value of
+   * `HTMLElement.attachInternals`) should be attached at runtime. If this is
+   * `null` then `attachInternals` should not be called.
+   */
+  formInternalsMemberName: string | null;
   internal: boolean;
   isCollectionDependency: boolean;
   jsFilePath: string;
   listeners: ComponentCompilerListener[];
   methods: ComponentCompilerMethod[];
   properties: ComponentCompilerProperty[];
-  /**
-   * The name to which an `ElementInternals` object (the return value of
-   * `HTMLElement.attachInternals`) should be attached at runtime. If this is
-   * `null` then the function should not be called.
-   *
-   * TODO is this the best name?
-   */
-  formInternalsMemberName: string | null;
   shadowDelegatesFocus: boolean;
   sourceFilePath: string;
   sourceMapPath: string;

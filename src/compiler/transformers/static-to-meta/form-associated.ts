@@ -51,7 +51,7 @@ export const parseFormAssociatedProperties = (staticMembers: ts.ClassElement[]):
   } else {
     return {
       formAssociated: false,
-      formInternalsMemberName,
+      formInternalsMemberName: null,
     };
   }
 };

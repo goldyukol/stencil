@@ -157,12 +157,12 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         }
       }
 
-      // TODO is this even necessary at all?
+      // if the component is formAssociated we need to set that on the host
+      // element so that it will be ready for `attachInternals` to be called on
+      // it later on
       if (BUILD.shadowDom && BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
-        Object.defineProperty(HostElement, 'formAssociated', {
-          writable: false,
-          value: true,
-        });
+        // any way around this typecast?
+        (HostElement as any).formAssociated = true;
       }
 
       if (BUILD.hotModuleReplacement) {

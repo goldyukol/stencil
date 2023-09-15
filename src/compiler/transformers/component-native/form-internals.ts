@@ -16,6 +16,18 @@ import ts from 'typescript';
  */
 export function createNativeFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
   if (cmp.formAssociated && cmp.formInternalsMemberName) {
+    // if a `@FormInternals` decorator is present on a component like this:
+    //
+    // ```ts
+    // @FormInternals()
+    // internals: ElementInternals;
+    // ```
+    //
+    // then these `ts.factory` calls will produce the following:
+    //
+    // ```ts
+    // this.internals = this.attachInternals();
+    // ```
     return [
       ts.factory.createExpressionStatement(
         ts.factory.createBinaryExpression(

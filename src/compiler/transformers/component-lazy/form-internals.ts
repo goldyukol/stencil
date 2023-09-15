@@ -18,6 +18,21 @@ import { HOST_REF_ARG } from './constants';
  */
 export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
   if (cmp.formAssociated && cmp.formInternalsMemberName) {
+    // if a `@FormInternals` decorator is present on a component like this:
+    //
+    // ```ts
+    // @FormInternals()
+    // internals: ElementInternals;
+    // ```
+    //
+    // then these `ts.factory` calls will produce the following:
+    //
+    // ```ts
+    // this.internals = hostRef.$hostElement$.attachInternals();
+    // ```
+    //
+    // For this to work a `hostRef` variable must be in scope! This will be the
+    // case in the lazy constructor.
     return [
       ts.factory.createExpressionStatement(
         ts.factory.createBinaryExpression(

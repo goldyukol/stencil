@@ -3,7 +3,7 @@ import ts from 'typescript';
 
 import type * as d from '../../../declarations';
 import { convertValueToLiteral, createStaticGetter, retrieveTsDecorators } from '../transform-utils';
-import { getDecoratorParameters } from './decorator-utils';
+import { getDecoratorParameters, isDecoratorNamed } from './decorator-utils';
 import { styleToStatic } from './style-to-static';
 
 /**
@@ -110,6 +110,21 @@ const validateComponent = (
     const err = buildError(diagnostics);
     err.messageText = `Components cannot be "scoped" and "shadow" at the same time, they are mutually exclusive configurations.`;
     augmentDiagnosticWithNode(err, findTagNode('scoped', componentDecorator));
+    return false;
+  }
+
+  const formInternalsMembers = cmpNode.members.filter(ts.isPropertyDeclaration).filter((prop) => {
+    return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('FormInternals'));
+  });
+
+  if (
+    formInternalsMembers.length > 0 &&
+    (typeof componentOptions.shadow === 'boolean' || !componentOptions?.shadow?.formAssociated)
+  ) {
+    const err = buildError(diagnostics);
+    err.messageText = `In order to use the @FormInternals() decorator to access ElementInternal a
+    component must set shadow.formAssociated to true.`;
+    augmentDiagnosticWithNode(err, formInternalsMembers[0]);
     return false;
   }
 

@@ -29,11 +29,14 @@ import { isDecoratorNamed } from './decorator-utils';
  * @param diagnostics for reporting errors and warnings
  * @param decoratedMembers the decorated members found on the class
  * @param newMembers an out param for new class members
+ * @param typeChecker a TypeScript typechecker, needed for resolving the prop
+   * declaration name
  */
 export const formInternalsDecoratorsToStatic = (
   diagnostics: d.Diagnostic[],
   decoratedMembers: ts.ClassElement[],
   newMembers: ts.ClassElement[],
+  typeChecker: ts.TypeChecker,
 ) => {
   const formInternalsMembers = decoratedMembers.filter(ts.isPropertyDeclaration).filter((prop) => {
     return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('FormInternals'));
@@ -48,6 +51,7 @@ export const formInternalsDecoratorsToStatic = (
   if (formInternalsMembers.length > 1) {
     const error = buildError(diagnostics);
     error.messageText = `Stencil does not support adding more than one FormAssociated() decorator to a component`;
+    return;
   }
 
   const [decoratedProp] = formInternalsMembers;

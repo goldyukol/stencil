@@ -229,6 +229,10 @@ export class MockElement extends MockNode {
   __shadowRoot: ShadowRoot | null | undefined;
   __style: MockCSSStyleDeclaration | null | undefined;
 
+  attachInternals() {
+    return {}
+  }
+
   constructor(ownerDocument: any, nodeName: string | null) {
     super(ownerDocument, NODE_TYPES.ELEMENT_NODE, typeof nodeName === 'string' ? nodeName : null, null);
     this.namespaceURI = null;

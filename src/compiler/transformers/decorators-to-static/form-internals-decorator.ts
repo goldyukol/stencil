@@ -30,7 +30,7 @@ import { isDecoratorNamed } from './decorator-utils';
  * @param decoratedMembers the decorated members found on the class
  * @param newMembers an out param for new class members
  * @param typeChecker a TypeScript typechecker, needed for resolving the prop
-   * declaration name
+ * declaration name
  */
 export const formInternalsDecoratorsToStatic = (
   diagnostics: d.Diagnostic[],

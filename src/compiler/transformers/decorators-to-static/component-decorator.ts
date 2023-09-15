@@ -119,7 +119,7 @@ const validateComponent = (
 
   if (
     formInternalsMembers.length > 0 &&
-    (typeof componentOptions.shadow === 'boolean' || !componentOptions?.shadow?.formAssociated)
+    (typeof componentOptions.shadow === 'boolean' || !componentOptions.shadow?.formAssociated)
   ) {
     const err = buildError(diagnostics);
     err.messageText = `In order to use the @FormInternals() decorator to access ElementInternals a

@@ -230,7 +230,7 @@ export class MockElement extends MockNode {
   __style: MockCSSStyleDeclaration | null | undefined;
 
   attachInternals() {
-    return {}
+    return {};
   }
 
   constructor(ownerDocument: any, nodeName: string | null) {

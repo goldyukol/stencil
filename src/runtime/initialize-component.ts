@@ -72,6 +72,12 @@ export const initializeComponent = async (
       // construction in order to directly wire together the
       // host element and the lazy-loaded instance
       try {
+        if (!hostRef.$hostElement$) {
+          // throw "no host element";
+          consoleError(hostRef);
+          // throw;
+          return;
+        }
         new (Cstr as any)(hostRef);
       } catch (e) {
         consoleError(e);

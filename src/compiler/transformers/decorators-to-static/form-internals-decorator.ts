@@ -56,7 +56,7 @@ export const formInternalsDecoratorsToStatic = (
 
   const [decoratedProp] = formInternalsMembers;
 
-  const name = tsPropDeclNameAsString(decoratedProp);
+  const name = tsPropDeclNameAsString(decoratedProp, typeChecker);
 
   newMembers.push(createStaticGetter('formInternalsMemberName', convertValueToLiteral(name)));
 };

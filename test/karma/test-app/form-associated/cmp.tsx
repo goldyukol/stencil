@@ -8,10 +8,6 @@ export class FormAssociatedCmp {
   @FormInternals()
   internals: ElementInternals;
 
-  constructor() {
-    console.error(this);
-  }
-
   render() {
     return <span>hey!</span>;
   }

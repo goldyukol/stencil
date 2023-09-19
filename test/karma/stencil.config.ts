@@ -24,10 +24,10 @@ export const config: Config = {
     },
   ],
   globalScript: 'test-app/global.ts',
-  // minifyJs: false,
+  minifyJs: false,
   globalStyle: 'test-app/style-plugin/global-sass-entry.scss',
   plugins: [sass()],
-  // buildEs5: true,
+  buildEs5: true,
   extras: {
     lifecycleDOMEvents: true,
     scriptDataOpts: true,

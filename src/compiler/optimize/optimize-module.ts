@@ -89,6 +89,11 @@ export const optimizeModule = async (
       mangleOptions.properties = {
         regex: '^\\$.+\\$$',
         debug: isDebug,
+        reserved: [
+          // we need to reserve this name so that it can be accessed on
+          // `hostRef` at runtime
+          "$hostElement$"
+        ]
       };
 
       compressOpts.inline = 1;
@@ -135,11 +140,20 @@ export const getTerserOptions = (config: Config, sourceTarget: SourceTarget, pre
   if (sourceTarget === 'es5') {
     opts.ecma = opts.format.ecma = 5;
     opts.compress = false;
-    opts.mangle = true;
+    opts.mangle = {
+      properties: {
+        // we need to reserve this name so that it can be accessed on `hostRef`
+        // at runtime
+        reserved: [ "$hostElement$" ]
+      }
+    }
   } else {
     opts.mangle = {
       properties: {
         regex: '^\\$.+\\$$',
+        // we need to reserve this name so that it can be accessed on `hostRef`
+        // at runtime
+        reserved: [ "$hostElement$" ]
       },
     };
     opts.compress = {
@@ -158,7 +172,14 @@ export const getTerserOptions = (config: Config, sourceTarget: SourceTarget, pre
   }
 
   if (prettyOutput) {
-    opts.mangle = { keep_fnames: true };
+    opts.mangle = {
+      keep_fnames: true,
+      properties: {
+        // we need to reserve this name so that it can be accessed on `hostRef`
+        // at runtime
+        reserved: ["$hostElement$"]
+      }
+    }
     opts.compress = {};
     opts.compress.drop_console = false;
     opts.compress.drop_debugger = false;

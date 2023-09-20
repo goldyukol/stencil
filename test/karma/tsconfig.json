@@ -20,7 +20,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "pretty": true,
-    "target": "es2017",
+    "target": "es5",
     "useUnknownInCatchVariables": true,
     "outDir": "tmp-compiled-tests",
     "baseUrl": ".",

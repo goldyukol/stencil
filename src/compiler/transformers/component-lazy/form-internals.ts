@@ -35,16 +35,6 @@ export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts
     // case in the lazy constructor.
     return [
       ts.factory.createExpressionStatement(
-        ts.factory.createCallExpression(
-          ts.factory.createPropertyAccessExpression(
-            ts.factory.createIdentifier('console'),
-            ts.factory.createIdentifier('error'),
-          ),
-          undefined,
-          [ts.factory.createIdentifier(HOST_REF_ARG)],
-        ),
-      ),
-      ts.factory.createExpressionStatement(
         ts.factory.createBinaryExpression(
           ts.factory.createPropertyAccessExpression(
             ts.factory.createThis(),

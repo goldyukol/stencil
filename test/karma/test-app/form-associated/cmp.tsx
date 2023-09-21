@@ -8,7 +8,16 @@ export class FormAssociatedCmp {
   @FormInternals()
   internals: ElementInternals;
 
+  handleChange(event: any) {
+    this.internals.setFormValue(event.target.value);
+  }
+
   render() {
-    return <span>hey!</span>;
+    return (
+      <input
+        type="text"
+        onInput={(event) => this.handleChange(event)}
+      />
+    )
   }
 }

@@ -23,6 +23,7 @@
     "testing/"
   ],
   "scripts": {
+    "knip": "NODE_OPTIONS=--max-old-space-size=8192 knip",
     "build": "npm run tsc.scripts && npm run tsc.prod && npm run rollup.prod.ci",
     "clean": "rm -rf build/ cli/ compiler/ dev-server/ internal/ mock-doc/ sys/ testing/ && npm run clean-scripts",
     "clean-scripts": "rm -rf scripts/build",
@@ -102,6 +103,7 @@
     "jest": "^27.4.5",
     "jest-cli": "^27.4.5",
     "jest-environment-node": "^27.4.4",
+    "knip": "^2.25.2",
     "listr": "^0.14.3",
     "magic-string": "^0.30.0",
     "merge-source-map": "^1.1.0",

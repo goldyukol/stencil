@@ -91,10 +91,9 @@ const visitClassDeclaration = (
   program: ts.Program,
   classNode: ts.ClassDeclaration,
 ): ts.ClassDeclaration => {
-  const componentDecorator = retrieveTsDecorators(classNode)?.find(isDecoratorNamed('Component'));
-  if (!componentDecorator) {
-    return classNode;
-  }
+  // if (!componentDecorator) {
+  //   return classNode;
+  // }
 
   const classMembers = classNode.members;
   const decoratedMembers = classMembers.filter((member) => (retrieveTsDecorators(member)?.length ?? 0) > 0);
@@ -105,7 +104,10 @@ const visitClassDeclaration = (
   const filteredMethodsAndFields = removeStencilMethodDecorators(Array.from(classMembers), diagnostics);
 
   // parser component decorator (Component)
-  componentDecoratorToStatic(config, typeChecker, diagnostics, classNode, filteredMethodsAndFields, componentDecorator);
+  const componentDecorator = retrieveTsDecorators(classNode)?.find(isDecoratorNamed('Component'));
+  if (componentDecorator) {
+    componentDecoratorToStatic(config, typeChecker, diagnostics, classNode, filteredMethodsAndFields, componentDecorator);
+  }
 
   // stores a reference to fields that should be watched for changes
   // parse member decorators (Prop, State, Listen, Event, Method, Element and Watch)

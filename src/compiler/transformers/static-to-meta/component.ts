@@ -41,27 +41,28 @@ export const parseStaticComponentMeta = (
   moduleFile: d.Module,
   transformOpts?: d.TransformOptions,
 ): ts.ClassDeclaration => {
-  if (cmpNode.members == null) {
-    return cmpNode;
-  }
+  // if (cmpNode.members == null) {
+  //   return cmpNode;
+  // }
   const staticMembers = cmpNode.members.filter(isStaticGetter);
   const tagName = getComponentTagName(staticMembers);
-  if (tagName == null) {
-    return cmpNode;
-  }
+  // if (tagName == null) {
+  //   return cmpNode;
+  // }
 
   const symbol = typeChecker ? typeChecker.getSymbolAtLocation(cmpNode.name) : undefined;
   const docs = serializeSymbol(typeChecker, symbol);
   const isCollectionDependency = moduleFile.isCollectionDependency;
   const encapsulation = parseStaticEncapsulation(staticMembers);
   const cmp: d.ComponentCompilerMeta = {
-    tagName: tagName,
+    tagName,
     excludeFromCollection: moduleFile.excludeFromCollection,
     isCollectionDependency,
     componentClassName: cmpNode.name ? cmpNode.name.text : '',
     elementRef: parseStaticElementRef(staticMembers),
     encapsulation,
     shadowDelegatesFocus: parseStaticShadowDelegatesFocus(encapsulation, staticMembers),
+
     properties: parseStaticProps(staticMembers),
     virtualProperties: parseVirtualProps(docs),
     states: parseStaticStates(staticMembers),
@@ -69,6 +70,7 @@ export const parseStaticComponentMeta = (
     listeners: parseStaticListeners(staticMembers),
     events: parseStaticEvents(staticMembers),
     watchers: parseStaticWatchers(staticMembers),
+
     styles: parseStaticStyles(compilerCtx, tagName, moduleFile.sourceFilePath, isCollectionDependency, staticMembers),
     internal: isInternal(docs),
     assetsDirs: parseAssetsDirs(staticMembers, moduleFile.jsFilePath),

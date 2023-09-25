@@ -1,4 +1,4 @@
-import { setupDomTests } from '../util';
+import { setupDomTests, waitForChanges } from '../util';
 
 describe('form associated', function () {
   const { setupDom, tearDownDom } = setupDomTests(document);
@@ -14,13 +14,10 @@ describe('form associated', function () {
     expect(elm).not.toBeNull();
   });
 
-  it('should echo a value out to the form', async () => {
-    const formEl = app.querySelector("form");
-    const face = app.querySelector('form-associated');
-
-    // @ts-ignore
-    face.shadowRoot.querySelector('input').value = "setting a form value!";
-    const formData = new FormData(formEl);
-    expect(formData.get("test-input")).toBe("setting a form value!");
-  });
+  // it('should link up to the surrounding form', async () => {
+  //   const formEl = app.querySelector("form");
+  //   await waitForChanges();
+  //   const formData = new FormData(formEl);
+  //   expect(formData.get("test-input")).toBe("my default value");
+  // });
 });

@@ -235,7 +235,7 @@ export class MockElement extends MockNode {
     return new Proxy({} as unknown as MockElementInternals, {
       get: function (_target, prop, _receiver) {
         console.error(
-          `Property ${String(prop)} was accessed on ElementInternals, but this property is not implemented.
+          `NOTE: Property ${String(prop)} was accessed on ElementInternals, but this property is not implemented.
 Testing components with ElementInternals is fully supported in e2e tests.`,
         );
       },

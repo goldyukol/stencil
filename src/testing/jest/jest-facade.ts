@@ -40,7 +40,7 @@ class Jest27StencilAdapter extends JestFacade {
 
 export const getRunner = async () => {
   // TODO(NOW): Cyclic deps
-  const majorVersion = getJestMajorVersion();
+  const majorVersion = getVersion();
   switch (majorVersion) {
     case 24:
     case 25:

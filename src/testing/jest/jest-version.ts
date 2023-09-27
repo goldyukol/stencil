@@ -1,8 +1,8 @@
-import type { Config } from '@jest/types';
-import { ValidatedConfig } from '@stencil/core/declarations';
+// import type { Config } from '@jest/types';
+// import { ValidatedConfig } from '@stencil/core/declarations';
 import { getVersion as jestGetVersion } from 'jest';
 
-import { buildJestArgv as buildJest27Argv } from './jest-27-and-under/jest-config';
+// import { buildJestArgv as buildJest27Argv } from './jest-27-and-under/jest-config';
 
 /**
  * Get the current major version of Jest that Stencil reconciles

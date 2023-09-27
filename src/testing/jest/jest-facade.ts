@@ -1,6 +1,6 @@
 import { getVersion as jestGetVersion } from 'jest';
 
-import {getJestMajorVersion} from "./jest-version";
+import { getJestMajorVersion } from './jest-version';
 
 // Probably a good bit of over-engineering
 //
@@ -19,11 +19,6 @@ abstract class JestFacade {
    */
   static getVersion = (): string => {
     return jestGetVersion();
-  };
-
-  // @ts-ignore let this be unused
-  someRandoFunction = () => {
-    throw 'not implemented';
   };
 
   static getRunner = async (): Promise<any> => {
@@ -55,7 +50,10 @@ export const getRunner = async () => {
     case 28:
     case 29:
     default:
-      throw new Error('TODO');
+      // in Stencil 4.X, defaulting to v27 and under is the default behavior
+      // when Jest 28+ is supported, this will change.
+      // we default here instead of throwing an error
+      return await Jest27StencilAdapter.getRunner();
   }
 };
 export const getScreenshot = async () => {
@@ -70,7 +68,10 @@ export const getScreenshot = async () => {
     case 28:
     case 29:
     default:
-      throw new Error('TODO');
+      // in Stencil 4.X, defaulting to v27 and under is the default behavior
+      // when Jest 28+ is supported, this will change.
+      // we default here instead of throwing an error
+      return await Jest27StencilAdapter.getRunner();
   }
 };
 

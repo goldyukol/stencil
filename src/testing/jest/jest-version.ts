@@ -13,18 +13,6 @@ export const getJestMajorVersion = (): string => {
   return jestGetVersion();
 };
 //
-// export const getTestingModuleNames = (): string[] => {
-//   switch (getJestMajorVersion()) {
-//     case 24:
-//     case 25:
-//     case 26:
-//     case 27:
-//     case 28:
-//     case 29:
-//     default:
-//       return ['@types/jest', 'jest', 'jest-cli'];
-//   }
-// };
 //
 // export const getJestRunner = (): string => {
 //   if (getJestMajorVersion() <= 27) {

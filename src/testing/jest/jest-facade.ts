@@ -37,6 +37,19 @@ export const getScreenshot = async () => {
   }
 };
 
+export const getTestingModuleNames = (): string[] => {
+  switch (getVersion()) {
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+    case 28:
+    case 29:
+    default:
+      return ['@types/jest', 'jest', 'jest-cli'];
+  }
+};
+
 export const getVersion = (): number => {
   return semverMajor(getJestMajorVersion());
 };

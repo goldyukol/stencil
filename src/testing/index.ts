@@ -1,7 +1,8 @@
-export { createJestPuppeteerEnvironment } from './jest/jest-27-and-under/jest-environment';
-export { jestPreprocessor } from './jest/jest-27-and-under/jest-preprocessor';
-export { createTestRunner } from './jest/jest-27-and-under/jest-runner';
-export { jestSetupTestFramework } from './jest/jest-27-and-under/jest-setup-test-framework';
+export { createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27 } from './jest/jest-27-and-under/jest-environment';
+export { jestPreprocessor as jestPreprocessor27 } from './jest/jest-27-and-under/jest-preprocessor';
+export { createTestRunner as createTestRunner27 } from './jest/jest-27-and-under/jest-runner';
+export { jestSetupTestFramework as jestSetupTestFramework27 } from './jest/jest-27-and-under/jest-setup-test-framework';
+export { getVersion as getJestMajorVersion } from './jest/jest-facade'; // TODO(NOW): Could be confusing
 export {
   mockFetch,
   MockHeaders,

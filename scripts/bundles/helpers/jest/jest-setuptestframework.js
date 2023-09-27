@@ -1,7 +1,9 @@
 const testing = require('./index.js');
 
-const jestVersion = testing['getJestMajorVersion']();
-const jestSetupTestFramework = `jestSetupTestFramework${jestVersion}`;
+let jestVersion = testing['getJestMajorVersion']();
+if (jestVersion < 27) {
+  jestVersion = 27;
+}const jestSetupTestFramework = `jestSetupTestFramework${jestVersion}`;
 
 const setup = testing[jestSetupTestFramework];
 

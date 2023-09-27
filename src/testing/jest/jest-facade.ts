@@ -1,7 +1,3 @@
-import { getVersion as jestGetVersion } from 'jest';
-
-import { getJestMajorVersion } from './jest-version';
-
 // Probably a good bit of over-engineering
 //
 // This assumes we know the version/can resolve jest ourselves
@@ -10,6 +6,10 @@ import { getJestMajorVersion } from './jest-version';
 // - Trying to resolve Jest and follow up attempts/strategies
 //
 // Probably the way forward (if at all) is to try to resolve Jest once and cache that decision
+import semverMajor from 'semver/functions/major';
+
+import { getJestMajorVersion } from './jest-version';
+
 abstract class JestFacade {
   // eslint-disable-next-line jsdoc/require-returns-check
   /**
@@ -17,8 +17,8 @@ abstract class JestFacade {
    *
    * @returns the version of Jest.
    */
-  static getVersion = (): string => {
-    return jestGetVersion();
+  static getVersion = (): number => {
+    return getVersion();
   };
 
   static getRunner = async (): Promise<any> => {
@@ -58,7 +58,7 @@ export const getRunner = async () => {
 };
 export const getScreenshot = async () => {
   // TODO(NOW): Cyclic deps
-  const majorVersion = getJestMajorVersion();
+  const majorVersion = getVersion();
   switch (majorVersion) {
     case 24:
     case 25:
@@ -75,6 +75,6 @@ export const getScreenshot = async () => {
   }
 };
 
-export const getVersion = (): string => {
-  return jestGetVersion();
+export const getVersion = (): number => {
+  return semverMajor(getJestMajorVersion());
 };

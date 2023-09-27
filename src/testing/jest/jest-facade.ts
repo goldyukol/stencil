@@ -71,7 +71,7 @@ export const getScreenshot = async () => {
       // in Stencil 4.X, defaulting to v27 and under is the default behavior
       // when Jest 28+ is supported, this will change.
       // we default here instead of throwing an error
-      return await Jest27StencilAdapter.getRunner();
+      return await Jest27StencilAdapter.getScreenshot();
   }
 };
 

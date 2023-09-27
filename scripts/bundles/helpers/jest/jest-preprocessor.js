@@ -1,3 +1,6 @@
-const { jestPreprocessor } = require('./index.js');
+const testing = require('./index.js');
 
-module.exports = jestPreprocessor;
+const jestVersion = testing['getJestMajorVersion']();
+const jestSetupTestFramework = `jestPreprocessor${jestVersion}`;
+
+module.exports = testing[jestSetupTestFramework];

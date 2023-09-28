@@ -140,13 +140,13 @@ const insertVNodeAnnotations = (
       if (parent && parent.childNodes) {
         const parentChildNodes: ChildNode[] = Array.from(parent.childNodes);
         const comment: d.RenderNode | undefined = parentChildNodes.find(
-          (node) => node.nodeType === NODE_TYPE.CommentNode && (node as d.RenderNode)['s-sr']
+          (node) => node.nodeType === NODE_TYPE.CommentNode && (node as d.RenderNode)['s-sr'],
         ) as d.RenderNode | undefined;
         if (comment) {
           const index: number = parentChildNodes.indexOf(hostElm) - 1;
           (vnode.$elm$ as d.RenderNode).setAttribute(
             HYDRATE_CHILD_ID,
-            `${comment['s-host-id']}.${comment['s-node-id']}.0.${index}`
+            `${comment['s-host-id']}.${comment['s-node-id']}.0.${index}`,
           );
         }
       }
@@ -160,7 +160,7 @@ const insertChildVNodeAnnotations = (
   cmpData: CmpData,
   hostId: number,
   depth: number,
-  index: number
+  index: number,
 ) => {
   const childElm = vnodeChild.$elm$ as d.RenderNode;
   if (childElm == null) {

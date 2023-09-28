@@ -45,7 +45,7 @@ export const getDefaultJestRunner = (): string => {
   return getVersion() <= 27 ? 'jest-jasmine2' : 'jest-circus';
 };
 
-export const getTestingModuleNames = (): string[] => {
+export const getJestModuleNames = (): string[] => {
   switch (getVersion()) {
     case 24:
     case 25:

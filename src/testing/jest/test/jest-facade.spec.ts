@@ -1,4 +1,4 @@
-import { getDefaultJestRunner, getTestingModuleNames, getVersion } from '../jest-facade';
+import { getDefaultJestRunner, getJestModuleNames, getVersion } from '../jest-facade';
 import * as JestVersion from '../jest-version';
 
 describe('jest-facade', () => {
@@ -66,7 +66,7 @@ describe('jest-facade', () => {
 
       getJestMajorVersionSpy.mockImplementation(() => jestMajorVersion);
 
-      expect(getTestingModuleNames()).toEqual(expectedModules);
+      expect(getJestModuleNames()).toEqual(expectedModules);
     });
   });
 });

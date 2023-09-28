@@ -224,14 +224,14 @@ export class MockNodeList {
 }
 
 export class MockElement extends MockNode {
-  namespaceURI: string | null;
+  #namespaceURI: string | null;
   __attributeMap: MockAttributeMap | null | undefined;
   __shadowRoot: ShadowRoot | null | undefined;
   __style: MockCSSStyleDeclaration | null | undefined;
 
   constructor(ownerDocument: any, nodeName: string | null) {
     super(ownerDocument, NODE_TYPES.ELEMENT_NODE, typeof nodeName === 'string' ? nodeName : null, null);
-    this.namespaceURI = null;
+    this.#namespaceURI = null;
     this.__shadowRoot = null;
     this.__attributeMap = null;
   }
@@ -251,6 +251,10 @@ export class MockElement extends MockNode {
       this,
       new MockFocusEvent('blur', { relatedTarget: null, bubbles: true, cancelable: true, composed: true }),
     );
+  }
+
+  get namespaceURI() {
+    return this.#namespaceURI;
   }
 
   get shadowRoot() {
@@ -1063,7 +1067,9 @@ function insertBefore(parentNode: MockNode, newNode: MockNode, referenceNode: Mo
 }
 
 export class MockHTMLElement extends MockElement {
-  override namespaceURI = 'http://www.w3.org/1999/xhtml';
+  override get namespaceURI() {
+    return 'http://www.w3.org/1999/xhtml';
+  }
 
   constructor(ownerDocument: any, nodeName: string) {
     super(ownerDocument, typeof nodeName === 'string' ? nodeName.toUpperCase() : null);

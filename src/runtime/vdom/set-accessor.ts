@@ -132,7 +132,11 @@ export const setAccessor = (
           } else {
             (elm as any)[memberName] = newValue;
           }
-        } catch (e) {}
+        } catch (e) {
+          /**
+           * in case someone tries to set a read-only property, e.g. "namespaceURI", we just ignore it
+           */
+        }
       }
 
       /**
@@ -168,5 +172,11 @@ export const setAccessor = (
     }
   }
 };
+
 const parseClassListRegex = /\s/;
+/**
+ * Parsed a string of classnames into an array
+ * @param value className string, e.g. "foo bar baz"
+ * @returns list of classes, e.g. ["foo", "bar", "baz"]
+ */
 const parseClassList = (value: string | undefined | null): string[] => (!value ? [] : value.split(parseClassListRegex));

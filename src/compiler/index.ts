@@ -6,6 +6,7 @@ export { loadConfig } from './config/load-config';
 export { optimizeCss } from './optimize/optimize-css';
 export { optimizeJs } from './optimize/optimize-js';
 export { createPrerenderer } from './prerender/prerender-main';
+export { path } from './sys/modules/path';
 export { FsWriteResults } from './sys/in-memory-fs';
 export { nodeRequire } from './sys/node-require';
 export { createSystem } from './sys/stencil-sys';

@@ -12,6 +12,7 @@ import { NODE_BUILTINS } from '../utils/constants';
 import type { BuildOptions } from '../utils/options';
 import { writePkgJson } from '../utils/write-pkg-json';
 import { aliasPlugin } from './plugins/alias-plugin';
+import {sysModulesPlugin} from './plugins/sys-modules-plugin';
 import { parse5Plugin } from './plugins/parse5-plugin';
 import { replacePlugin } from './plugins/replace-plugin';
 import { sizzlePlugin } from './plugins/sizzle-plugin';
@@ -157,8 +158,10 @@ export async function compiler(opts: BuildOptions) {
       parse5Plugin(opts),
       sizzlePlugin(opts),
       aliasPlugin(opts),
+      sysModulesPlugin(inputDir),
       rollupNodeResolve({
         mainFields: ['module', 'main'],
+        preferBuiltins: false,
       }),
       rollupCommonjs({
         transformMixedEsModules: false,

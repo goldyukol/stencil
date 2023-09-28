@@ -37,6 +37,14 @@ export const getScreenshot = async () => {
   }
 };
 
+/**
+ * Retrieve the default Jest runner prescribed by Stencil
+ * @returns the stringified name of the test runner, based on the currently detected version of Stencil
+ */
+export const getDefaultJestRunner = (): string => {
+  return  (getVersion() <= 27) ?  'jest-jasmine2':  'jest-circus';
+};
+
 export const getTestingModuleNames = (): string[] => {
   switch (getVersion()) {
     case 24:

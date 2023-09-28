@@ -12,14 +12,8 @@ import { getVersion as jestGetVersion } from 'jest';
 export const getJestMajorVersion = (): string => {
   return jestGetVersion();
 };
-//
-//
-// export const getJestRunner = (): string => {
-//   if (getJestMajorVersion() <= 27) {
-//     return 'jest-jasmine2';
-//   }
-//   return 'jest-circus';
-// };
+
+
 //
 // export type JestArgvFactoryOpts = {
 //   config: ValidatedConfig;

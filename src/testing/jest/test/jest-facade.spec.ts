@@ -1,4 +1,4 @@
-import { getTestingModuleNames, getVersion } from '../jest-facade';
+import {getDefaultJestRunner, getTestingModuleNames, getVersion} from '../jest-facade';
 import * as JestVersion from '../jest-version';
 
 describe('jest-facade', () => {
@@ -27,6 +27,22 @@ describe('jest-facade', () => {
     ])('transforms semver string %s into major version %d', (semverStr, majorVersion) => {
       getJestMajorVersionSpy.mockImplementation(() => semverStr);
       expect(getVersion()).toBe(majorVersion);
+    });
+  });
+
+  describe('getJestRunner()', () => {
+    it.each([
+      ['24.0.0', 'jest-jasmine2'],
+      ['25.0.0', 'jest-jasmine2'],
+      ['26.0.0', 'jest-jasmine2'],
+      ['27.0.0', 'jest-jasmine2'],
+      ['28.0.0', 'jest-circus'],
+      ['29.0.0', 'jest-circus'],
+      ['30.0.0', 'jest-circus'],
+    ])('returns the correct module names for jest %s', (jestMajorVersion, runnerName) => {
+      getJestMajorVersionSpy.mockImplementation(() => jestMajorVersion);
+
+      expect(getDefaultJestRunner()).toEqual(runnerName);
     });
   });
 

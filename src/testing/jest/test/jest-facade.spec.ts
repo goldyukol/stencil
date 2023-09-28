@@ -1,4 +1,4 @@
-import {getDefaultJestRunner, getTestingModuleNames, getVersion} from '../jest-facade';
+import { getDefaultJestRunner, getTestingModuleNames, getVersion } from '../jest-facade';
 import * as JestVersion from '../jest-version';
 
 describe('jest-facade', () => {

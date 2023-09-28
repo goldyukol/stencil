@@ -13,7 +13,6 @@ export const getJestMajorVersion = (): string => {
   return jestGetVersion();
 };
 
-
 //
 // export type JestArgvFactoryOpts = {
 //   config: ValidatedConfig;

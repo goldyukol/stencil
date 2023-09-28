@@ -5,13 +5,7 @@ import { CMP_FLAGS } from '@utils';
 import type * as d from '../declarations';
 import { connectedCallback } from './connected-callback';
 import { disconnectedCallback } from './disconnected-callback';
-import {
-  patchChildSlotNodes,
-  patchCloneNode,
-  patchPseudoShadowDom,
-  patchSlotAppendChild,
-  patchTextContent,
-} from './dom-extras';
+import { patchCloneNode, patchPseudoShadowDom } from './dom-extras';
 import { computeMode } from './mode';
 import { proxyComponent } from './proxy-component';
 import { PROXY_FLAGS } from './runtime-constants';
@@ -45,20 +39,13 @@ export const proxyCustomElement = (Cstr: any, compactMeta: d.ComponentRuntimeMet
 
   // TODO(STENCIL-914): this check and `else` block can go away and be replaced by just `BUILD.scoped` once we
   // default our pseudo-slot behavior
-  if (BUILD.patchPseudoShadowDom && BUILD.scoped) {
-    patchPseudoShadowDom(Cstr.prototype, cmpMeta);
-  } else {
-    if (BUILD.slotChildNodesFix) {
-      patchChildSlotNodes(Cstr.prototype, cmpMeta);
-    }
+  if (
+    cmpMeta.$flags$ & CMP_FLAGS.hasSlotRelocation ||
+    (cmpMeta.$flags$ & CMP_FLAGS.shadowDomEncapsulation && CMP_FLAGS.needsShadowDomShim)
+  ) {
+    patchPseudoShadowDom(Cstr.prototype);
     if (BUILD.cloneNodeFix) {
       patchCloneNode(Cstr.prototype);
-    }
-    if (BUILD.appendChildSlotFix) {
-      patchSlotAppendChild(Cstr.prototype);
-    }
-    if (BUILD.scopedSlotTextContentFix) {
-      patchTextContent(Cstr.prototype, cmpMeta);
     }
   }
 
@@ -105,7 +92,7 @@ export const forceModeUpdate = (elm: d.RenderNode) => {
     const mode = computeMode(elm);
     const hostRef = getHostRef(elm);
 
-    if (hostRef.$modeName$ !== mode) {
+    if (hostRef && hostRef.$modeName$ !== mode) {
       const cmpMeta = hostRef.$cmpMeta$;
       const oldScopeId = elm['s-sc'];
       const scopeId = getScopeId(cmpMeta, mode);

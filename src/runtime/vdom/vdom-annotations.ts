@@ -2,9 +2,11 @@ import { getHostRef } from '@platform';
 
 import type * as d from '../../declarations';
 import {
+  COMMENT_NODE_ID,
   CONTENT_REF_ID,
   HYDRATE_CHILD_ID,
   HYDRATE_ID,
+  HYDRATED_SLOT_FALLBACK_ID,
   NODE_TYPE,
   ORG_LOCATION_ID,
   SLOT_NODE_ID,
@@ -38,6 +40,7 @@ export const insertVdomAnnotations = (doc: Document, staticComponents: string[])
 
           if (nodeRef.nodeType === NODE_TYPE.ElementNode) {
             nodeRef.setAttribute(HYDRATE_CHILD_ID, childId);
+            if (typeof nodeRef['s-sn'] === 'string') nodeRef.setAttribute('s-sn', nodeRef['s-sn']);
           } else if (nodeRef.nodeType === NODE_TYPE.TextNode) {
             if (hostId === 0) {
               const textContent = nodeRef.nodeValue.trim();
@@ -50,6 +53,10 @@ export const insertVdomAnnotations = (doc: Document, staticComponents: string[])
             const commentBeforeTextNode = doc.createComment(childId);
             commentBeforeTextNode.nodeValue = `${TEXT_NODE_ID}.${childId}`;
             nodeRef.parentNode.insertBefore(commentBeforeTextNode, nodeRef);
+          } else if (nodeRef.nodeType === NODE_TYPE.CommentNode) {
+            const commentBeforeTextNode = doc.createComment(childId);
+            commentBeforeTextNode.nodeValue = `${COMMENT_NODE_ID}.${childId}`;
+            nodeRef.parentNode.insertBefore(commentBeforeTextNode, nodeRef);
           }
         }
 
@@ -60,7 +67,7 @@ export const insertVdomAnnotations = (doc: Document, staticComponents: string[])
           if (orgLocationParentNode['s-en'] === '') {
             // ending with a "." means that the parent element
             // of this node's original location is a SHADOW dom element
-            // and this node is apart of the root level light dom
+            // and this node is a part of the root level light dom
             orgLocationNodeId += `.`;
           } else if (orgLocationParentNode['s-en'] === 'c') {
             // ending with a ".c" means that the parent element
@@ -80,7 +87,7 @@ const parseVNodeAnnotations = (
   doc: Document,
   node: d.RenderNode,
   docData: DocData,
-  orgLocationNodes: d.RenderNode[],
+  orgLocationNodes: d.RenderNode[]
 ) => {
   if (node == null) {
     return;
@@ -110,7 +117,7 @@ const insertVNodeAnnotations = (
   hostElm: d.HostElement,
   vnode: d.VNode,
   docData: DocData,
-  cmpData: CmpData,
+  cmpData: CmpData
 ) => {
   if (vnode != null) {
     const hostId = ++docData.hostIds;
@@ -128,18 +135,18 @@ const insertVNodeAnnotations = (
       });
     }
 
-    if (hostElm && vnode && vnode.$elm$ && !hostElm.hasAttribute('c-id')) {
+    if (hostElm && vnode && vnode.$elm$ && !hostElm.hasAttribute(HYDRATE_CHILD_ID)) {
       const parent: HTMLElement = hostElm.parentElement;
       if (parent && parent.childNodes) {
         const parentChildNodes: ChildNode[] = Array.from(parent.childNodes);
         const comment: d.RenderNode | undefined = parentChildNodes.find(
-          (node) => node.nodeType === NODE_TYPE.CommentNode && (node as d.RenderNode)['s-sr'],
+          (node) => node.nodeType === NODE_TYPE.CommentNode && (node as d.RenderNode)['s-sr']
         ) as d.RenderNode | undefined;
         if (comment) {
           const index: number = parentChildNodes.indexOf(hostElm) - 1;
           (vnode.$elm$ as d.RenderNode).setAttribute(
             HYDRATE_CHILD_ID,
-            `${comment['s-host-id']}.${comment['s-node-id']}.0.${index}`,
+            `${comment['s-host-id']}.${comment['s-node-id']}.0.${index}`
           );
         }
       }
@@ -153,7 +160,7 @@ const insertChildVNodeAnnotations = (
   cmpData: CmpData,
   hostId: number,
   depth: number,
-  index: number,
+  index: number
 ) => {
   const childElm = vnodeChild.$elm$ as d.RenderNode;
   if (childElm == null) {
@@ -168,11 +175,13 @@ const insertChildVNodeAnnotations = (
 
   if (childElm.nodeType === NODE_TYPE.ElementNode) {
     childElm.setAttribute(HYDRATE_CHILD_ID, childId);
+    if (typeof childElm['s-sn'] === 'string') childElm.setAttribute('s-sn', childElm['s-sn']);
   } else if (childElm.nodeType === NODE_TYPE.TextNode) {
     const parentNode = childElm.parentNode;
     const nodeName = parentNode.nodeName;
     if (nodeName !== 'STYLE' && nodeName !== 'SCRIPT') {
-      const textNodeId = `${TEXT_NODE_ID}.${childId}`;
+      const slotName = childElm['s-sn'] || '';
+      const textNodeId = `${TEXT_NODE_ID}.${childId}.${childElm['s-sf'] ? '1' : '0'}.${slotName}`;
 
       const commentBeforeTextNode = doc.createComment(textNodeId);
       parentNode.insertBefore(commentBeforeTextNode, childElm);
@@ -180,7 +189,35 @@ const insertChildVNodeAnnotations = (
   } else if (childElm.nodeType === NODE_TYPE.CommentNode) {
     if (childElm['s-sr']) {
       const slotName = childElm['s-sn'] || '';
-      const slotNodeId = `${SLOT_NODE_ID}.${childId}.${slotName}`;
+      const fallBackText = vnodeChild.$children$
+        ?.filter((c) => c.$elm$?.nodeType === NODE_TYPE.TextNode)
+        .map((ce) => {
+          ce.$elm$['s-sf'] = true;
+          return ce.$text$;
+        })
+        .join(' ');
+      const slotNodeId = `${SLOT_NODE_ID}.${childId}.${slotName}.${childElm['s-hsf'] ? '1' : '0'}.${
+        childElm['s-sfc'] || fallBackText ? '1' : '0'
+      }`;
+      childElm.nodeValue = slotNodeId;
+
+      // this mock slot node has fallback text
+      // add the content to a comment node
+      if (childElm['s-sfc'] || fallBackText) {
+        const parentNode = childElm.parentNode;
+        const commentBeforeFallbackTextNode = doc.createComment(childElm['s-sfc'] || fallBackText);
+        parentNode.insertBefore(commentBeforeFallbackTextNode, childElm);
+      }
+
+      // this mock slot node has fallback nodes
+      // add the mock slot id as an serializable attribute
+      if (childElm['s-hsf'] && vnodeChild.$children$ && vnodeChild.$children$.length) {
+        vnodeChild.$children$.forEach((vNode) => {
+          if (vNode.$elm$.nodeType === NODE_TYPE.ElementNode) {
+            vNode.$elm$.setAttribute(HYDRATED_SLOT_FALLBACK_ID, slotNodeId);
+          }
+        });
+      }
       childElm.nodeValue = slotNodeId;
     }
   }

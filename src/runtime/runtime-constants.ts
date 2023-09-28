@@ -38,10 +38,12 @@ export const CONTENT_REF_ID = 'r';
 export const ORG_LOCATION_ID = 'o';
 export const SLOT_NODE_ID = 's';
 export const TEXT_NODE_ID = 't';
+export const COMMENT_NODE_ID = 'c';
 
 export const HYDRATE_ID = 's-id';
 export const HYDRATED_STYLE_ID = 'sty-id';
 export const HYDRATE_CHILD_ID = 'c-id';
 export const HYDRATED_CSS = '{visibility:hidden}.hydrated{visibility:inherit}';
+export const HYDRATED_SLOT_FALLBACK_ID = 'sf-id';
 
 export const XLINK_NS = 'http://www.w3.org/1999/xlink';

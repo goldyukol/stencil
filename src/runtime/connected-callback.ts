@@ -98,7 +98,7 @@ export const connectedCallback = (elm: d.HostElement) => {
       } else {
         initializeComponent(elm, hostRef, cmpMeta);
       }
-    } else {
+    } else if (hostRef) {
       // not the first time this has connected
 
       // reattach any event listeners to the host
@@ -128,5 +128,10 @@ const setContentReference = (elm: d.HostElement) => {
     BUILD.isDebug ? `content-ref (host=${elm.localName})` : '',
   ) as any);
   contentRefElm['s-cn'] = true;
-  elm.insertBefore(contentRefElm, elm.firstChild);
+  const firstChild = elm.__firstChild || elm.firstChild;
+  if (Boolean(firstChild)) {
+    elm.__insertBefore ? elm.__insertBefore(contentRefElm, firstChild) : elm.insertBefore(contentRefElm, firstChild);
+  } else {
+    elm.__appendChild ? elm.__appendChild(contentRefElm) : elm.appendChild(contentRefElm);
+  }
 };

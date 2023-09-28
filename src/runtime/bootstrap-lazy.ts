@@ -5,19 +5,15 @@ import { CMP_FLAGS, queryNonceMetaTagContent } from '@utils';
 import type * as d from '../declarations';
 import { connectedCallback } from './connected-callback';
 import { disconnectedCallback } from './disconnected-callback';
-import {
-  patchChildSlotNodes,
-  patchCloneNode,
-  patchPseudoShadowDom,
-  patchSlotAppendChild,
-  patchTextContent,
-} from './dom-extras';
+import { patchCloneNode, patchPseudoShadowDom } from './dom-extras';
 import { hmrStart } from './hmr-component';
+import { computeMode } from './mode';
 import { createTime, installDevTools } from './profile';
 import { proxyComponent } from './proxy-component';
 import { HYDRATED_CSS, HYDRATED_STYLE_ID, PLATFORM_FLAGS, PROXY_FLAGS } from './runtime-constants';
-import { convertScopedToShadow, registerStyle } from './styles';
+import { convertScopedToShadow, getScopeId, registerStyle } from './styles';
 import { appDidLoad } from './update-component';
+
 export { setNonce } from '@platform';
 
 export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.CustomElementsDefineOptions = {}) => {
@@ -37,7 +33,6 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
   const styles = /*@__PURE__*/ doc.querySelectorAll(`[${HYDRATED_STYLE_ID}]`);
   let appLoadFallback: any;
   let isBootstrapping = true;
-  let i = 0;
 
   Object.assign(plt, options);
   plt.$resourcesUrl$ = new URL(options.resourcesUrl || './', doc.baseURI).href;
@@ -50,11 +45,6 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
     // If the app is already hydrated there is not point to disable the
     // async queue. This will improve the first input delay
     plt.$flags$ |= PLATFORM_FLAGS.appLoaded;
-  }
-  if (BUILD.hydrateClientSide && BUILD.shadowDom) {
-    for (; i < styles.length; i++) {
-      registerStyle(styles[i].getAttribute(HYDRATED_STYLE_ID), convertScopedToShadow(styles[i].innerHTML), true);
-    }
   }
 
   lazyBundles.map((lazyBundle) => {
@@ -75,10 +65,10 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         cmpMeta.$attrsToReflect$ = [];
       }
       if (BUILD.watchCallback) {
-        cmpMeta.$watchers$ = compactMeta[4] ?? {};
+        cmpMeta.$watchers$ = {};
       }
       if (BUILD.shadowDom && !supportsShadow && cmpMeta.$flags$ & CMP_FLAGS.shadowDomEncapsulation) {
-        // TODO(STENCIL-854): Remove code related to legacy shadowDomShim field
+        // TODO(STENCIL-662): Remove code related to deprecated shadowDomShim field
         cmpMeta.$flags$ |= CMP_FLAGS.needsShadowDomShim;
       }
       const tagName =
@@ -94,6 +84,19 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
           // @ts-ignore
           super(self);
           self = this;
+
+          if (BUILD.hydrateClientSide && BUILD.shadowDom) {
+            const scopeId = getScopeId(cmpMeta, computeMode(self));
+            const style = Array.from(styles).find((style) => style.getAttribute(HYDRATED_STYLE_ID) === scopeId);
+
+            if (style) {
+              if (cmpMeta.$flags$ & CMP_FLAGS.shadowDomEncapsulation) {
+                registerStyle(scopeId, convertScopedToShadow(style.innerHTML), true);
+              } else {
+                registerStyle(scopeId, style.innerHTML, false);
+              }
+            }
+          }
 
           registerHost(self, cmpMeta);
           if (BUILD.shadowDom && cmpMeta.$flags$ & CMP_FLAGS.shadowDomEncapsulation) {
@@ -138,22 +141,14 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         }
       };
 
-      // TODO(STENCIL-914): this check and `else` block can go away and be replaced by just `BUILD.scoped` once we
-      // default our pseudo-slot behavior
-      if (BUILD.patchPseudoShadowDom && BUILD.scoped) {
-        patchPseudoShadowDom(HostElement.prototype, cmpMeta);
-      } else {
-        if (BUILD.slotChildNodesFix) {
-          patchChildSlotNodes(HostElement.prototype, cmpMeta);
-        }
+      if (
+        !BUILD.hydrateServerSide &&
+        (cmpMeta.$flags$ & CMP_FLAGS.hasSlotRelocation ||
+          cmpMeta.$flags$ & (CMP_FLAGS.shadowDomEncapsulation && CMP_FLAGS.needsShadowDomShim))
+      ) {
+        patchPseudoShadowDom(HostElement.prototype);
         if (BUILD.cloneNodeFix) {
           patchCloneNode(HostElement.prototype);
-        }
-        if (BUILD.appendChildSlotFix) {
-          patchSlotAppendChild(HostElement.prototype);
-        }
-        if (BUILD.scopedSlotTextContentFix) {
-          patchTextContent(HostElement.prototype, cmpMeta);
         }
       }
 
@@ -169,7 +164,7 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
         cmpTags.push(tagName);
         customElements.define(
           tagName,
-          proxyComponent(HostElement as any, cmpMeta, PROXY_FLAGS.isElementConstructor) as any,
+          proxyComponent(HostElement as any, cmpMeta, PROXY_FLAGS.isElementConstructor) as any
         );
       }
     });

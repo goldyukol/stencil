@@ -1042,6 +1042,22 @@ export interface HostElement extends HTMLElement {
   disconnectedCallback?: () => void;
   host?: Element;
   forceUpdate?: () => void;
+  readonly __childNodes?: NodeListOf<ChildNode>;
+  readonly __children?: HTMLCollectionOf<Element>;
+  readonly __childElementCount?: number;
+  readonly __firstChild?: ChildNode | null;
+  readonly __lastChild?: ChildNode | null;
+  __innerHTML?: string;
+  __innerText?: string;
+  __textContent?: string;
+  __insertBefore?: <T extends Node>(node: T, child: Node | null) => T;
+  __append?: (...nodes: (Node | string)[]) => void;
+  __prepend?: (...nodes: (Node | string)[]) => void;
+  __appendChild?: <T extends Node>(newChild: T) => T;
+  __replaceChildren?: (...nodes: (Node | string)[]) => void;
+  __insertAdjacentElement?: (position: InsertPosition, insertedElement: Element) => Element | null;
+  __insertAdjacentHTML?: (where: InsertPosition, html: string) => void;
+  __insertAdjacentText?: (where: InsertPosition, text: string) => void;
 
   // "s-" prefixed properties should not be property renamed
   // and should be common between all versions of stencil
@@ -1330,6 +1346,26 @@ export interface RenderNode extends HostElement {
   ['s-sn']?: string;
 
   /**
+   * Parent slot name
+   */
+  ['s-psn']?: string;
+
+  /**
+   * Is a slot fallback node
+   */
+  ['s-sf']?: boolean;
+
+  /**
+   * Slot has fallback nodes
+   */
+  ['s-hsf']?: boolean;
+
+  /**
+   * Slot fallback node text content
+   */
+  ['s-sfc']?: string;
+
+  /**
    * Host element tag name:
    * The tag name of the host element that this
    * node was created in.
@@ -1343,6 +1379,12 @@ export interface RenderNode extends HostElement {
    * before it was moved to its slot.
    */
   ['s-ol']?: RenderNode;
+
+  /**
+   * Original Order:
+   * A number representing the order of a slotted node
+   */
+  ['s-oo']?: number;
 
   /**
    * Node reference:

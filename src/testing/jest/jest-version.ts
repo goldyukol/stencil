@@ -1,4 +1,5 @@
 import { getVersion as jestGetVersion } from 'jest';
+// TODO(): Move to facade? Elsewhere?
 
 /**
  * Get the current major version of Jest that Stencil reconciles

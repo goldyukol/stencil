@@ -2,6 +2,7 @@ import semverMajor from 'semver/functions/major';
 
 import { getJestMajorVersion } from './jest-version';
 import { createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27 } from './jest-27-and-under/jest-environment';
+import { jestPreprocessor as jestPreprocessor27 } from './jest-27-and-under/jest-preprocessor';
 
 /**
  * Retrieve the numeric representation of the major version of Jest being used.
@@ -115,5 +116,26 @@ export const getCreateJestPuppeteerEnvironment = (): typeof createJestPuppeteerE
       // when Jest 28+ is supported, this will likely change.
       // we default here instead of throwing an error
       return createJestPuppeteerEnvironment27;
+  }
+};
+
+/**
+ * Retrieve the Jest preprocessor, based on the version of Jest that is installed
+ * @returns a Jest preprocessor
+ */
+export const getJestPreprocessor = (): typeof jestPreprocessor27 => {
+  switch (getVersion()) {
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+      return jestPreprocessor27;
+    case 28:
+    case 29:
+    default:
+      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
+      // when Jest 28+ is supported, this will likely change.
+      // we default here instead of throwing an error
+      return jestPreprocessor27;
   }
 };

@@ -1,7 +1,7 @@
 import semverMajor from 'semver/functions/major';
 
 import { getJestMajorVersion } from './jest-version';
-import {createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27} from './jest-27-and-under/jest-environment';
+import { createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27 } from './jest-27-and-under/jest-environment';
 
 /**
  * Retrieve the numeric representation of the major version of Jest being used.
@@ -97,7 +97,11 @@ export const getScreenshot = async () => {
   }
 };
 
-export const getCreateJestPuppeteerEnvironment = () => {
+/**
+ * Retrieve the Jest-Puppeteer Environment, based on the version of Jest that is installed
+ * @returns a function capapble of creating a Jest environment
+ */
+export const getCreateJestPuppeteerEnvironment = (): typeof createJestPuppeteerEnvironment27 => {
   switch (getVersion()) {
     case 24:
     case 25:

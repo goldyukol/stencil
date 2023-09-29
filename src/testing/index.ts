@@ -1,4 +1,3 @@
-export { jestSetupTestFramework as jestSetupTestFramework27 } from './jest/jest-27-and-under/jest-setup-test-framework';
 export {
   getVersion as getJestMajorVersion,
   getJestModuleNames,

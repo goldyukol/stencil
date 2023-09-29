@@ -30,15 +30,15 @@ describe('jest-facade', () => {
     });
   });
 
-  describe('getJestRunner()', () => {
+  describe('getDefaultJestRunner()', () => {
     it.each([
       ['24.0.0', 'jest-jasmine2'],
       ['25.0.0', 'jest-jasmine2'],
       ['26.0.0', 'jest-jasmine2'],
       ['27.0.0', 'jest-jasmine2'],
-      ['28.0.0', 'jest-circus'],
-      ['29.0.0', 'jest-circus'],
-      ['30.0.0', 'jest-circus'],
+      ['28.0.0', 'jest-jasmine2'],
+      ['29.0.0', 'jest-jasmine2'],
+      ['30.0.0', 'jest-jasmine2'],
     ])('returns the correct module names for jest %s', (jestMajorVersion, runnerName) => {
       getJestMajorVersionSpy.mockImplementation(() => jestMajorVersion);
 
@@ -46,7 +46,7 @@ describe('jest-facade', () => {
     });
   });
 
-  describe('getTestingModuleNames', () => {
+  describe('getJestModuleNames', () => {
     it.each([
       ['24.0.0'],
       ['25.0.0'],

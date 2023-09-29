@@ -2,49 +2,65 @@ import semverMajor from 'semver/functions/major';
 
 import { getJestMajorVersion } from './jest-version';
 
-export const getRunner = async () => {
-  const majorVersion = getVersion();
-  switch (majorVersion) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return await import('./jest-27-and-under/jest-runner');
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior
-      // when Jest 28+ is supported, this will change.
-      // we default here instead of throwing an error
-      return await import('./jest-27-and-under/jest-runner');
-  }
+/**
+ * Retrieve the numeric representation of the major version of Jest being used.
+ *
+ * If a user has Jest v27.1.0 installed, `27` will be returned.
+ *
+ * @returns the major version of Jest detected
+ */
+export const getVersion = (): number => {
+  return semverMajor(getJestMajorVersion());
 };
-export const getScreenshot = async () => {
-  const majorVersion = getVersion();
-  switch (majorVersion) {
+
+/**
+ * Retrieve the default Jest runner name prescribed by Stencil
+ * @returns the stringified name of the test runner, based on the currently detected version of Stencil
+ */
+export const getDefaultJestRunner = (): string => {
+  switch (getVersion()) {
     case 24:
     case 25:
     case 26:
     case 27:
-      return await import('./jest-27-and-under/jest-screenshot');
+      return 'jest-jasmine2';
     case 28:
     case 29:
     default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior
-      // when Jest 28+ is supported, this will change.
+      // in Stencil 4.X, defaulting to jest-jasmine2 is the default behavior.
+      // when Jest 28+ is supported, this will likely change.
       // we default here instead of throwing an error
-      return await import('./jest-27-and-under/jest-screenshot');
+      return 'jest-jasmine2';
   }
 };
 
 /**
- * Retrieve the default Jest runner prescribed by Stencil
- * @returns the stringified name of the test runner, based on the currently detected version of Stencil
+ * Retrieve the Stencil-Jest test runner based on the version of Jest that's installed.
+ *
+ * @returns a test runner for Stencil tests, based on the version of Jest that's detected
  */
-export const getDefaultJestRunner = (): string => {
-  return getVersion() <= 27 ? 'jest-jasmine2' : 'jest-circus';
+export const getRunner = async () => {
+  switch (getVersion()) {
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+      return await import('./jest-27-and-under/jest-runner');
+    case 28:
+    case 29:
+    default:
+      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
+      // when Jest 28+ is supported, this will likely change.
+      // we default here instead of throwing an error
+      return await import('./jest-27-and-under/jest-runner');
+  }
 };
 
+/**
+ * Retrieve a list of modules that are expected to be installed when a user runs `stencil test`.
+ *
+ * @returns a Jest version-specific expected list of modules that should be installed
+ */
 export const getJestModuleNames = (): string[] => {
   switch (getVersion()) {
     case 24:
@@ -58,6 +74,24 @@ export const getJestModuleNames = (): string[] => {
   }
 };
 
-export const getVersion = (): number => {
-  return semverMajor(getJestMajorVersion());
+/**
+ * Retrieve the Stencil-Jest screenshot adapter based on the version of Jest that's installed.
+ *
+ * @returns a screenshot adapter for Stencil tests, based on the version of Jest that's detected
+ */
+export const getScreenshot = async () => {
+  switch (getVersion()) {
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+      return await import('./jest-27-and-under/jest-screenshot');
+    case 28:
+    case 29:
+    default:
+      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
+      // when Jest 28+ is supported, this will likely change.
+      // we default here instead of throwing an error
+      return await import('./jest-27-and-under/jest-screenshot');
+  }
 };

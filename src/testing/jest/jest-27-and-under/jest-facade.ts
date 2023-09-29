@@ -4,8 +4,7 @@ import { createTestRunner as createTestRunner27 } from './jest-runner';
 import { runJest as runJest27 } from './jest-runner';
 import { runJestScreenshot as runJestScreenshot27 } from './jest-screenshot';
 import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-setup-test-framework';
-import {JestFacade} from "../jest-base";
-
+import { JestFacade } from '../jest-base';
 
 export class Jest27StencilAdapter extends JestFacade {
   static override getRunner() {

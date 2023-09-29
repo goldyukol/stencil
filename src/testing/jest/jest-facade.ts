@@ -2,7 +2,7 @@ import semverMajor from 'semver/functions/major';
 
 import { Jest27StencilAdapter } from './jest-27-and-under/jest-facade';
 import { getJestMajorVersion } from './jest-version';
-import {JestFacade} from "./jest-base";
+import { JestFacade } from './jest-base';
 
 /**
  * Retrieve the numeric representation of the major version of Jest being used.

@@ -5,6 +5,7 @@ export {
   getCreateJestPuppeteerEnvironment,
   getJestPreprocessor,
   getCreateJestTestRunner,
+  getJestSetupTestFramework,
 } from './jest/jest-facade';
 export {
   mockFetch,

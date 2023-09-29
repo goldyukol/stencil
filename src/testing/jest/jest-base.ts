@@ -1,5 +1,6 @@
 import type * as d from '@stencil/core/internal';
-import {JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner} from "./jest-version";
+
+import { JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner } from './jest-version';
 
 export abstract class JestAdapter {
   getRunner(): (config: d.ValidatedConfig, e2eEnv: d.E2EProcessEnv) => Promise<boolean> {
@@ -33,7 +34,7 @@ export abstract class JestAdapter {
     throw new Error('TODO');
   }
 
-  getJestSetupTestFramework():void {
+  getJestSetupTestFramework(): void {
     throw new Error('TODO');
   }
 }

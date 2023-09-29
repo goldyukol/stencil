@@ -18,6 +18,10 @@ export class Jest27StencilAdapter extends JestAdapter {
     return 'jest-jasmine2';
   }
 
+  override getJestModuleNames = () => {
+    return ['@types/jest', 'jest', 'jest-cli'];
+  };
+
   override getCreateJestPuppeteerEnvironment() {
     return createJestPuppeteerEnvironment27;
   }

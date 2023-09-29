@@ -1,4 +1,4 @@
-import type * as d from '@stencil/core/internal';
+// import type {ValidatedConfig, E2EProcessEnv} from '@stencil/core/internal';
 
 import { JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner } from './jest-apis';
 
@@ -14,7 +14,7 @@ export abstract class JestAdapter {
    *
    * @returns A function that invokes the Jest CLI.
    */
-  abstract getJestCliRunner(): (config: d.ValidatedConfig, e2eEnv: d.E2EProcessEnv) => Promise<boolean>;
+  abstract getJestCliRunner(): (config: any, e2eEnv: any) => Promise<boolean>;
 
   /**
    * Retrieve a function that invokes Stencil's Screenshot runner.
@@ -24,7 +24,7 @@ export abstract class JestAdapter {
    *
    * @returns A function that invokes the Screenshot runner.
    */
-  abstract getRunJestScreenshot(): (config: d.ValidatedConfig, e2eEnv: d.E2EProcessEnv) => Promise<boolean>;
+  abstract getRunJestScreenshot(): (config: any, e2eEnv: any) => Promise<boolean>;
 
   /**
    * Retrieve the default Jest runner name prescribed by Stencil.
@@ -40,9 +40,7 @@ export abstract class JestAdapter {
    *
    * @returns the list of expected modules
    */
-  getJestModuleNames = (): string[] => {
-    return ['@types/jest', 'jest', 'jest-cli'];
-  };
+  abstract getJestModuleNames(): string[];
 
   /**
    * Retrieve a function that builds a testing environment for Jest + Stencil.

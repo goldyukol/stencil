@@ -1,10 +1,10 @@
 import semverMajor from 'semver/functions/major';
 
-import { getJestMajorVersion } from './jest-version';
 import { createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27 } from './jest-27-and-under/jest-environment';
 import { jestPreprocessor as jestPreprocessor27 } from './jest-27-and-under/jest-preprocessor';
 import { createTestRunner as createTestRunner27 } from './jest-27-and-under/jest-runner';
 import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-27-and-under/jest-setup-test-framework';
+import { getJestMajorVersion } from './jest-version';
 
 /**
  * Retrieve the numeric representation of the major version of Jest being used.

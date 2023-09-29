@@ -1,9 +1,9 @@
 export {
+  getCreateJestPuppeteerEnvironment,
+  getCreateJestTestRunner,
   getVersion as getJestMajorVersion,
   getJestModuleNames,
-  getCreateJestPuppeteerEnvironment,
   getJestPreprocessor,
-  getCreateJestTestRunner,
   getJestSetupTestFramework,
 } from './jest/jest-facade';
 export {

@@ -1,10 +1,13 @@
 import semverMajor from 'semver/functions/major';
 
 import { Jest27StencilAdapter } from './jest-27-and-under/jest-facade';
-import { JestFacade } from './jest-base';
+import { JestAdapter } from './jest-base';
 import { getJestMajorVersion } from './jest-version';
 
-let JEST_ADAPTER: JestFacade | null = null;
+/**
+ * Store a reference to the Jest version-specific adapter used to get pieces of testing infrastructure
+ */
+let JEST_ADAPTER: JestAdapter | null = null;
 
 /**
  * Retrieve the numeric representation of the major version of Jest being used.
@@ -17,15 +20,14 @@ export const getVersion = (): number => {
   return semverMajor(getJestMajorVersion());
 };
 
-const getJestAdapter = (): JestFacade => {
+const getJestAdapter = (): JestAdapter => {
   if (!JEST_ADAPTER) {
     const version = getVersion();
     if (version <= 27) {
       JEST_ADAPTER = new Jest27StencilAdapter();
     } else {
-      // in Stencil 4.X, defaulting to jest-jasmine2 is the default behavior.
+      // in Stencil 4.X, defaulting to jest 27 infrastructure is the default behavior.
       // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
       JEST_ADAPTER = new Jest27StencilAdapter();
     }
   }

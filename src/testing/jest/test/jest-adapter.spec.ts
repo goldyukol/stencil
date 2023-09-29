@@ -1,7 +1,7 @@
-import { getDefaultJestRunner, getJestModuleNames, getVersion } from '../jest-facade';
+import { getDefaultJestRunner, getJestModuleNames, getVersion } from '../jest-adapter';
 import * as JestVersion from '../jest-version';
 
-describe('jest-facade', () => {
+describe('jest-adapter', () => {
   let getJestMajorVersionSpy: jest.SpyInstance<
     ReturnType<typeof JestVersion.getJestMajorVersion>,
     Parameters<typeof JestVersion.getJestMajorVersion>

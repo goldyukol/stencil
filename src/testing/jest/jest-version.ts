@@ -14,6 +14,14 @@
 
 import { getVersion } from 'jest';
 
+export type JestPuppeteerEnvironment = any;
+
+type Jest26CacheKeyOptions = { instrument: boolean; rootDir: string };
+type Jest26Config = { instrument: boolean; rootDir: string };
+type Jest27TransformOptions = { config: Jest26Config };
+export type JestPreprocessor = {process(sourceText: string, sourcePath: string, jestConfig: (Jest26Config | Jest27TransformOptions), transformOptions?: Jest26Config): string, getCacheKey(sourceText: string, sourcePath: string, jestConfigStr: (string | Jest27TransformOptions), transformOptions?: Jest26CacheKeyOptions): string}
+
+export type JestTestRunner = any;
 /**
  * Get the current major version of Jest that Stencil reconciles
  *

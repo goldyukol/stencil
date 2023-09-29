@@ -1,8 +1,11 @@
-export abstract class JestFacade {
-  getRunner(): (_: any, _1: any) => Promise<boolean> {
+import type * as d from '@stencil/core/internal';
+import {JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner} from "./jest-version";
+
+export abstract class JestAdapter {
+  getRunner(): (config: d.ValidatedConfig, e2eEnv: d.E2EProcessEnv) => Promise<boolean> {
     throw new Error('TODO');
   }
-  getScreenshot(): (_: any, _1: any) => Promise<boolean> {
+  getScreenshot(): (config: d.ValidatedConfig, e2eEnv: d.E2EProcessEnv) => Promise<boolean> {
     throw new Error('TODO');
   }
 
@@ -11,26 +14,26 @@ export abstract class JestFacade {
    * @returns the stringified name of the test runner, based on the currently detected version of Stencil
    */
   getDefaultJestRunner(): string {
-    throw new Error('TODO');
+    return 'jest-jasmine2';
   }
 
   getJestModuleNames = (): string[] => {
     return ['@types/jest', 'jest', 'jest-cli'];
   };
 
-  getCreateJestPuppeteerEnvironment(): () => any {
+  getCreateJestPuppeteerEnvironment(): () => JestPuppeteerEnvironment {
     throw new Error('TODO');
   }
 
-  getJestPreprocessor() {
+  getJestPreprocessor(): JestPreprocessor {
     throw new Error('TODO');
   }
 
-  getCreateJestTestRunner() {
+  getCreateJestTestRunner(): JestTestRunner {
     throw new Error('TODO');
   }
 
-  getJestSetupTestFramework() {
+  getJestSetupTestFramework():void {
     throw new Error('TODO');
   }
 }

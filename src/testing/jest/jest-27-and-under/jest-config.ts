@@ -2,7 +2,7 @@ import type { Config } from '@jest/types';
 import type * as d from '@stencil/core/internal';
 import { isString } from '@utils';
 
-import { getDefaultJestRunner } from '../jest-facade';
+import { getDefaultJestRunner } from '../jest-adapter';
 
 // TODO(STENCIL-306): Remove support for earlier versions of Jest
 /**

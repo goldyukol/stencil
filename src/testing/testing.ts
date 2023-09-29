@@ -13,7 +13,7 @@ import type {
 import { hasError } from '@utils';
 import type * as puppeteer from 'puppeteer';
 
-import { getRunner, getScreenshot } from './jest/jest-facade';
+import { getRunner, getScreenshot } from './jest/jest-adapter';
 import { startPuppeteerBrowser } from './puppeteer/puppeteer-browser';
 import { getAppScriptUrl, getAppStyleUrl } from './testing-utils';
 

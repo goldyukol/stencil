@@ -4,7 +4,7 @@ export {
   getJestModuleNames,
   getJestPreprocessor,
   getJestSetupTestFramework,
-} from './jest/jest-facade';
+} from './jest/jest-adapter';
 export {
   mockFetch,
   MockHeaders,

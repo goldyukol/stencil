@@ -2,12 +2,14 @@ import { createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27 } fr
 import { jestPreprocessor as jestPreprocessor27 } from './jest-preprocessor';
 import { createTestRunner as createTestRunner27 } from './jest-runner';
 import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-setup-test-framework';
+import { runJest as runJest27} from './jest-runner';
+import {runJestScreenshot as runJestScreenshot27} from './jest-screenshot'
 
 export abstract class JestFacade {
-  static getRunner = async (): Promise<any> => {
+  static getRunner = (): any => {
     throw 'not implemented';
   };
-  static getScreenshot = async (): Promise<any> => {
+  static getScreenshot =  (): any => {
     throw 'not implemented';
   };
 
@@ -41,11 +43,11 @@ export abstract class JestFacade {
 }
 
 export class Jest27StencilAdapter extends JestFacade {
-  static override async getRunner() {
-    return await import('./jest-runner');
+  static override getRunner() {
+    return runJest27;
   }
-  static override async getScreenshot() {
-    return await import('./jest-screenshot');
+  static override getScreenshot() {
+    return runJestScreenshot27;
   }
 
   static override getDefaultJestRunner() {

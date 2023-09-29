@@ -40,20 +40,20 @@ export const getDefaultJestRunner = (): string => {
  *
  * @returns a test runner for Stencil tests, based on the version of Jest that's detected
  */
-export const getRunner = async () => {
+export const getRunner = () => {
   switch (getVersion()) {
     case 24:
     case 25:
     case 26:
     case 27:
-      return await Jest27StencilAdapter.getRunner();
+      return Jest27StencilAdapter.getRunner();
     case 28:
     case 29:
     default:
       // in Stencil 4.X, defaulting to v27 and under is the default behavior.
       // when Jest 28+ is supported, this will likely change.
       // we default here instead of throwing an error
-      return await Jest27StencilAdapter.getRunner();
+      return Jest27StencilAdapter.getRunner();
   }
 };
 
@@ -80,20 +80,20 @@ export const getJestModuleNames = (): string[] => {
  *
  * @returns a screenshot adapter for Stencil tests, based on the version of Jest that's detected
  */
-export const getScreenshot = async () => {
+export const getScreenshot = () => {
   switch (getVersion()) {
     case 24:
     case 25:
     case 26:
     case 27:
-      return await Jest27StencilAdapter.getScreenshot();
+      return Jest27StencilAdapter.getScreenshot();
     case 28:
     case 29:
     default:
       // in Stencil 4.X, defaulting to v27 and under is the default behavior.
       // when Jest 28+ is supported, this will likely change.
       // we default here instead of throwing an error
-      return await Jest27StencilAdapter.getScreenshot();
+      return Jest27StencilAdapter.getScreenshot();
   }
 };
 

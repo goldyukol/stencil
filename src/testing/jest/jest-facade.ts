@@ -53,7 +53,7 @@ export const getRunner = () => {
  * @returns a Jest version-specific expected list of modules that should be installed
  */
 export const getJestModuleNames = (): string[] => {
-    return JestFacade.getJestModuleNames();
+  return JestFacade.getJestModuleNames();
 };
 
 /**
@@ -81,7 +81,8 @@ export const getCreateJestPuppeteerEnvironment = () => {
   const version = getVersion();
   if (version <= 27) {
     return Jest27StencilAdapter.getCreateJestPuppeteerEnvironment();
-  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+  } else {
+    // in Stencil 4.X, defaulting to v27 and under is the default behavior.
     // when Jest 28+ is supported, this will likely change.
     // we default here instead of throwing an error
     return Jest27StencilAdapter.getCreateJestPuppeteerEnvironment();
@@ -96,7 +97,8 @@ export const getJestPreprocessor = () => {
   const version = getVersion();
   if (version <= 27) {
     return Jest27StencilAdapter.getJestPreprocessor();
-  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+  } else {
+    // in Stencil 4.X, defaulting to v27 and under is the default behavior.
     // when Jest 28+ is supported, this will likely change.
     // we default here instead of throwing an error
     return Jest27StencilAdapter.getJestPreprocessor();
@@ -111,7 +113,8 @@ export const getCreateJestTestRunner = () => {
   const version = getVersion();
   if (version <= 27) {
     return Jest27StencilAdapter.getCreateJestTestRunner();
-  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+  } else {
+    // in Stencil 4.X, defaulting to v27 and under is the default behavior.
     // when Jest 28+ is supported, this will likely change.
     // we default here instead of throwing an error
     return Jest27StencilAdapter.getCreateJestTestRunner();
@@ -126,7 +129,8 @@ export const getJestSetupTestFramework = () => {
   const version = getVersion();
   if (version <= 27) {
     return Jest27StencilAdapter.getJestSetupTestFramework();
-  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+  } else {
+    // in Stencil 4.X, defaulting to v27 and under is the default behavior.
     // when Jest 28+ is supported, this will likely change.
     // we default here instead of throwing an error
     return Jest27StencilAdapter.getJestSetupTestFramework();

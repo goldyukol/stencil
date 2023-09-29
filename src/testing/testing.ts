@@ -143,7 +143,7 @@ export const createTesting = async (config: ValidatedConfig): Promise<Testing> =
 
     try {
       if (doScreenshots) {
-        const runJestScreenshot  = getScreenshot();
+        const runJestScreenshot = getScreenshot();
         passed = await runJestScreenshot(config, env);
       } else {
         const runJest = getRunner();

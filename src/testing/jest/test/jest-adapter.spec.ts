@@ -1,5 +1,5 @@
 import { getDefaultJestRunner, getJestModuleNames, getVersion } from '../jest-adapter';
-import * as JestVersion from '../jest-version';
+import * as JestVersion from '../jest-apis';
 
 describe('jest-adapter', () => {
   let getJestMajorVersionSpy: jest.SpyInstance<

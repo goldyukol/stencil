@@ -1,6 +1,6 @@
 import type * as d from '@stencil/core/internal';
 
-import { JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner } from './jest-version';
+import { JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner } from './jest-apis';
 
 export abstract class JestAdapter {
   getRunner(): (config: d.ValidatedConfig, e2eEnv: d.E2EProcessEnv) => Promise<boolean> {

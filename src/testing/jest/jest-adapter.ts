@@ -1,8 +1,8 @@
 import semverMajor from 'semver/functions/major';
 
 import { Jest27StencilAdapter } from './jest-27-and-under/jest-facade';
+import { getJestMajorVersion } from './jest-apis';
 import { JestAdapter } from './jest-base';
-import { getJestMajorVersion } from './jest-version';
 
 /**
  * Store a reference to the Jest version-specific adapter used to get pieces of testing infrastructure

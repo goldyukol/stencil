@@ -35,6 +35,7 @@ export type JestPreprocessor = {
 };
 
 export type JestTestRunner = any;
+
 /**
  * Get the current major version of Jest that Stencil reconciles
  *

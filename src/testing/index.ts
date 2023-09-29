@@ -1,7 +1,6 @@
 export {
   getCreateJestPuppeteerEnvironment,
   getCreateJestTestRunner,
-  getVersion as getJestMajorVersion,
   getJestModuleNames,
   getJestPreprocessor,
   getJestSetupTestFramework,

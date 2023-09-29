@@ -19,19 +19,14 @@ export const getVersion = (): number => {
  * @returns the stringified name of the test runner, based on the currently detected version of Stencil
  */
 export const getDefaultJestRunner = (): string => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return Jest27StencilAdapter.getDefaultJestRunner();
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to jest-jasmine2 is the default behavior.
-      // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
-      return Jest27StencilAdapter.getDefaultJestRunner();
+  const version = getVersion();
+  if (version <= 27) {
+    return Jest27StencilAdapter.getDefaultJestRunner();
+  } else {
+    // in Stencil 4.X, defaulting to jest-jasmine2 is the default behavior.
+    // when Jest 28+ is supported, this will likely change.
+    // we default here instead of throwing an error
+    return Jest27StencilAdapter.getDefaultJestRunner();
   }
 };
 
@@ -41,19 +36,14 @@ export const getDefaultJestRunner = (): string => {
  * @returns a test runner for Stencil tests, based on the version of Jest that's detected
  */
 export const getRunner = () => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return Jest27StencilAdapter.getRunner();
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
-      // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
-      return Jest27StencilAdapter.getRunner();
+  const version = getVersion();
+  if (version <= 27) {
+    return Jest27StencilAdapter.getRunner();
+  } else {
+    // in Stencil 4.X, defaulting to v27 and under is the default behavior.
+    // when Jest 28+ is supported, this will likely change.
+    // we default here instead of throwing an error
+    return Jest27StencilAdapter.getRunner();
   }
 };
 
@@ -63,16 +53,7 @@ export const getRunner = () => {
  * @returns a Jest version-specific expected list of modules that should be installed
  */
 export const getJestModuleNames = (): string[] => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-    default:
-      return JestFacade.getJestModuleNames();
-  }
+    return JestFacade.getJestModuleNames();
 };
 
 /**
@@ -81,19 +62,14 @@ export const getJestModuleNames = (): string[] => {
  * @returns a screenshot adapter for Stencil tests, based on the version of Jest that's detected
  */
 export const getScreenshot = () => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return Jest27StencilAdapter.getScreenshot();
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
-      // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
-      return Jest27StencilAdapter.getScreenshot();
+  const version = getVersion();
+  if (version <= 27) {
+    return Jest27StencilAdapter.getScreenshot();
+  } else {
+    // in Stencil 4.X, defaulting to v27 and under is the default behavior.
+    // when Jest 28+ is supported, this will likely change.
+    // we default here instead of throwing an error
+    return Jest27StencilAdapter.getScreenshot();
   }
 };
 
@@ -102,19 +78,13 @@ export const getScreenshot = () => {
  * @returns a function capable of creating a Jest environment
  */
 export const getCreateJestPuppeteerEnvironment = () => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return Jest27StencilAdapter.getCreateJestPuppeteerEnvironment();
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
-      // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
-      return Jest27StencilAdapter.getCreateJestPuppeteerEnvironment();
+  const version = getVersion();
+  if (version <= 27) {
+    return Jest27StencilAdapter.getCreateJestPuppeteerEnvironment();
+  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+    // when Jest 28+ is supported, this will likely change.
+    // we default here instead of throwing an error
+    return Jest27StencilAdapter.getCreateJestPuppeteerEnvironment();
   }
 };
 
@@ -123,19 +93,13 @@ export const getCreateJestPuppeteerEnvironment = () => {
  * @returns a Jest preprocessor
  */
 export const getJestPreprocessor = () => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return Jest27StencilAdapter.getJestPreprocessor();
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
-      // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
-      return Jest27StencilAdapter.getJestPreprocessor();
+  const version = getVersion();
+  if (version <= 27) {
+    return Jest27StencilAdapter.getJestPreprocessor();
+  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+    // when Jest 28+ is supported, this will likely change.
+    // we default here instead of throwing an error
+    return Jest27StencilAdapter.getJestPreprocessor();
   }
 };
 
@@ -144,19 +108,13 @@ export const getJestPreprocessor = () => {
  * @returns a function capable of creating a Jest test runner
  */
 export const getCreateJestTestRunner = () => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return Jest27StencilAdapter.getCreateJestTestRunner();
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
-      // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
-      return Jest27StencilAdapter.getCreateJestTestRunner();
+  const version = getVersion();
+  if (version <= 27) {
+    return Jest27StencilAdapter.getCreateJestTestRunner();
+  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+    // when Jest 28+ is supported, this will likely change.
+    // we default here instead of throwing an error
+    return Jest27StencilAdapter.getCreateJestTestRunner();
   }
 };
 
@@ -165,18 +123,12 @@ export const getCreateJestTestRunner = () => {
  * @returns a function capable of setting up Jest
  */
 export const getJestSetupTestFramework = () => {
-  switch (getVersion()) {
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-      return Jest27StencilAdapter.getJestSetupTestFramework();
-    case 28:
-    case 29:
-    default:
-      // in Stencil 4.X, defaulting to v27 and under is the default behavior.
-      // when Jest 28+ is supported, this will likely change.
-      // we default here instead of throwing an error
-      return Jest27StencilAdapter.getJestSetupTestFramework();
+  const version = getVersion();
+  if (version <= 27) {
+    return Jest27StencilAdapter.getJestSetupTestFramework();
+  } else {// in Stencil 4.X, defaulting to v27 and under is the default behavior.
+    // when Jest 28+ is supported, this will likely change.
+    // we default here instead of throwing an error
+    return Jest27StencilAdapter.getJestSetupTestFramework();
   }
 };

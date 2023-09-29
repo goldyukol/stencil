@@ -1,9 +1,9 @@
 import { createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27 } from './jest-environment';
 import { jestPreprocessor as jestPreprocessor27 } from './jest-preprocessor';
 import { createTestRunner as createTestRunner27 } from './jest-runner';
-import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-setup-test-framework';
 import { runJest as runJest27} from './jest-runner';
 import {runJestScreenshot as runJestScreenshot27} from './jest-screenshot'
+import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-setup-test-framework';
 
 export abstract class JestFacade {
   static getRunner = (): any => {

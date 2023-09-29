@@ -1,11 +1,3 @@
-const testing = require('./index.js');
-
-const { getJestMajorVersion } = testing;
-let jestVersion = getJestMajorVersion();
-if (jestVersion < 27) {
-  jestVersion = 27;
-}
-
-const createTestRunner = `createTestRunner${jestVersion}`;
-
-module.exports = testing[createTestRunner]();
+const { getCreateJestTestRunner } = require('./index.js');
+const testRunner = getCreateJestTestRunner();
+module.exports = testRunner();

@@ -99,7 +99,7 @@ export const getScreenshot = async () => {
 
 /**
  * Retrieve the Jest-Puppeteer Environment, based on the version of Jest that is installed
- * @returns a function capapble of creating a Jest environment
+ * @returns a function capable of creating a Jest environment
  */
 export const getCreateJestPuppeteerEnvironment = (): typeof createJestPuppeteerEnvironment27 => {
   switch (getVersion()) {

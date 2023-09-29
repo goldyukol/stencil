@@ -1,11 +1,3 @@
-const testing = require('./index.js');
-
-const { getJestMajorVersion } = testing;
-let jestVersion = getJestMajorVersion();
-if (jestVersion < 27) {
-  jestVersion = 27;
-}
-
-const createJestPuppeteerEnvironment = `createJestPuppeteerEnvironment${jestVersion}`;
-
-module.exports = testing[createJestPuppeteerEnvironment]();
+const { getCreateJestPuppeteerEnvironment } = require('./index.js');
+const createJestEnvironment = getCreateJestPuppeteerEnvironment();
+module.exports = createJestEnvironment();

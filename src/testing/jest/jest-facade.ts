@@ -1,6 +1,7 @@
 import semverMajor from 'semver/functions/major';
 
 import { createJestPuppeteerEnvironment as createJestPuppeteerEnvironment27 } from './jest-27-and-under/jest-environment';
+import {Jest27StencilAdapter} from "./jest-27-and-under/jest-facade";
 import { jestPreprocessor as jestPreprocessor27 } from './jest-27-and-under/jest-preprocessor';
 import { createTestRunner as createTestRunner27 } from './jest-27-and-under/jest-runner';
 import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-27-and-under/jest-setup-test-framework';
@@ -27,14 +28,14 @@ export const getDefaultJestRunner = (): string => {
     case 25:
     case 26:
     case 27:
-      return 'jest-jasmine2';
+      return Jest27StencilAdapter.getDefaultJestRunner()
     case 28:
     case 29:
     default:
       // in Stencil 4.X, defaulting to jest-jasmine2 is the default behavior.
       // when Jest 28+ is supported, this will likely change.
       // we default here instead of throwing an error
-      return 'jest-jasmine2';
+      return Jest27StencilAdapter.getDefaultJestRunner()
   }
 };
 
@@ -49,14 +50,14 @@ export const getRunner = async () => {
     case 25:
     case 26:
     case 27:
-      return await import('./jest-27-and-under/jest-runner');
+      return await Jest27StencilAdapter.getRunner();
     case 28:
     case 29:
     default:
       // in Stencil 4.X, defaulting to v27 and under is the default behavior.
       // when Jest 28+ is supported, this will likely change.
       // we default here instead of throwing an error
-      return await import('./jest-27-and-under/jest-runner');
+      return await Jest27StencilAdapter.getRunner();
   }
 };
 

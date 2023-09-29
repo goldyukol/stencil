@@ -49,7 +49,7 @@ export const getDefaultJestRunner = (): string => {
  * @returns a test runner for Stencil tests, based on the version of Jest that's detected
  */
 export const getRunner = () => {
-  return getJestAdapter().getRunner();
+  return getJestAdapter().getJestCliRunner();
 };
 
 /**
@@ -67,7 +67,7 @@ export const getJestModuleNames = (): string[] => {
  * @returns a screenshot adapter for Stencil tests, based on the version of Jest that's detected
  */
 export const getScreenshot = () => {
-  return getJestAdapter().getScreenshot();
+  return getJestAdapter().getRunJestScreenshot();
 };
 
 /**

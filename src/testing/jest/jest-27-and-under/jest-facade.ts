@@ -7,10 +7,10 @@ import { runJestScreenshot as runJestScreenshot27 } from './jest-screenshot';
 import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-setup-test-framework';
 
 export class Jest27StencilAdapter extends JestAdapter {
-  override getRunner() {
+  override getJestCliRunner() {
     return runJest27;
   }
-  override getScreenshot() {
+  override getRunJestScreenshot() {
     return runJestScreenshot27;
   }
 

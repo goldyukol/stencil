@@ -1513,6 +1513,15 @@ export interface HostRef {
   $flags$: number;
   $cmpMeta$: ComponentRuntimeMeta;
   $hostElement$: HostElement;
+  /**
+   * This is set on the {@link HostRef} in order to support form-associated
+   * Stencil components with Hot module replacement.
+   *
+   * We need to maintain a reference to a the `ElementInternals` object for a
+   * form-associated Stencil component across updates because the
+   * `attachInternals` method can only be called once on a given `HTMLElement`.
+   */
+  $elementInternals$?: ElementInternals;
   $instanceValues$?: Map<string, any>;
   $lazyInstance$?: ComponentInterface;
   $onReadyPromise$?: Promise<any>;

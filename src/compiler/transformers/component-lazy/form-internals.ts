@@ -16,7 +16,7 @@ import { HOST_REF_ARG } from './constants';
  * @param cmp metadata about the component of interest, gathered during compilation
  * @returns a list of expression statements
  */
-export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
+export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.Statement[] {
   if (cmp.formAssociated && cmp.formInternalsMemberName) {
     // if a `@FormInternals` decorator is present on a component like this:
     //
@@ -34,36 +34,96 @@ export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts
     // For this to work a `hostRef` variable must be in scope! This will be the
     // case in the lazy constructor.
     return [
-      ts.factory.createExpressionStatement(ts.factory.createCallExpression(
-        ts.factory.createPropertyAccessExpression(
-          ts.factory.createIdentifier("console"),
-          ts.factory.createIdentifier("log")
-        ),
-        undefined,
-        [ts.factory.createElementAccessExpression(
-          ts.factory.createThis(),
-          ts.factory.createIdentifier(cmp.formInternalsMemberName),
-        )]
-      )),
       ts.factory.createExpressionStatement(
-        ts.factory.createBinaryExpression(
+        ts.factory.createCallExpression(
           ts.factory.createPropertyAccessExpression(
-            ts.factory.createThis(),
-            // use the name set on the {@link d.ComponentCompilerMeta}
-            ts.factory.createIdentifier(cmp.formInternalsMemberName),
+            ts.factory.createIdentifier('console'),
+            ts.factory.createIdentifier('log'),
           ),
-          ts.factory.createToken(ts.SyntaxKind.EqualsToken),
-          ts.factory.createCallExpression(
-            ts.factory.createPropertyAccessExpression(
-              ts.factory.createPropertyAccessExpression(
-                ts.factory.createIdentifier(HOST_REF_ARG),
-                ts.factory.createIdentifier('$hostElement$'),
+          undefined,
+          [ts.factory.createIdentifier(HOST_REF_ARG)],
+        ),
+      ),
+
+      ts.factory.createIfStatement(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier(HOST_REF_ARG),
+            ts.factory.createIdentifier('$lazyInstance$'),
+          ),
+          ts.factory.createIdentifier(cmp.formInternalsMemberName)
+        ),
+        ts.factory.createBlock(
+          [
+      ts.factory.createExpressionStatement(
+        ts.factory.createCallExpression(
+          ts.factory.createPropertyAccessExpression(
+            ts.factory.createIdentifier('console'),
+            ts.factory.createIdentifier('log'),
+          ),
+          undefined,
+          [ts.factory.createIdentifier(HOST_REF_ARG)],
+        ),
+      ),
+            // // this.${ cmp.formInternalsMemberName } = hostRef.$elementInternals$;
+            // ts.factory.createExpressionStatement(
+            //   ts.factory.createBinaryExpression(
+            //     ts.factory.createPropertyAccessExpression(
+            //       ts.factory.createThis(),
+            //       // use the name set on the {@link d.ComponentCompilerMeta}
+            //       ts.factory.createIdentifier(cmp.formInternalsMemberName),
+            //     ),
+            //     ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+            //     ts.factory.createPropertyAccessExpression(
+            //       ts.factory.createIdentifier(HOST_REF_ARG),
+            //       ts.factory.createIdentifier('$elementInternals$'),
+            //     ),
+            //   ),
+            // ),
+          ],
+          true,
+        ),
+        ts.factory.createBlock(
+          [
+            // this.${ cmp.formInternalsMemberName } = hostRef.$hostElement$.attachInternals();
+            ts.factory.createExpressionStatement(
+              ts.factory.createBinaryExpression(
+                ts.factory.createPropertyAccessExpression(
+                  ts.factory.createThis(),
+                  // use the name set on the {@link d.ComponentCompilerMeta}
+                  ts.factory.createIdentifier(cmp.formInternalsMemberName),
+                ),
+                ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+                ts.factory.createCallExpression(
+                  ts.factory.createPropertyAccessExpression(
+                    ts.factory.createPropertyAccessExpression(
+                      ts.factory.createIdentifier(HOST_REF_ARG),
+                      ts.factory.createIdentifier('$hostElement$'),
+                    ),
+                    ts.factory.createIdentifier('attachInternals'),
+                  ),
+                  undefined,
+                  [],
+                ),
               ),
-              ts.factory.createIdentifier('attachInternals'),
             ),
-            undefined,
-            [],
-          ),
+            // hostRef.$elementInternals$ = this.${ cmp.formInternalsMemberName };
+            // ts.factory.createExpressionStatement(
+            //   ts.factory.createBinaryExpression(
+            //     ts.factory.createPropertyAccessExpression(
+            //       ts.factory.createIdentifier(HOST_REF_ARG),
+            //       ts.factory.createIdentifier('$elementInternals$'),
+            //     ),
+            //     ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+            //     ts.factory.createPropertyAccessExpression(
+            //       ts.factory.createThis(),
+            //       // use the name set on the {@link d.ComponentCompilerMeta}
+            //       ts.factory.createIdentifier(cmp.formInternalsMemberName),
+            //     ),
+            //   ),
+            // ),
+          ],
+          true,
         ),
       ),
     ];

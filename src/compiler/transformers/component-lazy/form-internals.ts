@@ -51,20 +51,22 @@ export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts
             ts.factory.createIdentifier(HOST_REF_ARG),
             ts.factory.createIdentifier('$lazyInstance$'),
           ),
-          ts.factory.createIdentifier(cmp.formInternalsMemberName)
+          ts.factory.createIdentifier(cmp.formInternalsMemberName),
         ),
         ts.factory.createBlock(
           [
-      ts.factory.createExpressionStatement(
-        ts.factory.createCallExpression(
-          ts.factory.createPropertyAccessExpression(
-            ts.factory.createIdentifier('console'),
-            ts.factory.createIdentifier('log'),
-          ),
-          undefined,
-          [ts.factory.createIdentifier(HOST_REF_ARG)],
-        ),
-      ),
+            // TODO do I need to still assign HOST_REF_ARG.$lazyInstance$[cmp.formInternalsMemberName]
+            // to this[cmp.formInternalsMemberName] here? I'm not sure.
+            ts.factory.createExpressionStatement(
+              ts.factory.createCallExpression(
+                ts.factory.createPropertyAccessExpression(
+                  ts.factory.createIdentifier('console'),
+                  ts.factory.createIdentifier('log'),
+                ),
+                undefined,
+                [ts.factory.createIdentifier(HOST_REF_ARG)],
+              ),
+            ),
             // // this.${ cmp.formInternalsMemberName } = hostRef.$elementInternals$;
             // ts.factory.createExpressionStatement(
             //   ts.factory.createBinaryExpression(

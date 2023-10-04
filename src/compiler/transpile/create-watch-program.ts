@@ -2,7 +2,9 @@ import ts from 'typescript';
 
 import type * as d from '../../declarations';
 import { getTsOptionsToExtend } from './ts-config';
-
+function getDebugPrefix(): string {
+  return (Math.random() + 1).toString(36).substring(7);
+}
 /**
  * This method creates the {@link ts.EmitAndSemanticDiagnosticsBuilderProgram} that is responsible for
  * rebuilding a Stencil project after file changes have been detected (via TS's polling-based file watcher).
@@ -88,6 +90,8 @@ export const createTsWatchProgram = async (
   // is created using the definition we have constructed for `tsWatchHost`.
   // This is what will be used to kick-off the actual Stencil build process via the `buildCallback()`
   tsWatchHost.afterProgramCreate = async (tsBuilder) => {
+    const prefix = `afterProgramCreate__${getDebugPrefix()} `;
+      console.log(prefix, "got called");
     lastTsBuilder = tsBuilder;
     isRunning = true;
     await buildCallback(tsBuilder);

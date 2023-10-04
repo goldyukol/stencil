@@ -34,6 +34,17 @@ export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts
     // For this to work a `hostRef` variable must be in scope! This will be the
     // case in the lazy constructor.
     return [
+      ts.factory.createExpressionStatement(ts.factory.createCallExpression(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createIdentifier("console"),
+          ts.factory.createIdentifier("log")
+        ),
+        undefined,
+        [ts.factory.createElementAccessExpression(
+          ts.factory.createThis(),
+          ts.factory.createIdentifier(cmp.formInternalsMemberName),
+        )]
+      )),
       ts.factory.createExpressionStatement(
         ts.factory.createBinaryExpression(
           ts.factory.createPropertyAccessExpression(

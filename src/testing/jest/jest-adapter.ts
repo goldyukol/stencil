@@ -71,4 +71,14 @@ export abstract class JestAdapter {
    * @returns a function that runs a setup configuration between tests.
    */
   abstract getJestSetupTestFramework(): () => void;
+
+  /**
+   * Retrieve a function that returns the setup configuration code to run between tests.
+   *
+   * The value returned by said function is expected to be used in a
+   * [preset](https://jestjs.io/docs/configuration#preset-string) context.
+   *
+   * @returns a function that returns the Jest preset object.
+   */
+  abstract getJestPreset(): () => void;
 }

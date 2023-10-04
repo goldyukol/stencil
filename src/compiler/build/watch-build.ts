@@ -18,6 +18,10 @@ import { createTsWatchProgram } from '../transpile/create-watch-program';
 import { build } from './build';
 import { BuildContext } from './build-ctx';
 
+function getDebugPrefix(): string {
+  return (Math.random() + 1).toString(36).substring(7);
+}
+
 /**
  * This method contains context and functionality for a TS watch build. This is called via
  * the compiler when running a build in watch mode (i.e. `stencil build --watch`).
@@ -55,6 +59,8 @@ export const createWatchBuild = async (
    * @param tsBuilder A {@link ts.BuilderProgram} to be passed to the `build()` function.
    */
   const onBuild = async (tsBuilder: ts.BuilderProgram) => {
+    const prefix = `onBuild_${getDebugPrefix()} `
+    console.log(prefix, "got called");
     const buildCtx = new BuildContext(config, compilerCtx);
     buildCtx.isRebuild = isRebuild;
     buildCtx.requiresFullBuild = !isRebuild;
@@ -94,8 +100,10 @@ export const createWatchBuild = async (
 
     buildCtx.start();
 
+    console.log(prefix, 'about to call "build"');
     // Rebuild the project
     const result = await build(config, compilerCtx, buildCtx, tsBuilder);
+    console.log(prefix, 'called "build"');
 
     if (result && !result.hasError) {
       isRebuild = true;

@@ -3,14 +3,14 @@ import { join } from 'path';
 
 /**
  * The path's declared below are relative. Specifically, they are relative to the location of this file after
- * compilation of the Stencil compiler has completed. See `scripts/bundles/testing` for the location of this file
- * following compilation.
+ * compilation of the Stencil compiler has completed.
  */
 const testingDir = __dirname;
 const rootDir = join(testingDir, '..');
 const internalDir = join(rootDir, 'internal');
 
-// NOTE: if you change this, also change compiler/transpile.ts
+// NOTE: if you change this, also change compiler/transpile.ts. Search for 'mod_extensions_jest' to find other comments
+// like it.
 const moduleExtensions = ['ts', 'tsx', 'js', 'mjs', 'jsx'];
 const moduleExtensionRegexp = '(' + moduleExtensions.join('|') + ')';
 

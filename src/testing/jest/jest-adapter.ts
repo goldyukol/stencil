@@ -1,4 +1,4 @@
-import { JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner } from './jest-apis';
+import { JestConfig, JestPreprocessor, JestPuppeteerEnvironment, JestTestRunner } from './jest-apis';
 
 /**
  * Base class for Jest-version specific code implementations that interact with Stencil.
@@ -73,12 +73,12 @@ export abstract class JestAdapter {
   abstract getJestSetupTestFramework(): () => void;
 
   /**
-   * Retrieve a function that returns the setup configuration code to run between tests.
+   * Retrieve the Jest preset configuration object for configuring tests.
    *
    * The value returned by said function is expected to be used in a
    * [preset](https://jestjs.io/docs/configuration#preset-string) context.
    *
-   * @returns a function that returns the Jest preset object.
+   * @returns the Jest preset object to be used for a particular version of Jest.
    */
-  abstract getJestPreset(): () => void;
+  abstract getJestPreset(): JestConfig;
 }

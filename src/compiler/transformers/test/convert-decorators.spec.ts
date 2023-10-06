@@ -385,13 +385,42 @@ describe('convert-decorators', () => {
     const t = transpileModule(`
      @Component({
        tag: 'cmp-a',
-       shadow: { formAssociated: true },
+       formAssociated: true
+     })
+      export class CmpA {
+    }
+    `);
+
+    expect(getStaticGetter(t.outputText, 'formAssociated')).toBe(true);
+  });
+
+  it('should support formAssociated with shadow', async () => {
+    const t = transpileModule(`
+     @Component({
+       tag: 'cmp-a',
+       formAssociated: true,
+       shadow: true
      })
       export class CmpA {
     }
     `);
 
     expect(getStaticGetter(t.outputText, 'encapsulation')).toBe('shadow');
+    expect(getStaticGetter(t.outputText, 'formAssociated')).toBe(true);
+  });
+
+  it('should support formAssociated with scoped', async () => {
+    const t = transpileModule(`
+     @Component({
+       tag: 'cmp-a',
+       formAssociated: true,
+       scoped: true
+     })
+      export class CmpA {
+    }
+    `);
+
+    expect(getStaticGetter(t.outputText, 'encapsulation')).toBe('scoped');
     expect(getStaticGetter(t.outputText, 'formAssociated')).toBe(true);
   });
 

@@ -114,7 +114,7 @@ describe('nativeComponentTransform', () => {
     it('adds a getter for formAssociated', async () => {
       const code = `
         @Component({
-          tag: 'cmp-a', shadow: { formAssociated: true }
+          tag: 'cmp-a', formAssociated: true
         })
         export class CmpA {
         }
@@ -130,7 +130,6 @@ describe('nativeComponentTransform', () => {
           constructor() {
             super();
             this.__registerHost();
-            this.__attachShadow();
           }
           static get formAssociated() {
             return true;
@@ -142,7 +141,7 @@ describe('nativeComponentTransform', () => {
     it('adds a binding for @FormInternals', async () => {
       const code = `
         @Component({
-          tag: 'cmp-a', shadow: { formAssociated: true }
+          tag: 'cmp-a', formAssociated: true
         })
         export class CmpA {
           @FormInternals() internals;
@@ -158,7 +157,6 @@ describe('nativeComponentTransform', () => {
           constructor() {
             super();
             this.__registerHost();
-            this.__attachShadow();
             this.internals = this.attachInternals();
           }
           static get formAssociated() {

@@ -91,7 +91,7 @@ export const createTsWatchProgram = async (
   // This is what will be used to kick-off the actual Stencil build process via the `buildCallback()`
   tsWatchHost.afterProgramCreate = async (tsBuilder) => {
     const prefix = `afterProgramCreate__${getDebugPrefix()} `;
-      console.log(prefix, "got called");
+    console.log(prefix, 'got called');
     lastTsBuilder = tsBuilder;
     isRunning = true;
     await buildCallback(tsBuilder);

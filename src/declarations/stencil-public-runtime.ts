@@ -9,6 +9,16 @@ export interface ComponentDecorator {
 }
 export interface ComponentOptions {
   /**
+   * When set to `true` this component will be form-associated. See
+   * https://stenciljs.com/docs/next/form-associated documentation on how to
+   * build form-associated Stencil components that integrate into forms like
+   * native browser elements such as `<input>` and `<textarea>`.
+   *
+   * The {@link FormInternals} decorator allows for access to the
+   * `ElementInternals` object to modify the associated form.
+   */
+  formAssociated?: boolean;
+  /**
    * Tag name of the web component. Ideally, the tag name must be globally unique,
    * so it's recommended to choose an unique prefix for all your components within the same collection.
    *
@@ -61,17 +71,6 @@ export interface ShadowRootOptions {
    * focusable part is given focus, and the shadow host is given any available `:focus` styling.
    */
   delegatesFocus?: boolean;
-
-  /**
-   * When set to `true` this component will be form-associated. See
-   * https://stenciljs.com/docs/next/form-associated documentation on how to
-   * build form-associated Stencil components that integrate into forms like
-   * native browser elements such as `<input>` and `<textarea>`.
-   *
-   * The {@link FormInternals} decorator allows for access to the
-   * `ElementInternals` object to modify the associated form.
-   */
-  formAssociated?: boolean;
 }
 
 export interface ModeStyles {

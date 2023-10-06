@@ -53,14 +53,13 @@ export const componentDecoratorToStatic = (
       if (componentOptions.shadow.delegatesFocus === true) {
         newMembers.push(createStaticGetter('delegatesFocus', convertValueToLiteral(true)));
       }
-
-      // we only support building form-associated components with shadow DOM
-      if (componentOptions.shadow.formAssociated === true) {
-        newMembers.push(createStaticGetter('formAssociated', convertValueToLiteral(true)));
-      }
     }
   } else if (componentOptions.scoped) {
     newMembers.push(createStaticGetter('encapsulation', convertValueToLiteral('scoped')));
+  }
+
+  if (componentOptions.formAssociated === true) {
+    newMembers.push(createStaticGetter('formAssociated', convertValueToLiteral(true)));
   }
 
   styleToStatic(newMembers, componentOptions);
@@ -116,17 +115,6 @@ const validateComponent = (
   const formInternalsMembers = cmpNode.members.filter(ts.isPropertyDeclaration).filter((prop) => {
     return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('FormInternals'));
   });
-
-  if (
-    formInternalsMembers.length > 0 &&
-    (typeof componentOptions.shadow === 'boolean' || !componentOptions.shadow?.formAssociated)
-  ) {
-    const err = buildError(diagnostics);
-    err.messageText = `In order to use the @FormInternals() decorator to access ElementInternals a
-    component must set shadow.formAssociated to true.`;
-    augmentDiagnosticWithNode(err, findTagNode('shadow', componentDecorator));
-    return false;
-  }
 
   const constructor = cmpNode.members.find(ts.isConstructorDeclaration);
   if (constructor && constructor.parameters.length > 0) {

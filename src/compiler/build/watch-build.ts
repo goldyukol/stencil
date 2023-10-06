@@ -59,8 +59,8 @@ export const createWatchBuild = async (
    * @param tsBuilder A {@link ts.BuilderProgram} to be passed to the `build()` function.
    */
   const onBuild = async (tsBuilder: ts.BuilderProgram) => {
-    const prefix = `onBuild_${getDebugPrefix()} `
-    console.log(prefix, "got called");
+    const prefix = `onBuild_${getDebugPrefix()} `;
+    console.log(prefix, 'got called');
     const buildCtx = new BuildContext(config, compilerCtx);
     buildCtx.isRebuild = isRebuild;
     buildCtx.requiresFullBuild = !isRebuild;

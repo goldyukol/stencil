@@ -1085,6 +1085,16 @@ export interface HostElement extends HTMLElement {
   ['s-lr']?: boolean;
 
   /**
+   * A reference to the `ElementInternals` object for the current host
+   *
+   * This is used for maintaining a reference to the object between HMR
+   * refreshes in the lazy build.
+   *
+   * "stencil-element-internals"
+   */
+  ['s-ei']?: ElementInternals;
+
+  /**
    * On Render Callbacks:
    * Array of callbacks to fire off after it has rendered.
    */

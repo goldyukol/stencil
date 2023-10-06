@@ -18,6 +18,6 @@ describe('form associated', function () {
     const formEl = app.querySelector('form');
     // this shows that the element has, through the `ElementInternals`
     // interface, been able to set a value in the surrounding form
-    expect(new FormData(formEl).get("test-input")).toBe("my default value");
+    expect(new FormData(formEl).get('test-input')).toBe('my default value');
   });
 });

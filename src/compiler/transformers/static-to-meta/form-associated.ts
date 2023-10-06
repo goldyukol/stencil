@@ -1,4 +1,3 @@
-import { ComponentCompilerMeta } from '@stencil/core/declarations';
 import ts from 'typescript';
 
 import { getStaticValue } from '../transform-utils';
@@ -9,49 +8,7 @@ import { getStaticValue } from '../transform-utils';
  * @param staticMembers class members for the Stencil component of interest
  * @returns whether or not the given component is form-associated
  */
-const parseFormAssociated = (staticMembers: ts.ClassElement[]): boolean => {
+export const parseFormAssociated = (staticMembers: ts.ClassElement[]): boolean => {
   const isFormAssociated = getStaticValue(staticMembers, 'formAssociated');
   return typeof isFormAssociated === 'boolean' && isFormAssociated;
-};
-
-/**
- * Parse the name of  form internals prop from a transformed Stencil component
- * if present
- *
- * @param staticMembers class members for the Stencil component of interest
- * @returns the parsed value, if present, else null
- */
-const parseFormInternals = (staticMembers: ts.ClassElement[]): string | null => {
-  const parsedFormInternalsMemberName = getStaticValue(staticMembers, 'formInternalsMemberName');
-  if (parsedFormInternalsMemberName && typeof parsedFormInternalsMemberName === 'string') {
-    return parsedFormInternalsMemberName;
-  } else {
-    return null;
-  }
-};
-
-type FormAssociatedProperties = Pick<ComponentCompilerMeta, 'formAssociated' | 'formInternalsMemberName'>;
-
-/**
- * Parse both of the static properties for form associated custom elements,
- * `formAssociated` and `formInternalsMemberName`, and return suitable values. In
- * particular, if `formAssociated` is not set to `true` in the `@Component`
- * decorator we should always return `null` for `formInternalsMemberName`.
- *
- * @param staticMembers class members for the Stencil component of interest
- * @returns an object with `formAssociated` and `formInternalsMemberName` set on
- * it
- */
-export const parseFormAssociatedProperties = (staticMembers: ts.ClassElement[]): FormAssociatedProperties => {
-  const formAssociated = parseFormAssociated(staticMembers);
-  const formInternalsMemberName = parseFormInternals(staticMembers);
-
-  if (formAssociated) {
-    return { formAssociated, formInternalsMemberName };
-  } else {
-    return {
-      formAssociated: false,
-      formInternalsMemberName: null,
-    };
-  }
 };

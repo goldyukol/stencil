@@ -5,7 +5,7 @@ import { addCoreRuntimeApi, REGISTER_INSTANCE, RUNTIME_APIS } from '../core-runt
 import { addCreateEvents } from '../create-event';
 import { updateConstructor } from '../transform-utils';
 import { HOST_REF_ARG } from './constants';
-import { createLazyFormInternalsBinding } from './form-internals';
+import { createLazyAttachInternalsBinding } from './form-internals';
 
 /**
  * Update the constructor for a Stencil component's class in order to prepare
@@ -29,7 +29,7 @@ export const updateLazyComponentConstructor = (
   const cstrStatements = [
     registerInstanceStatement(moduleFile),
     ...addCreateEvents(moduleFile, cmp),
-    ...createLazyFormInternalsBinding(cmp),
+    ...createLazyAttachInternalsBinding(cmp),
   ];
 
   updateConstructor(classNode, classMembers, cstrStatements, cstrMethodArgs);

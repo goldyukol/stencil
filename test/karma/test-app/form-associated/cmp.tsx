@@ -1,13 +1,11 @@
-import { Component, h, FormInternals } from '@stencil/core';
+import { Component, h, AttachInternals } from '@stencil/core';
 
 @Component({
   tag: 'form-associated',
-  shadow: {
-    formAssociated: true,
-  },
+  formAssociated: true,
 })
 export class FormAssociatedCmp {
-  @FormInternals()
+  @AttachInternals()
   internals: ElementInternals;
 
   componentWillLoad() {

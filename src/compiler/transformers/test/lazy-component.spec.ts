@@ -63,7 +63,7 @@ describe('lazy-component', () => {
     expect(t.outputText).not.toContain(`el;`);
   });
 
-  it('adds an `attachInternals` call with a `@FormInternals` decoration', () => {
+  it('adds an `attachInternals` call with a `@AttachInternals` decoration', () => {
     const compilerCtx = mockCompilerCtx();
     const transformOpts: d.TransformOptions = {
       coreImportPath: '@stencil/core',
@@ -81,7 +81,7 @@ describe('lazy-component', () => {
         formAssociated: true
       })
       export class CmpA {
-        @FormInternals() internals: ElementInternals;
+        @AttachInternals() internals: ElementInternals;
       }
     `;
 

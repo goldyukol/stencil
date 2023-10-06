@@ -644,7 +644,7 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
    * `HTMLElement.attachInternals`) should be attached at runtime. If this is
    * `null` then `attachInternals` should not be called.
    */
-  formInternalsMemberName: string | null;
+  attachInternalsMemberName: string | null;
   internal: boolean;
   isCollectionDependency: boolean;
   jsFilePath: string;

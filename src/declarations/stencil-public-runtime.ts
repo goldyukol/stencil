@@ -14,7 +14,7 @@ export interface ComponentOptions {
    * build form-associated Stencil components that integrate into forms like
    * native browser elements such as `<input>` and `<textarea>`.
    *
-   * The {@link FormInternals} decorator allows for access to the
+   * The {@link AttachInternals} decorator allows for access to the
    * `ElementInternals` object to modify the associated form.
    */
   formAssociated?: boolean;
@@ -136,7 +136,7 @@ export interface EventOptions {
   composed?: boolean;
 }
 
-export interface FormInternalsDecorator {
+export interface AttachInternalsDecorator {
   (): PropertyDecorator;
 }
 
@@ -219,11 +219,11 @@ export declare const Element: ElementDecorator;
 export declare const Event: EventDecorator;
 
 /**
- * If the `formAssociated` option is set in the shadow DOM options passed to
- * the `@Component()` decorator then this decorator may be used to get access
- * to `ElementInternals` instance associated with the component.
+ * If the `formAssociated` option is set in options passed to the
+ * `@Component()` decorator then this decorator may be used to get access to the
+ * `ElementInternals` instance associated with the component.
  */
-export declare const FormInternals: FormInternalsDecorator;
+export declare const AttachInternals: AttachInternalsDecorator;
 
 /**
  * The `Listen()` decorator is for listening DOM events, including the ones

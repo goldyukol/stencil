@@ -8,18 +8,18 @@ import ts from 'typescript';
  *
  * Since a 'native' custom element will extend `HTMLElement` we can call
  * `this.attachInternals` directly, binding it to the name annotated by the
- * developer with the `@FormInternals` decorator.
+ * developer with the `@AttachInternals` decorator.
  *
  * @param cmp metadata about the component of interest, gathered during
  * compilation
  * @returns an expression statement syntax tree node
  */
-export function createNativeFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
-  if (cmp.formAssociated && cmp.formInternalsMemberName) {
-    // if a `@FormInternals` decorator is present on a component like this:
+export function createNativeAttachInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
+  if (cmp.formAssociated && cmp.attachInternalsMemberName) {
+    // if an `@AttachInternals` decorator is present on a component like this:
     //
     // ```ts
-    // @FormInternals()
+    // @AttachInternals()
     // internals: ElementInternals;
     // ```
     //
@@ -34,7 +34,7 @@ export function createNativeFormInternalsBinding(cmp: d.ComponentCompilerMeta): 
           ts.factory.createPropertyAccessExpression(
             ts.factory.createThis(),
             // use the name set on the {@link d.ComponentCompilerMeta}
-            ts.factory.createIdentifier(cmp.formInternalsMemberName),
+            ts.factory.createIdentifier(cmp.attachInternalsMemberName),
           ),
           ts.factory.createToken(ts.SyntaxKind.EqualsToken),
           ts.factory.createCallExpression(

@@ -29,7 +29,7 @@ export {
   Env,
   Event,
   forceUpdate,
-  FormInternals,
+  AttachInternals,
   Fragment,
   getAssetPath,
   getElement,

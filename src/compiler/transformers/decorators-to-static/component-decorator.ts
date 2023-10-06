@@ -112,8 +112,8 @@ const validateComponent = (
     return false;
   }
 
-  const formInternalsMembers = cmpNode.members.filter(ts.isPropertyDeclaration).filter((prop) => {
-    return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('FormInternals'));
+  const attachInternalsMembers = cmpNode.members.filter(ts.isPropertyDeclaration).filter((prop) => {
+    return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('AttachInternals'));
   });
 
   const constructor = cmpNode.members.find(ts.isConstructorDeclaration);

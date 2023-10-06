@@ -16,12 +16,12 @@ import { HOST_REF_ARG } from './constants';
  * @param cmp metadata about the component of interest, gathered during compilation
  * @returns a list of expression statements
  */
-export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts.Statement[] {
-  if (cmp.formAssociated && cmp.formInternalsMemberName) {
-    // if a `@FormInternals` decorator is present on a component like this:
+export function createLazyAttachInternalsBinding(cmp: d.ComponentCompilerMeta): ts.Statement[] {
+  if (cmp.formAssociated && cmp.attachInternalsMemberName) {
+    // if an `@AttachInternals` decorator is present on a component like this:
     //
     // ```ts
-    // @FormInternals()
+    // @AttachInternals()
     // internals: ElementInternals;
     // ```
     //
@@ -51,7 +51,7 @@ export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts
             ts.factory.createIdentifier(HOST_REF_ARG),
             ts.factory.createIdentifier('$lazyInstance$'),
           ),
-          ts.factory.createIdentifier(cmp.formInternalsMemberName),
+          ts.factory.createIdentifier(cmp.attachInternalsMemberName),
         ),
         ts.factory.createBlock(
           [
@@ -93,7 +93,7 @@ export function createLazyFormInternalsBinding(cmp: d.ComponentCompilerMeta): ts
                 ts.factory.createPropertyAccessExpression(
                   ts.factory.createThis(),
                   // use the name set on the {@link d.ComponentCompilerMeta}
-                  ts.factory.createIdentifier(cmp.formInternalsMemberName),
+                  ts.factory.createIdentifier(cmp.attachInternalsMemberName),
                 ),
                 ts.factory.createToken(ts.SyntaxKind.EqualsToken),
                 ts.factory.createCallExpression(

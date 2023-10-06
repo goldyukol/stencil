@@ -17,7 +17,7 @@ import {
 } from './decorators-constants';
 import { elementDecoratorsToStatic } from './element-decorator';
 import { eventDecoratorsToStatic } from './event-decorator';
-import { formInternalsDecoratorsToStatic } from './form-internals-decorator';
+import { attachInternalsDecoratorsToStatic } from './form-internals-decorator';
 import { listenDecoratorsToStatic } from './listen-decorator';
 import { methodDecoratorsToStatic, validateMethods } from './method-decorator';
 import { propDecoratorsToStatic } from './prop-decorator';
@@ -126,7 +126,7 @@ const visitClassDeclaration = (
     elementDecoratorsToStatic(diagnostics, decoratedMembers, typeChecker, filteredMethodsAndFields);
     watchDecoratorsToStatic(typeChecker, decoratedMembers, filteredMethodsAndFields);
     listenDecoratorsToStatic(diagnostics, typeChecker, decoratedMembers, filteredMethodsAndFields);
-    formInternalsDecoratorsToStatic(diagnostics, decoratedMembers, filteredMethodsAndFields, typeChecker);
+    attachInternalsDecoratorsToStatic(diagnostics, decoratedMembers, filteredMethodsAndFields, typeChecker);
   }
 
   // We call the `handleClassFields` method which handles transforming any

@@ -138,13 +138,13 @@ describe('nativeComponentTransform', () => {
       );
     });
 
-    it('adds a binding for @FormInternals', async () => {
+    it('adds a binding for @AttachInternals', async () => {
       const code = `
         @Component({
           tag: 'cmp-a', formAssociated: true
         })
         export class CmpA {
-          @FormInternals() internals;
+          @AttachInternals() internals;
         }
       `;
 

@@ -1,19 +1,22 @@
 import { transpileModule } from './transpile';
 
-describe('parse form associated', function () {
-  it('should set formAssociated if passed to decorator', async () => {
+describe('parse attachInternals', function () {
+  it('should set attachInternalsMemberName when set', async () => {
     const t = transpileModule(`
     @Component({
       tag: 'cmp-a',
       formAssociated: true
     })
     export class CmpA {
+      @AttachInternals()
+      myProp;
     }
     `);
     expect(t.cmp!.formAssociated).toBe(true);
+    expect(t.cmp!.attachInternalsMemberName).toBe('myProp');
   });
 
-  it('should not set formAssociated if not set', async () => {
+  it('should not set attachInternalsMemberName if not set', async () => {
     const t = transpileModule(`
     @Component({
       tag: 'cmp-a',
@@ -21,6 +24,6 @@ describe('parse form associated', function () {
     export class CmpA {
     }
     `);
-    expect(t.cmp!.formAssociated).toBe(false);
+    expect(t.cmp!.attachInternalsMemberName).toBe(null);
   });
 });

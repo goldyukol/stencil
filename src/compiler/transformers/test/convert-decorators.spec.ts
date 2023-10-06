@@ -424,17 +424,17 @@ describe('convert-decorators', () => {
     expect(getStaticGetter(t.outputText, 'formAssociated')).toBe(true);
   });
 
-  it('should create formInternalsMemberName static getter', async () => {
+  it('should create attachInternalsMemberName static getter', async () => {
     const t = transpileModule(`
      @Component({
        tag: 'cmp-a',
      })
       export class CmpA {
-      @FormInternals()
-      formInternals;
+      @AttachInternals()
+      elementInternals;
     }
     `);
-    expect(getStaticGetter(t.outputText, 'formInternalsMemberName')).toBe('formInternals');
+    expect(getStaticGetter(t.outputText, 'attachInternalsMemberName')).toBe('elementInternals');
   });
 
   describe('filterDecorators', () => {

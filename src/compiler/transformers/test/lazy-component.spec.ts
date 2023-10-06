@@ -3,6 +3,7 @@ import { mockCompilerCtx } from '@stencil/core/testing';
 import type * as d from '../../../declarations';
 import { lazyComponentTransform } from '../component-lazy/transform-lazy-component';
 import { transpileModule } from './transpile';
+import { c } from './utils';
 
 describe('lazy-component', () => {
   it('add registerInstance() to constructor w/ decorator on class', () => {
@@ -89,6 +90,20 @@ describe('lazy-component', () => {
 
     const t = transpileModule(code, null, compilerCtx, [], [transformer]);
 
-    expect(t.outputText).toContain(`this.internals = hostRef.$hostElement$.attachInternals()`);
+    expect(t.outputText).toBe(c`import { registerInstance as __stencil_registerInstance } from "@stencil-core";
+      export const CmpA = class {
+        constructor (hostRef) {
+          __stencil_registerInstance(this, hostRef);
+          if (hostRef.$hostElement$["s-ei"]) {
+            this.internals = hostRef.$hostElement$["s-ei"];
+          } else {
+            this.internals = hostRef.$hostElement$.attachInternals();
+            hostRef.$hostElement$["s-ei"] = this.internals;
+          }
+        }
+        static get formAssociated() {
+          return true;
+        }
+      }`);
   });
 });

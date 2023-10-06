@@ -3,7 +3,7 @@ import ts from 'typescript';
 import type * as d from '../../../declarations';
 import { addCreateEvents } from '../create-event';
 import { updateConstructor } from '../transform-utils';
-import { createNativeAttachInternalsBinding } from './form-internals';
+import { createNativeAttachInternalsBinding } from './attach-internals';
 
 /**
  * Updates a constructor to include:

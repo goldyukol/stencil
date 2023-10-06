@@ -5,7 +5,7 @@ import { addCoreRuntimeApi, REGISTER_INSTANCE, RUNTIME_APIS } from '../core-runt
 import { addCreateEvents } from '../create-event';
 import { updateConstructor } from '../transform-utils';
 import { HOST_REF_ARG } from './constants';
-import { createLazyAttachInternalsBinding } from './form-internals';
+import { createLazyAttachInternalsBinding } from './attach-internals';
 
 /**
  * Update the constructor for a Stencil component's class in order to prepare

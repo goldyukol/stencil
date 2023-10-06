@@ -17,7 +17,7 @@ import {
 } from './decorators-constants';
 import { elementDecoratorsToStatic } from './element-decorator';
 import { eventDecoratorsToStatic } from './event-decorator';
-import { attachInternalsDecoratorsToStatic } from './form-internals-decorator';
+import { attachInternalsDecoratorsToStatic } from './attach-internals';
 import { listenDecoratorsToStatic } from './listen-decorator';
 import { methodDecoratorsToStatic, validateMethods } from './method-decorator';
 import { propDecoratorsToStatic } from './prop-decorator';

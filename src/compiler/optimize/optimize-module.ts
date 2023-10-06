@@ -188,7 +188,7 @@ function getTerserManglePropertiesConfig(): ManglePropertiesOptions {
   const options = {
     // we need to reserve this name so that it can be accessed on `hostRef`
     // at runtime
-    reserved: ['$hostElement$'],
+    reserved: ['$hostElement$', '$lazyInstance$'],
   } satisfies ManglePropertiesOptions;
 
   return options;

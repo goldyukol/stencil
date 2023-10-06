@@ -5,6 +5,7 @@ import { Config } from '../../internal';
 
 export const config: Config = {
   namespace: 'TestApp',
+  minifyJs: false,
   srcDir: 'test-app',
   tsconfig: 'tsconfig-stencil.json',
   outputTargets: [

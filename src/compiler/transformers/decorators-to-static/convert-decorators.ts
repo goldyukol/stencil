@@ -8,6 +8,7 @@ import {
   tsPropDeclNameAsString,
   updateConstructor,
 } from '../transform-utils';
+import { attachInternalsDecoratorsToStatic } from './attach-internals';
 import { componentDecoratorToStatic } from './component-decorator';
 import { isDecoratorNamed } from './decorator-utils';
 import {
@@ -17,7 +18,6 @@ import {
 } from './decorators-constants';
 import { elementDecoratorsToStatic } from './element-decorator';
 import { eventDecoratorsToStatic } from './event-decorator';
-import { attachInternalsDecoratorsToStatic } from './attach-internals';
 import { listenDecoratorsToStatic } from './listen-decorator';
 import { methodDecoratorsToStatic, validateMethods } from './method-decorator';
 import { propDecoratorsToStatic } from './prop-decorator';

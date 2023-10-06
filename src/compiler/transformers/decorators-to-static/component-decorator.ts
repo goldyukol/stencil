@@ -112,10 +112,6 @@ const validateComponent = (
     return false;
   }
 
-  const attachInternalsMembers = cmpNode.members.filter(ts.isPropertyDeclaration).filter((prop) => {
-    return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('AttachInternals'));
-  });
-
   const constructor = cmpNode.members.find(ts.isConstructorDeclaration);
   if (constructor && constructor.parameters.length > 0) {
     const err = buildError(diagnostics);

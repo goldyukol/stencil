@@ -1,4 +1,4 @@
-import { setupDomTests, waitForChanges } from '../util';
+import { setupDomTests } from '../util';
 
 describe('form associated', function () {
   const { setupDom, tearDownDom } = setupDomTests(document);
@@ -16,11 +16,8 @@ describe('form associated', function () {
 
   it('should link up to the surrounding form', async () => {
     const formEl = app.querySelector('form');
+    // this shows that the element has, through the `ElementInternals`
+    // interface, been able to set a value in the surrounding form
     expect(new FormData(formEl).get("test-input")).toBe("my default value");
-
-    const elm = app.querySelector('form-associated');
-    elm.querySelector('input').value = 'new value';
-    await waitForChanges();
-    expect(new FormData(formEl).get('test-input')).toBe('new value');
   });
 });

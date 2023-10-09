@@ -609,6 +609,12 @@ export interface ComponentCompilerFeatures {
  */
 export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
   assetsDirs: CompilerAssetDir[];
+  /**
+   * The name to which an `ElementInternals` object (the return value of
+   * `HTMLElement.attachInternals`) should be attached at runtime. If this is
+   * `null` then `attachInternals` should not be called.
+   */
+  attachInternalsMemberName: string | null;
   componentClassName: string;
   /**
    * A list of web component tag names that are either:
@@ -639,12 +645,6 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
    * Whether or not the component is form-associated
    */
   formAssociated: boolean;
-  /**
-   * The name to which an `ElementInternals` object (the return value of
-   * `HTMLElement.attachInternals`) should be attached at runtime. If this is
-   * `null` then `attachInternals` should not be called.
-   */
-  attachInternalsMemberName: string | null;
   internal: boolean;
   isCollectionDependency: boolean;
   jsFilePath: string;
@@ -1523,15 +1523,6 @@ export interface HostRef {
   $flags$: number;
   $cmpMeta$: ComponentRuntimeMeta;
   $hostElement$: HostElement;
-  /**
-   * This is set on the {@link HostRef} in order to support form-associated
-   * Stencil components with Hot module replacement.
-   *
-   * We need to maintain a reference to a the `ElementInternals` object for a
-   * form-associated Stencil component across updates because the
-   * `attachInternals` method can only be called once on a given `HTMLElement`.
-   */
-  $elementInternals$?: ElementInternals;
   $instanceValues$?: Map<string, any>;
   $lazyInstance$?: ComponentInterface;
   $onReadyPromise$?: Promise<any>;

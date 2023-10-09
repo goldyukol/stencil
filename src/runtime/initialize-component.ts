@@ -29,11 +29,8 @@ export const initializeComponent = async (
   let Cstr: any;
   // initializeComponent
   if ((hostRef.$flags$ & HOST_FLAGS.hasInitializedComponent) === 0) {
-    console.log('IN THE INITIALIZE COMPONENT IF BLOCK');
-    console.log(hostRef.$flags$);
     // Let the runtime know that the component has been initialized
     hostRef.$flags$ |= HOST_FLAGS.hasInitializedComponent;
-    console.log(hostRef.$flags$);
 
     if (BUILD.lazyLoad || BUILD.hydrateClientSide) {
       // lazy loaded components

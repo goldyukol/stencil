@@ -101,7 +101,7 @@ export function createLazyAttachInternalsBinding(cmp: d.ComponentCompilerMeta): 
                 ),
               ),
             ),
-            // this `ts.factory` call produces thefollowing:
+            // this `ts.factory` call produces the following:
             //
             // ```ts
             // hostRef.$hostElement$['s-ei'] = this.${ cmp.attachInternalsMemberName };

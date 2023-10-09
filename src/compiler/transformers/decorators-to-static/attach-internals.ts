@@ -40,7 +40,7 @@ export const attachInternalsDecoratorsToStatic = (
     return !!retrieveTsDecorators(prop)?.find(isDecoratorNamed('AttachInternals'));
   });
 
-  // no decorator fields, return!
+  // no decorated fields, return!
   if (attachInternalsMembers.length === 0) {
     return;
   }

@@ -10,24 +10,27 @@ import ts from 'typescript';
  * `this.attachInternals` directly, binding it to the name annotated by the
  * developer with the `@AttachInternals` decorator.
  *
+ * Thus if an `@AttachInternals` decorator is present on a component like
+ * this:
+ *
+ * ```ts
+ * @AttachInternals()
+ * internals: ElementInternals;
+ * ```
+ *
+ * then this transformer will emit TS syntax nodes representing the
+ * following TypeScript source code:
+ *
+ * ```ts
+ * this.internals = this.attachInternals();
+ * ```
+ *
  * @param cmp metadata about the component of interest, gathered during
  * compilation
  * @returns an expression statement syntax tree node
  */
 export function createNativeAttachInternalsBinding(cmp: d.ComponentCompilerMeta): ts.ExpressionStatement[] {
   if (cmp.formAssociated && cmp.attachInternalsMemberName) {
-    // if an `@AttachInternals` decorator is present on a component like this:
-    //
-    // ```ts
-    // @AttachInternals()
-    // internals: ElementInternals;
-    // ```
-    //
-    // then these `ts.factory` calls will produce the following:
-    //
-    // ```ts
-    // this.internals = this.attachInternals();
-    // ```
     return [
       ts.factory.createExpressionStatement(
         ts.factory.createBinaryExpression(

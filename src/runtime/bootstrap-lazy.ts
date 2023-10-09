@@ -161,7 +161,6 @@ export const bootstrapLazy = (lazyBundles: d.LazyBundlesRuntimeData, options: d.
       // element so that it will be ready for `attachInternals` to be called on
       // it later on
       if (BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated) {
-        // any way around this typecast?
         (HostElement as any).formAssociated = true;
       }
 

@@ -87,7 +87,6 @@ export const optimizeModule = async (
       }
 
       mangleOptions.properties = {
-        regex: '^\\$.+\\$$',
         debug: isDebug,
         ...getTerserManglePropertiesConfig(),
       };
@@ -141,10 +140,7 @@ export const getTerserOptions = (config: Config, sourceTarget: SourceTarget, pre
     };
   } else {
     opts.mangle = {
-      properties: {
-        regex: '^\\$.+\\$$',
-        ...getTerserManglePropertiesConfig(),
-      },
+      properties: getTerserManglePropertiesConfig(),
     };
     opts.compress = {
       pure_getters: true,
@@ -186,6 +182,7 @@ export const getTerserOptions = (config: Config, sourceTarget: SourceTarget, pre
  */
 function getTerserManglePropertiesConfig(): ManglePropertiesOptions {
   const options = {
+    regex: '^\\$.+\\$$',
     // we need to reserve this name so that it can be accessed on `hostRef`
     // at runtime
     reserved: ['$hostElement$'],

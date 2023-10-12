@@ -7,6 +7,7 @@ export const config: Config = {
   namespace: 'TestApp',
   srcDir: 'test-app',
   tsconfig: 'tsconfig-stencil.json',
+  sourceMap: false,
   outputTargets: [
     {
       type: 'www',

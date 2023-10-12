@@ -1,5 +1,5 @@
 import sourceMapMerge from 'merge-source-map';
-import type { CompressOptions, MangleOptions, ManglePropertiesOptions, MinifyOptions, SourceMapOptions } from 'terser';
+import type { CompressOptions, MangleOptions, MinifyOptions, SourceMapOptions } from 'terser';
 import ts from 'typescript';
 
 import type { CompilerCtx, Config, OptimizeJsResult, SourceMap, SourceTarget } from '../../declarations';
@@ -89,7 +89,6 @@ export const optimizeModule = async (
       mangleOptions.properties = {
         regex: '^\\$.+\\$$',
         debug: isDebug,
-        ...getTerserManglePropertiesConfig(),
       };
 
       compressOpts.inline = 1;
@@ -136,14 +135,11 @@ export const getTerserOptions = (config: Config, sourceTarget: SourceTarget, pre
   if (sourceTarget === 'es5') {
     opts.ecma = opts.format.ecma = 5;
     opts.compress = false;
-    opts.mangle = {
-      properties: getTerserManglePropertiesConfig(),
-    };
+    opts.mangle = true;
   } else {
     opts.mangle = {
       properties: {
         regex: '^\\$.+\\$$',
-        ...getTerserManglePropertiesConfig(),
       },
     };
     opts.compress = {
@@ -162,10 +158,7 @@ export const getTerserOptions = (config: Config, sourceTarget: SourceTarget, pre
   }
 
   if (prettyOutput) {
-    opts.mangle = {
-      keep_fnames: true,
-      properties: getTerserManglePropertiesConfig(),
-    };
+    opts.mangle = { keep_fnames: true };
     opts.compress = {};
     opts.compress.drop_console = false;
     opts.compress.drop_debugger = false;
@@ -177,22 +170,6 @@ export const getTerserOptions = (config: Config, sourceTarget: SourceTarget, pre
 
   return opts;
 };
-
-/**
- * Get baseline configuration for the 'properties' option for terser's mangle
- * configuration.
- *
- * @returns an object with our baseline property mangling configuration
- */
-function getTerserManglePropertiesConfig(): ManglePropertiesOptions {
-  const options = {
-    // we need to reserve this name so that it can be accessed on `hostRef`
-    // at runtime
-    reserved: ['$hostElement$'],
-  } satisfies ManglePropertiesOptions;
-
-  return options;
-}
 
 /**
  * This method is likely to be called by a worker on the compiler context, rather than directly.

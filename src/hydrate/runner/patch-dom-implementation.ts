@@ -37,8 +37,9 @@ export function patchDomImplementation(doc: any, opts: d.HydrateFactoryOptions) 
     }
   }
 
-  try {
-    doc.baseURI;
+  try {    
+    // Assigning the baseURI prevents JavaScript optimizers from treating this as dead code
+    win.__stencil_baseURI = doc.baseURI;
   } catch (e) {
     Object.defineProperty(doc, 'baseURI', {
       get() {

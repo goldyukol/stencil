@@ -1,9 +1,10 @@
 import { BUILD } from '@app-data';
 import { consoleDevWarn, getHostRef, plt } from '@platform';
+import { CMP_FLAGS } from '@utils';
 
 import type * as d from '../declarations';
 import { HOST_FLAGS, MEMBER_FLAGS } from '../utils/constants';
-import { PROXY_FLAGS } from './runtime-constants';
+import { PROXY_FLAGS, FORM_ASSOCIATED_CUSTOM_ELEMENT_CALLBACKS } from './runtime-constants';
 import { getValue, setValue } from './set-value';
 
 /**
@@ -81,6 +82,26 @@ export const proxyComponent = (
         });
       }
     });
+
+    /**
+     * proxy form associated custom element lifecycle callbacks
+     * @ref https://web.dev/articles/more-capable-form-controls#lifecycle_callbacks
+     */
+    if (BUILD.formAssociated && cmpMeta.$flags$ & CMP_FLAGS.formAssociated && flags & PROXY_FLAGS.isElementConstructor) {
+      FORM_ASSOCIATED_CUSTOM_ELEMENT_CALLBACKS.forEach((cbName) => Object.defineProperty(prototype, cbName, {
+        value(this: d.HostElement, ...args: any[]) {
+          const hostRef = getHostRef(this);
+          const elm = BUILD.lazyLoad ? hostRef.$hostElement$ : this;
+          const instance = BUILD.lazyLoad ? hostRef.$lazyInstance$ : (elm as any);
+          if (!instance) {
+            hostRef.$onReadyPromise$.then((instance) => instance?.[cbName](...args));
+          } else {
+            const cb = instance[cbName];
+            typeof cb === 'function' && cb(...args);
+          }
+        }
+      }))
+    }
 
     if (BUILD.observeAttribute && (!BUILD.lazyLoad || flags & PROXY_FLAGS.isElementConstructor)) {
       const attrNameToPropName = new Map();

@@ -640,6 +640,8 @@ export interface ComponentCompilerMeta extends ComponentCompilerFeatures {
    * A list of web component tag names that the current component directly in their JSX/h() function
    */
   directDependents?: string[];
+
+  parentClassPath?: string;
 }
 
 /**

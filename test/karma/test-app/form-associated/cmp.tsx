@@ -12,6 +12,10 @@ export class FormAssociatedCmp {
     this.internals.setFormValue('my default value');
   }
 
+  formAssociatedCallback () {
+    this.internals.ariaLabel = 'formAssociated called'
+  }
+
   render() {
     return <input type="text" />;
   }

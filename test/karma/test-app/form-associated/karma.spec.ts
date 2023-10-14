@@ -12,6 +12,7 @@ describe('form associated', function () {
   it('should render without errors', async () => {
     const elm = app.querySelector('form-associated');
     expect(elm).not.toBeNull();
+    expect(elm.ariaLabel).toBe('formAssociated called');
   });
 
   it('should link up to the surrounding form', async () => {

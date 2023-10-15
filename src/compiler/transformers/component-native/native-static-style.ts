@@ -69,7 +69,8 @@ const addSingleStyleGetter = (
     // import myTagStyle from './import-path.css';
     // static get style() { return myTagStyle; }
     const styleIdentifier = ts.factory.createIdentifier(style.styleIdentifier);
-    classMembers.push(createStaticGetter('style', styleIdentifier));
+
+    classMembers.push(createStaticGetter('style', checkForAppendParentStyles(styleIdentifier, cmp)));
   } else if (Array.isArray(style.externalStyles) && style.externalStyles.length > 0) {
     // import generated from @Component() styleUrls option
     // import myTagStyle from './import-path.css';
@@ -86,7 +87,8 @@ const createStyleLiteral = (cmp: d.ComponentCompilerMeta, style: d.StyleCompiler
     return ts.factory.createStringLiteral(scopeCss(style.styleStr, scopeId, false));
   }
 
-  return ts.factory.createStringLiteral(style.styleStr);
+  const baseStyles = ts.factory.createStringLiteral(style.styleStr);
+  return checkForAppendParentStyles(baseStyles, cmp);
 };
 
 const createStyleIdentifierFromUrl = (cmp: d.ComponentCompilerMeta, style: d.StyleCompiler) => {
@@ -100,5 +102,13 @@ const createStyleIdentifierFromUrl = (cmp: d.ComponentCompilerMeta, style: d.Sty
   style.styleIdentifier += 'Style';
   style.externalStyles = [style.externalStyles[0]];
 
-  return ts.factory.createIdentifier(style.styleIdentifier);
+  const identifier = ts.factory.createIdentifier(style.styleIdentifier);
+
+  return checkForAppendParentStyles(identifier, cmp);
+};
+
+const checkForAppendParentStyles = (baseStyles: ts.Identifier | ts.StringLiteral, cmp: d.ComponentCompilerMeta) => {
+  return cmp.parentClassPath
+    ? ts.factory.createAdd(baseStyles, ts.factory.createIdentifier("super.style ?? ''"))
+    : baseStyles;
 };

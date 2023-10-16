@@ -277,6 +277,6 @@ describe('jest-config', () => {
   it('sets the default runner', () => {
     const jestArgv = buildJestArgv(mockValidatedConfig());
     const config = JSON.parse(jestArgv.config!);
-    expect(config.testRunner).toBe('jest-jasmine2');
+    expect(config.testRunner).toBe('jest-circus');
   });
 });

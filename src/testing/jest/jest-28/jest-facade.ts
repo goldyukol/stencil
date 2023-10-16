@@ -24,7 +24,7 @@ export class Jest28Stencil implements JestFacade {
   }
 
   getDefaultJestRunner() {
-    return 'jest-jasmine2';
+    return 'jest-circus';
   }
 
   getCreateJestPuppeteerEnvironment() {

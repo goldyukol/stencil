@@ -1,7 +1,7 @@
 {
   "name": "@stencil/jest-28",
   "version": "1.0.0",
-  "description": "Internal package for supporting Jest 27 and under with Stencil",
+  "description": "Internal package for supporting Jest 28 with Stencil",
   "license": "MIT",
   "author": "Ionic Team",
   "homepage": "https://stenciljs.com/",

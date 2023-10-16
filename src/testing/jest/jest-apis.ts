@@ -12,6 +12,7 @@
  * file be added to sparingly.
  */
 
+import type { TransformedSource } from '@jest/transform';
 import type { Config } from '@jest/types';
 import { getVersion } from 'jest';
 
@@ -27,7 +28,7 @@ export type JestPreprocessor = {
     sourcePath: string,
     jestConfig: Jest26Config | Jest27TransformOptions,
     transformOptions?: Jest26Config,
-  ): string;
+  ): string | TransformedSource;
   getCacheKey(
     sourceText: string,
     sourcePath: string,

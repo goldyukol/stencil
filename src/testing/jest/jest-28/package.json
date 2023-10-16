@@ -1,5 +1,5 @@
 {
-  "name": "@stencil/jest-27-and-under",
+  "name": "@stencil/jest-28",
   "version": "1.0.0",
   "description": "Internal package for supporting Jest 27 and under with Stencil",
   "license": "MIT",

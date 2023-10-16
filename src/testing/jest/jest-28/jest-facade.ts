@@ -1,3 +1,7 @@
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { Config } from '@jest/types';
+
 import { JestFacade } from '../jest-facade';
 import { createJestPuppeteerEnvironment } from './jest-environment';
 import { jestPreprocessor } from './jest-preprocessor';

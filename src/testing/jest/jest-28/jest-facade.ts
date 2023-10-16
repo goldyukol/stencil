@@ -10,7 +10,7 @@ import { jestSetupTestFramework as jestSetupTestFramework27 } from './jest-setup
 /**
  * `JestFacade` implementation for communicating between this directory's version of Jest and Stencil
  */
-export class Jest27Stencil implements JestFacade {
+export class Jest28Stencil implements JestFacade {
   getJestCliRunner() {
     return runJest27;
   }

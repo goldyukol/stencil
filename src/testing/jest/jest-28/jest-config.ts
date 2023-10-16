@@ -2,7 +2,7 @@ import type { Config } from '@jest/types';
 import type * as d from '@stencil/core/internal';
 import { isString } from '@utils';
 
-import { Jest27Stencil } from './jest-facade';
+import { Jest28Stencil } from './jest-facade';
 
 /**
  * Helper function for retrieving legacy Jest options. These options have been provided as defaults to Stencil users
@@ -147,7 +147,7 @@ export function buildJestConfig(config: d.ValidatedConfig): string {
     jestConfig.verbose = stencilConfigTesting.verbose;
   }
 
-  jestConfig.testRunner = new Jest27Stencil().getDefaultJestRunner();
+  jestConfig.testRunner = new Jest28Stencil().getDefaultJestRunner();
 
   return JSON.stringify(jestConfig);
 }

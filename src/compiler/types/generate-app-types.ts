@@ -22,7 +22,7 @@ export const generateAppTypes = async (
   compilerCtx: d.CompilerCtx,
   buildCtx: d.BuildCtx,
   destination: string,
-): Promise<boolean> => {
+): Promise<void> => {
   // only gather components that are still root ts files we've found and have component metadata
   // the compilerCtx cache may still have files that may have been deleted/renamed
   const timespan = buildCtx.createTimeSpan(`generated app types started`, true);
@@ -46,15 +46,12 @@ export const generateAppTypes = async (
   const writeResults = await compilerCtx.fs.writeFile(normalizePath(componentsDtsFilePath), componentTypesFileContent, {
     immediateWrite: true,
   });
-  const hasComponentsDtsChanged = writeResults.changedContent;
-
   const componentsDtsRelFileName = relative(config.rootDir, componentsDtsFilePath);
-  if (hasComponentsDtsChanged) {
+  if (writeResults.changedContent) {
     config.logger.debug(`generateAppTypes: ${componentsDtsRelFileName} has changed`);
   }
 
   timespan.finish(`generated app types finished: ${componentsDtsRelFileName}`);
-  return hasComponentsDtsChanged;
 };
 
 /**

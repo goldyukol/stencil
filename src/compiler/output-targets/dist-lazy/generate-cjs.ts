@@ -53,10 +53,10 @@ const generateShortcuts = (
   rollupResult: d.RollupResult[],
   outputTargets: d.OutputTargetDistLazy[],
 ): Promise<void[]> => {
-  const indexFilename = rollupResult.find((r) => r.type === 'chunk' && r.isIndex).fileName;
+  const indexFilename = rollupResult.find((r) => r.type === 'chunk' && r.isIndex)?.fileName;
   return Promise.all(
     outputTargets.map(async (o) => {
-      if (o.cjsIndexFile) {
+      if (o.cjsDir != null && o.cjsIndexFile && indexFilename != null) {
         const entryPointPath = join(o.cjsDir, indexFilename);
         const relativePath = relativeImport(o.cjsIndexFile, entryPointPath);
         const shortcutContent = `module.exports = require('${relativePath}');\n`;

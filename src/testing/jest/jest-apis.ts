@@ -16,7 +16,7 @@ import type { TransformedSource } from '@jest/transform';
 import type { Config } from '@jest/types';
 import { getVersion } from 'jest';
 
-import { Jest28TransformOptions } from "./jest-28/jest-preprocessor";
+import { Jest28TransformOptions } from './jest-28/jest-preprocessor';
 
 // TODO(STENCIL-959): Improve this typing by narrowing it
 export type JestPuppeteerEnvironment = any;
@@ -25,16 +25,8 @@ type Jest26Config = { instrument: boolean; rootDir: string };
 type Jest27TransformOptions = { config: Jest26Config };
 
 type BasePreprocessor = {
-  process(
-    sourceText: string,
-    sourcePath: string,
-    ...args: any[]
-  ): string | TransformedSource;
-  getCacheKey(
-    sourceText: string,
-    sourcePath: string,
-    ...args: any[]
-  ): string;
+  process(sourceText: string, sourcePath: string, ...args: any[]): string | TransformedSource;
+  getCacheKey(sourceText: string, sourcePath: string, ...args: any[]): string;
 };
 
 type Jest27Preprocessor = BasePreprocessor & {
@@ -53,20 +45,11 @@ type Jest27Preprocessor = BasePreprocessor & {
 };
 
 type Jest28Preprocessor = BasePreprocessor & {
-  process(
-    sourceText: string,
-    sourcePath: string,
-    options: Jest28TransformOptions,
-  ): TransformedSource;
-  getCacheKey(
-    sourceText: string,
-    sourcePath: string,
-    options: Jest28TransformOptions,
-  ): string;
+  process(sourceText: string, sourcePath: string, options: Jest28TransformOptions): TransformedSource;
+  getCacheKey(sourceText: string, sourcePath: string, options: Jest28TransformOptions): string;
 };
 
 export type JestPreprocessor = Jest27Preprocessor | Jest28Preprocessor;
-
 
 // TODO(STENCIL-960): Improve this typing by narrowing it
 export type JestTestRunner = any;

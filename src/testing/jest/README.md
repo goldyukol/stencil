@@ -26,6 +26,14 @@ This allows for 'well known' commits that map directly back to these steps to be
        └── jest-28            <- Newly copied version of jest-27-and-under, just with a different name
    ```
 1. **Commit your changes to help your reviewers out - this makes it easier to review changes that are coming down the line.**
+   Last reminder, please do this after every step.
+1. Update any Jest related dependencies to use the targeted version of Jest.
+   Note: It is up to you to determine/verify the packages needed here.
+   ```bash
+   $ cd src/testing/jest/jest-28
+   $ npm i -D jest@28 @types/jest@28
+   ```
+   Note that all dependencies can simply be dev-dependencies, since they're only used for type checking.
 1. Update the name of the package in the newly created directory to reflect the version of Jest it supports.
    Do so by replacing the one instance of the package name in `package.json` and two instances in `package-lock-json`.
    Following the example above, `@stencil/jest-27-and-under` would be replaced with `@stencil/jest-28`
@@ -74,13 +82,6 @@ This allows for 'well known' commits that map directly back to these steps to be
        "homepage": "https://stenciljs.com/",
     
     ```
-1. Update any Jest related dependencies to use the targeted version of Jest.
-   Note: It is up to you to determine/verify the packages needed here.
-   ```bash
-   $ cd src/testing/jest/jest-28
-   $ npm i -D jest@28 @types/jest@28
-   ```
-   Note that all dependencies can simply be dev-dependencies, since they're only used for type checking.
 1. Update `renovate.json` to not bump Jest beyond the version that this directory is responsible for:
     ```diff
     index 4861b2477..7cf75e16d 100644
@@ -187,9 +188,9 @@ This allows for 'well known' commits that map directly back to these steps to be
     -    '@types/jest': { minVersion: '24.9.1', recommendedVersion: '27.0.3', maxVersion: '27.0.0' },
     -    jest: { minVersion: '24.9.0', recommendedVersion: '27.0.3', maxVersion: '27.0.0' },
     -    'jest-cli': { minVersion: '24.9.0', recommendedVersion: '27.4.5', maxVersion: '27.0.0' },
-    +    '@types/jest': { minVersion: '24.9.1', recommendedVersion: '28', maxVersion: '28' },
-    +    jest: { minVersion: '24.9.0', recommendedVersion: '28', maxVersion: '28' },
-    +    'jest-cli': { minVersion: '24.9.0', recommendedVersion: '28', maxVersion: '28' },
+    +    '@types/jest': { minVersion: '24.9.1', recommendedVersion: '28', maxVersion: '28.0.0' },
+    +    jest: { minVersion: '24.9.0', recommendedVersion: '28', maxVersion: '28.0.0' },
+    +    'jest-cli': { minVersion: '24.9.0', recommendedVersion: '28', maxVersion: '28.0.0' },
          puppeteer: { minVersion: '10.0.0', recommendedVersion: '20' },
          'puppeteer-core': { minVersion: '10.0.0', recommendedVersion: '20' },
          'workbox-build': { minVersion: '4.3.1', recommendedVersion: '4.3.1' },

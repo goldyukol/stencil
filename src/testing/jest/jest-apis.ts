@@ -16,13 +16,15 @@ import type { TransformedSource } from '@jest/transform';
 import type { Config } from '@jest/types';
 import { getVersion } from 'jest';
 
+import { Jest28TransformOptions } from "./jest-28/jest-preprocessor";
+
 // TODO(STENCIL-959): Improve this typing by narrowing it
 export type JestPuppeteerEnvironment = any;
 
 type Jest26CacheKeyOptions = { instrument: boolean; rootDir: string };
 type Jest26Config = { instrument: boolean; rootDir: string };
 type Jest27TransformOptions = { config: Jest26Config };
-export type JestPreprocessor = {
+type Jest27Preprocessor = {
   process(
     sourceText: string,
     sourcePath: string,
@@ -36,6 +38,19 @@ export type JestPreprocessor = {
     transformOptions?: Jest26CacheKeyOptions,
   ): string;
 };
+type Jest28Preprocessor = {
+  process(
+    sourceText: string,
+    sourcePath: string,
+    options: Jest28TransformOptions, // TODO(NOW)
+  ): string | TransformedSource;
+  getCacheKey(
+    sourceText: string,
+    sourcePath: string,
+    options: Jest28TransformOptions, // TODO(NOW)
+  ): string;
+};
+export type JestPreprocessor = Jest27Preprocessor | Jest28Preprocessor;
 
 // TODO(STENCIL-960): Improve this typing by narrowing it
 export type JestTestRunner = any;

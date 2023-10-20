@@ -95,35 +95,6 @@ describe('jest-config', () => {
     expect(jestArgv.maxWorkers).toBe(config.maxConcurrentWorkers);
   });
 
-  it('sets legacy jest options', () => {
-    const args = ['test'];
-    const config = mockValidatedConfig();
-    config.flags = parseFlags(args);
-
-    const jestArgv = buildJestArgv(config);
-
-    expect(jestArgv.detectLeaks).toBe(false);
-    expect(jestArgv['detect-leaks']).toBe(false);
-    expect(jestArgv.detectOpenHandles).toBe(false);
-    expect(jestArgv['detect-open-handles']).toBe(false);
-    expect(jestArgv.detectLeaks).toBe(false);
-    expect(jestArgv['detect-leaks']).toBe(false);
-    expect(jestArgv.errorOnDeprecated).toBe(false);
-    expect(jestArgv['error-on-deprecated']).toBe(false);
-    expect(jestArgv.listTests).toBe(false);
-    expect(jestArgv['list-tests']).toBe(false);
-    expect(jestArgv.maxConcurrency).toBe(5);
-    expect(jestArgv['max-concurrency']).toBe(5);
-    expect(jestArgv.notifyMode).toBe('failure-change');
-    expect(jestArgv['notify-mode']).toBe('failure-change');
-    expect(jestArgv.passWithNoTests).toBe(false);
-    expect(jestArgv['pass-with-no-tests']).toBe(false);
-    expect(jestArgv.runTestsByPath).toBe(false);
-    expect(jestArgv['run-tests-by-path']).toBe(false);
-    expect(jestArgv.testLocationInResults).toBe(false);
-    expect(jestArgv['test-location-in-results']).toBe(false);
-  });
-
   it('pass test spec arg to jest', () => {
     const args = ['test', 'hello.spec.ts'];
     const config = mockValidatedConfig();

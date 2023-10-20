@@ -102,6 +102,21 @@ This allows for 'well known' commits that map directly back to these steps to be
    - `matchFileNames` maps to the new Jest directory's `package.json`
    - `matchPackageNames` lists the packages that were upgraded earlier
    - `allowedVersions` allows versions less than or equal to the version we're adding support for
+1. Add the new version of Jest to the Component Starter smoke tests:
+    ```diff
+   index 16560a659..a4bee5308 100644
+    --- a/.github/workflows/test-component-starter.yml
+    +++ b/.github/workflows/test-component-starter.yml
+    @@ -16,7 +16,7 @@ jobs:
+    strategy:
+    fail-fast: false
+    matrix:
+    -        jest: ['24', '25', '26', '27']
+    +        jest: ['24', '25', '26', '27', '28']
+             node: ['16', '18', '20']
+             os: ['ubuntu-latest', 'windows-latest']
+      runs-on: ${{ matrix.os }}
+   ```
 1. Rename the `JestFacade` implementation in the new directory's `jest-facade.ts` file.
    The number in the class name should match the version of Jest we're adding support for.
    It is recommended that you use your editor's renaming/refactoring utility to do this step:
@@ -187,3 +202,4 @@ This allows for 'well known' commits that map directly back to these steps to be
 1. Perform a final pass through the Jest Breaking Changes guide for the current version that you are adding support for.
    Ensure any changes that ought to be made are completed.
    Note: Just because something didn't give us a runtime error, doesn't mean it should not be changed.
+1. Once your PR is merged, please ensure that the CI gate checks are updated to enforce successful runs of the new version of Jest for the Stencil Component Starter smoke test.

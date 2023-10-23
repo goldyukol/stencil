@@ -1,5 +1,6 @@
 import type * as d from '@stencil/core/declarations';
 import { mockCompilerSystem, mockLoadConfigInit, mockLogger } from '@stencil/core/testing';
+import { join } from '@utils';
 import path from 'path';
 
 import { validateConfig } from '../validate-config';
@@ -15,26 +16,26 @@ describe('validatePaths', () => {
     userConfig = {
       sys: sys as any,
       logger: logger,
-      rootDir: path.join(ROOT, 'User', 'my-app'),
+      rootDir: join(ROOT, 'User', 'my-app'),
       namespace: 'Testing',
     };
   });
 
   it('should set absolute cacheDir', () => {
-    userConfig.cacheDir = path.join(ROOT, 'some', 'custom', 'cache');
+    userConfig.cacheDir = join(ROOT, 'some', 'custom', 'cache');
     const { config } = validateConfig(userConfig, mockLoadConfigInit());
-    expect(config.cacheDir).toBe(path.join(ROOT, 'some', 'custom', 'cache'));
+    expect(config.cacheDir).toBe(join(ROOT, 'some', 'custom', 'cache'));
   });
 
   it('should set relative cacheDir', () => {
     userConfig.cacheDir = 'custom-cache';
     const { config } = validateConfig(userConfig, mockLoadConfigInit());
-    expect(config.cacheDir).toBe(path.join(ROOT, 'User', 'my-app', 'custom-cache'));
+    expect(config.cacheDir).toBe(join(ROOT, 'User', 'my-app', 'custom-cache'));
   });
 
   it('should set default cacheDir', () => {
     const { config } = validateConfig(userConfig, mockLoadConfigInit());
-    expect(config.cacheDir).toBe(path.join(ROOT, 'User', 'my-app', '.stencil'));
+    expect(config.cacheDir).toBe(join(ROOT, 'User', 'my-app', '.stencil'));
   });
 
   it('should set default wwwIndexHtml and convert to absolute path', () => {
@@ -47,7 +48,7 @@ describe('validatePaths', () => {
     userConfig.outputTargets = [
       {
         type: 'www',
-        indexHtml: path.join('assets', 'custom-index.html'),
+        indexHtml: join('assets', 'custom-index.html'),
       },
     ] as d.OutputTargetWww[];
     const { config } = validateConfig(userConfig, mockLoadConfigInit());
@@ -148,14 +149,14 @@ describe('validatePaths', () => {
   });
 
   it('should convert globalScript to absolute path, if a globalScript property was provided', () => {
-    userConfig.globalScript = path.join('src', 'global', 'index.ts');
+    userConfig.globalScript = join('src', 'global', 'index.ts');
     const { config } = validateConfig(userConfig, mockLoadConfigInit());
     expect(path.basename(config.globalScript)).toBe('index.ts');
     expect(path.isAbsolute(config.globalScript)).toBe(true);
   });
 
   it('should convert globalStyle string to absolute path array, if a globalStyle property was provided', () => {
-    userConfig.globalStyle = path.join('src', 'global', 'styles.css');
+    userConfig.globalStyle = join('src', 'global', 'styles.css');
     const { config } = validateConfig(userConfig, mockLoadConfigInit());
     expect(path.basename(config.globalStyle)).toBe('styles.css');
     expect(path.isAbsolute(config.globalStyle)).toBe(true);
